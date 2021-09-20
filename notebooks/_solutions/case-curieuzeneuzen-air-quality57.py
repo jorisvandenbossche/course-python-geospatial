@@ -1,1 +1,0 @@
-streets["highway"][idx_closest]

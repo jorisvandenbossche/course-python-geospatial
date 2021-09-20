@@ -1,1 +1,0 @@
-len(gdf_gent)

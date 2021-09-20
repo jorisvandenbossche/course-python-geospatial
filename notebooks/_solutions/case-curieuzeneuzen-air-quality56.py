@@ -1,1 +1,0 @@
-streets.loc[idx_closest]

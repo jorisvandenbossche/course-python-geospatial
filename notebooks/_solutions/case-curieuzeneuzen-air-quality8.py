@@ -1,1 +1,0 @@
-exceedances = df['no2'] > 40

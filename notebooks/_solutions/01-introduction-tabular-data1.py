@@ -1,1 +1,0 @@
-districts = pd.read_csv("data/paris_districts.csv")

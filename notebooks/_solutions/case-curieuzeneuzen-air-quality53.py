@@ -1,1 +1,0 @@
-streets.distance(point)

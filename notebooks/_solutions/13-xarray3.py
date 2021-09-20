@@ -1,1 +1,0 @@
-argo["buoyancy"] = 9.8 * (2e-4 * argo["temperature"] - 7e-4 * argo["salinity"])

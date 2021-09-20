@@ -1,1 +1,0 @@
-df.groupby('campaign')["no2"].mean()

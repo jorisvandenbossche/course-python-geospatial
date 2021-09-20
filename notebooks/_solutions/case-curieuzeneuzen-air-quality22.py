@@ -1,1 +1,0 @@
-gdf_combined = geopandas.sjoin(gdf_lambert, muni[["NAAM", "geometry"]])

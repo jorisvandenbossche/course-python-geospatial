@@ -1,1 +1,0 @@
-gdf_combined.head()

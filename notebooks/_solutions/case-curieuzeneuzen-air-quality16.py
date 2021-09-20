@@ -1,1 +1,0 @@
-muni = geopandas.read_file("./data/VRBG/Refgem.shp")

@@ -1,1 +1,0 @@
-argo["temperature"].sel(level=[10, 20, 30]).plot.line(hue="level");

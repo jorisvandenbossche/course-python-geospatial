@@ -1,1 +1,0 @@
-stations['bike_stands'].hist()

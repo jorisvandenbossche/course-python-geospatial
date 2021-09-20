@@ -1,1 +1,0 @@
-gdf_combined["exceedance"] = gdf_combined["no2"] > 40

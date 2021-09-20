@@ -1,1 +1,0 @@
-ds_mm.mean(dim='lon').plot.imshow(x="month", y="lat", vmin=-2, vmax=30, cmap="coolwarm")

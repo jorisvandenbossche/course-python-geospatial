@@ -1,1 +1,0 @@
-gdf['land_use'].value_counts()

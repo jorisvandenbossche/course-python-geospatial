@@ -1,1 +1,0 @@
-land_use_muette.dissolve(by='class')

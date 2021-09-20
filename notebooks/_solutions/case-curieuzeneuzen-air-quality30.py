@@ -1,1 +1,0 @@
-exceedances_muni = gdf_combined.groupby("NAAM")["exceedance"].mean() * 100

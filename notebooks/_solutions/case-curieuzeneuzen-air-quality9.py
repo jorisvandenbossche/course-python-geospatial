@@ -1,1 +1,0 @@
-exceedances.mean() * 100  # the mean is equivalent here to counting the True values and dividing by the total number of elements

@@ -1,1 +1,0 @@
-seaborn.boxplot(y="land_use_class", x="no2", data=subset)

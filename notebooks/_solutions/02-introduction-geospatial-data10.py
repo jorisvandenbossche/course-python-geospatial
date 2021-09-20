@@ -1,1 +1,0 @@
-districts = geopandas.read_file("data/paris_districts_utm.geojson")
