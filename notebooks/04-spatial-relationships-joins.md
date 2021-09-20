@@ -208,14 +208,14 @@ from shapely.geometry import Point
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Construct a point object for the Eiffel Tower
 eiffel_tower = Point(648237.3, 6862271.9)
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Print the result
 print(eiffel_tower)
@@ -228,21 +228,21 @@ bike_station = stations.loc[293, 'geometry']
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Is the Eiffel Tower located within the Montparnasse district?
 print(eiffel_tower.within(district_montparnasse))
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Does the Montparnasse district contains the bike station?
 print(district_montparnasse.contains(bike_station))
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # The distance between the Eiffel Tower and the bike station?
 print(eiffel_tower.distance(bike_station))
@@ -273,7 +273,7 @@ eiffel_tower = Point(648237.3, 6862271.9)
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Create a boolean Series
 mask = districts.contains(eiffel_tower)
@@ -281,7 +281,7 @@ mask
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Filter the districts with the boolean mask
 districts[mask]
@@ -310,21 +310,21 @@ To do this, we can calculate the distance to the Eiffel Tower for each of the st
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # The distance from each stations to the Eiffel Tower
 dist_eiffel = stations.distance(eiffel_tower)
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # The distance to the closest station
 dist_eiffel.min()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Filter the bike stations closer than 1 km
 stations_eiffel = stations[dist_eiffel < 1000]
@@ -367,7 +367,7 @@ Pandas provides functionality to join or merge dataframes in different ways, see
 
 +++
 
-To illustrate the concept of joining the information of two dataframes with pandas, let's take a small subset of our `cities` and `countries` datasets: 
+To illustrate the concept of joining the information of two dataframes with pandas, let's take a small subset of our `cities` and `countries` datasets:
 
 ```{code-cell} ipython3
 cities2 = cities[cities['name'].isin(['Bern', 'Brussels', 'London', 'Paris'])].copy()
@@ -489,13 +489,13 @@ stations = geopandas.read_file("data/paris_bike_stations.geojson").to_crs(epsg=2
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 joined = geopandas.sjoin(stations, districts[['district_name', 'geometry']], op='within')
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 joined.head()
 ```
@@ -522,7 +522,7 @@ To obtain the tree count by district, we first need to know in which district ea
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Read the trees and districts data
 trees = geopandas.read_file("data/paris_trees.gpkg")
@@ -530,14 +530,14 @@ districts = geopandas.read_file("data/paris_districts.geojson").to_crs(trees.crs
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # The trees dataset with point locations of trees
 trees.head()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Spatial join of the trees and districts datasets
 joined = geopandas.sjoin(trees, districts, op='within')
@@ -562,7 +562,7 @@ We then convert `trees_by_district` to a DataFrame for the next exercise.
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Calculate the number of trees in each district
 trees_by_district = joined.groupby('district_name').size()
@@ -608,7 +608,7 @@ Since not all districts have the same size, we should compare the tree density f
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Merge the 'districts' and 'trees_by_district' dataframes
 districts_trees = pd.merge(districts, trees_by_district, on='district_name')
@@ -616,14 +616,14 @@ districts_trees.head()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Add a column with the tree density
 districts_trees['n_trees_per_area'] = districts_trees['n_trees'] / districts_trees.geometry.area
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Make of map of the districts colored by 'n_trees_per_area'
 ax = districts_trees.plot(column='n_trees_per_area', figsize=(12, 6))

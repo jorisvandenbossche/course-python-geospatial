@@ -48,7 +48,7 @@ In addition, rasterio provides a Python API to perform some GIS raster operation
 
 
 
-Enter `rioxarray` (https://corteva.github.io/rioxarray/stable/index.html), which extends xarray with geospatial functionality powered by rasterio. 
+Enter `rioxarray` (https://corteva.github.io/rioxarray/stable/index.html), which extends xarray with geospatial functionality powered by rasterio.
 
 ```{code-cell} ipython3
 import rioxarray
@@ -182,7 +182,7 @@ One important difference, though, is that the above `rasterio` workflow will not
 
 As example, we are using data from the Zwalm river area in Flanders. 
 
-The digital elevation model (DEM) can be downloaded via the [governmental website](https://download.vlaanderen.be/Producten/Detail?id=936&title=Digitaal_Hoogtemodel_Vlaanderen_II_DSM_raster_5_m) ([download link](https://downloadagiv.blob.core.windows.net/dhm-vlaanderen-ii-dsm-raster-5m/DHMVIIDSMRAS5m_k30.zip), extracted in the `/data` directory for this example)/ 
+The digital elevation model (DEM) can be downloaded via the [governmental website](https://download.vlaanderen.be/Producten/Detail?id=936&title=Digitaal_Hoogtemodel_Vlaanderen_II_DSM_raster_5_m) ([download link](https://downloadagiv.blob.core.windows.net/dhm-vlaanderen-ii-dsm-raster-5m/DHMVIIDSMRAS5m_k30.zip), extracted in the `/data` directory for this example)/
 
 ```{code-cell} ipython3
 dem_zwalm_file = "data/DHMVIIDSMRAS5m_k30/GeoTIFF/DHMVIIDSMRAS5m_k30.tif"
@@ -230,7 +230,7 @@ segments.plot(figsize=(8, 7))
 
 ### Clip raster with vector
 
-The catchment extent is much smaller than the DEM file, so clipping the data first will make the computation less heavy. 
+The catchment extent is much smaller than the DEM file, so clipping the data first will make the computation less heavy.
 
 +++
 
@@ -323,7 +323,7 @@ dem_zwalm2.rio.clip(catchment.to_crs('epsg:31370').geometry, from_disk=True)
 
 +++
 
-If we have the raster and vector files on disk, [`gdal CLI`](https://gdal.org/programs/index.html) will be very fast to work with (note that GDAL automatically handles the CRS difference of the raster and vector). 
+If we have the raster and vector files on disk, [`gdal CLI`](https://gdal.org/programs/index.html) will be very fast to work with (note that GDAL automatically handles the CRS difference of the raster and vector).
 
 ```{code-cell} ipython3
 rm ./dem_masked_gdal.tiff
@@ -450,7 +450,7 @@ To access WFS data, you need the following information:
 
 Instead of downloading the entire data set, filtering the request itself (only downloading what you need) is a good idea, using the `cql_filter` filter. Finding out these is sometimes a bit of hazzle... E.g. quickly [preview the data in QGIS](https://docs.qgis.org/3.10/en/docs/training_manual/online_resources/wfs.html?highlight=wfs).
 
-You can also use the [`OWSLib` library](https://geopython.github.io/OWSLib/#wfs). But as WFS is a webservice, the `requests` package will be sufficient for simple queries. 
+You can also use the [`OWSLib` library](https://geopython.github.io/OWSLib/#wfs). But as WFS is a webservice, the `requests` package will be sufficient for simple queries.
 
 +++
 

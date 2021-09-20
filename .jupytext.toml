@@ -2,4 +2,4 @@
 formats = "ipynb,md:myst"
 
 # Don't store run_control metadata
-cell_metadata_filter = "-run_control,-deletable,-editable,-jupyter,-slideshow,-tags"
+cell_metadata_filter = "-run_control,-deletable,-editable,-jupyter,-slideshow"

@@ -131,7 +131,6 @@ Using xarray:
 - Data stored as a Numpy arrays
 - Dimensions do have a name
 - The coordinates of each of the dimensions can represent coordinates, categories, dates,... instead of just an index
-   
 
 +++
 
@@ -442,7 +441,7 @@ Degrees Kelvin = degrees celsius + 273.
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 argo["temperature_kelvin"] = argo["temperature"] + 273.15
 ```
@@ -462,7 +461,7 @@ The water level classes define different water depths. The pressure is a proxy f
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 argo.plot.scatter(x="pressure", y="level")
 ```
@@ -495,19 +494,19 @@ Make a 2D (image) plot with the x-axis the date, the y-axis the water level and 
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 argo["buoyancy"] = 9.8 * (2e-4 * argo["temperature"] - 7e-4 * argo["salinity"])
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 argo["buoyancy"].plot(yincrease=False)  # xarray decides the plot type when no specific method is used
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # More explicit version defining the x and y axis
 argo["buoyancy"].plot.pcolormesh(x="date", y="level", yincrease=False)  # pcolormesh instead of imshow
@@ -532,7 +531,7 @@ Break it down into different steps and chain the individual steps:
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 argo["salinity"].sel(level=10).plot.line()
 ```
@@ -559,13 +558,13 @@ For the subplots, check the [facetting documentation](http://xarray.pydata.org/e
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 argo["temperature"].sel(level=[10, 20, 30]).plot.line(hue="level");
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 argo["temperature"].sel(level=[10, 20, 30]).plot.line(col="level");
 ```
@@ -591,13 +590,13 @@ You wonder how the temperature evolves with increasing latitude and what the eff
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 argo.plot.scatter(x="temperature", y="level", hue="lat", s=2)
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 argo.sel(level=[1, 5, 25, 50]).plot.scatter(x="lat", y="temperature", col="level")
 ```
@@ -626,7 +625,7 @@ Choose a custom colormap and adjust the label of the colorbar to `'Temperature (
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 argo.temperature.plot.pcolormesh(yincrease=False, 
                                  cbar_kwargs={'label': 'Temperature (°C)'},
@@ -655,13 +654,13 @@ Make a separate line plot for each of them. Define the figure and 2 subplots fir
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 subset_mean = argo.sel(date=slice('2012-10-01', '2012-12-01')).mean(dim="date")
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 fig, (ax0, ax1) = plt.subplots(1, 2)
 subset_mean["salinity"].plot.line(y="level", yincrease=False, ax=ax0)
@@ -683,7 +682,7 @@ argo.mean(dim=["date"])
 
 But if we wanted the _average for each month of the year_ per level, we would first have to __split__ the data set in a group for each month of the year, __apply__ the average function on each of the months and __combine__ the data again. 
 
-We already learned about the [split-apply-combine](https://pandas.pydata.org/pandas-docs/stable/user_guide/groupby.html) approach when using Pandas. The syntax of Xarray’s groupby is almost identical to Pandas! 
+We already learned about the [split-apply-combine](https://pandas.pydata.org/pandas-docs/stable/user_guide/groupby.html) approach when using Pandas. The syntax of Xarray’s groupby is almost identical to Pandas!
 
 +++
 

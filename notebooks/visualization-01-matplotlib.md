@@ -357,7 +357,7 @@ If you take the time to make your perfect/spot-on/greatest-ever matplotlib-figur
 
 +++
 
-# Need more matplotlib inspiration? 
+# Need more matplotlib inspiration?
 
 +++
 

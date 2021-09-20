@@ -34,7 +34,7 @@ from rasterio.plot import plotting_extent, show
 
 +++
 
-On of the most fundamental parts of the scientific python 'ecosystem' is [numpy](https://numpy.org/). A lot of other packages - you already used Pandas and GeoPandas in this course - are built on top of Numpy and the `ndarray`  (n-dimensional array) data type it provides. 
+On of the most fundamental parts of the scientific python 'ecosystem' is [numpy](https://numpy.org/). A lot of other packages - you already used Pandas and GeoPandas in this course - are built on top of Numpy and the `ndarray`  (n-dimensional array) data type it provides.
 
 ```{code-cell} ipython3
 import numpy as np
@@ -282,21 +282,21 @@ np.where(b4 < 5000, 10, b4)
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff") as src:
     tc_data = src.read()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Get the green channel
 tc_g = tc_data[1]
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Convert all values above 15000
 tc_g[tc_g > 15000] = 65535
@@ -318,14 +318,14 @@ Subsample the ndarray `tc_data` by taking only the one out of each 5 data points
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff") as src:
     tc_data = src.read()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # subsample the data
 tc_data[:, ::5, ::5].shape
@@ -357,21 +357,21 @@ Elements with the value `65535` do represent 'Not a Number' (NaN) values. Howeve
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff") as src:
     b4_data = src.read()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Count the number of cells with value 65535
 np.sum(b4_data == 65535)
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Convert to float and make 65535 equal to Nan
 b4_data_f = b4_data.astype(float)
@@ -379,14 +379,14 @@ b4_data_f[b4_data == 65535] = np.nan
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Count the number of cells with value 0
 np.sum(np.isnan(b4_data_f))
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Create the histogram plots
 fig, (ax0, ax1) = plt.subplots(1, 2, sharey=True)
@@ -490,7 +490,7 @@ When we combine arrays with different shapes during arithmetic operations, Numpy
 np.array([1, 2, 3]) + 4. , np.array([1, 2, 3]) + np.array([4.]), np.array([1, 2, 3]) + np.array([4., 4., 4.])
 ```
 
-The smallest array is broadcasted to make both compatible. It starts with the trailing (i.e. rightmost) dimensions. Exploring all the rules are out of scope in this lesson and are well explained in the [broadcasting Numpy documentation](https://numpy.org/devdocs/user/basics.broadcasting.html#general-broadcasting-rules). 
+The smallest array is broadcasted to make both compatible. It starts with the trailing (i.e. rightmost) dimensions. Exploring all the rules are out of scope in this lesson and are well explained in the [broadcasting Numpy documentation](https://numpy.org/devdocs/user/basics.broadcasting.html#general-broadcasting-rules).
 
 +++
 
@@ -611,7 +611,7 @@ Next, plot a greyscale version of the data as well. Instead of using a custom fu
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 with rasterio.open("./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff") as src:
     herstappe_data = src.read()
@@ -619,7 +619,7 @@ with rasterio.open("./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Make a RGB plot
 fig, ax = plt.subplots(figsize=(12, 5))
@@ -627,7 +627,7 @@ plt.imshow(herstappe_data.transpose(1, 2, 0), extent=herstappe_extent);
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Make a Grey scale plot
 greyscale_data = herstappe_data.sum(axis=0)
@@ -664,7 +664,7 @@ with rasterio.open("./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Calculate the min and max for each channel
 h_min = herstappe_data.min(axis=(1, 2), keepdims=True)
@@ -672,14 +672,14 @@ h_max = herstappe_data.max(axis=(1, 2), keepdims=True)
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Rescale the data
 herstappe_rescaled = ((herstappe_data - h_min)/(h_max - h_min))
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Make a plot
 fig, ax = plt.subplots(figsize=(12, 5))
@@ -715,28 +715,28 @@ with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff") as s
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Squeeze to 2D float array 
 b4_data = b4_data.squeeze().astype(float)
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Rescale the data
 b4_data = (b4_data - b4_data.min())/(b4_data.max() - b4_data.min())
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Create a new array with the same shape as the original b4_data
 b4_data_classified = np.empty_like(b4_data).astype(int)
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Assign the new values according to the classes
 b4_data_classified[b4_data < 0.05] = 10
@@ -745,7 +745,7 @@ b4_data_classified[0.1 <= b4_data] = 30
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Create an image plot
 fig, ax = plt.subplots(figsize=(12, 5))
@@ -779,7 +779,7 @@ Process the images and create a plot of the NDVI:
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff") as src:
     b4_data = src.read()
@@ -789,7 +789,7 @@ with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B08.tiff") as s
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Combine both arrays by stacking them together
 b48_bands = np.vstack((b4_data, b8_data))  # 0 is b4 and 1 is b8
@@ -800,7 +800,7 @@ b48_bands.shape
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Rescale the data to 0-1
 b48_min = b48_bands.min(axis=(1, 2), keepdims=True)
@@ -809,14 +809,14 @@ b48_bands = ((b48_bands - b48_min)/(b48_max - b48_min))
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Assign very small value to 0-values
 b48_bands[b48_bands == 0] = 1e-6
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Calculate the ndvi using the stacked data
 ndvi = (b48_bands[1] - b48_bands[0])/(b48_bands[0] + b48_bands[1])
@@ -827,7 +827,7 @@ ndvi = (b48_bands[1] - b48_bands[0])/(b48_bands[0] + b48_bands[1])
 Using a Matplotlib norm to adjust colormap influence on image https://matplotlib.org/api/_as_gen/matplotlib.colors.TwoSlopeNorm.html
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # A Sequential colormap `YlGn` with a normalization on the color limits
 import matplotlib.colors as mcolors
@@ -838,7 +838,7 @@ fig.colorbar(ll);
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # A Diverging colormap `RdYlGn` with a normalization on the color limits in two directions of the central point:
 div_norm = mcolors.TwoSlopeNorm(vmin=-0.1, vcenter=0.4, vmax=0.8)

@@ -1,5 +1,6 @@
 ---
 jupytext:
+  formats: ipynb,md:myst
   text_representation:
     extension: .md
     format_name: myst
@@ -106,7 +107,7 @@ countries.sort_values(by='pop_est')
 
 +++
 
-### Elementwise-operations 
+### Elementwise-operations
 
 +++
 
@@ -137,7 +138,7 @@ countries['gdp_md_est'] / countries['pop_est']
 
 +++
 
-Pandas provides a large set of **summary** functions that operate on different kinds of pandas objects (DataFrames, Series, Index) and produce a single value. When applied to a DataFrame, the result is returned as a pandas Series (one value for each column). 
+Pandas provides a large set of **summary** functions that operate on different kinds of pandas objects (DataFrames, Series, Index) and produce a single value. When applied to a DataFrame, the result is returned as a pandas Series (one value for each column).
 
 +++
 
@@ -309,20 +310,24 @@ Here, we start with the following datasets:
     
 </div>
 
++++
+
+test
+
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts = pd.read_csv("data/paris_districts.csv")
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts.head()
 ```
@@ -345,19 +350,19 @@ districts.head()
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts['population']
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts['population'].mean()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts['population'].median()
 ```
@@ -382,19 +387,19 @@ districts['population'].median()
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts['area'].max()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts['area'].max() / 1000**2  # or / 10**6
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts['area'] / 1000**2
 ```
@@ -416,14 +421,14 @@ districts['area'] / 1000**2
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 population_density = districts["population"] / (districts["area"] / 1000**2)
 population_density
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 population_density.max()
 ```
@@ -444,7 +449,7 @@ population_density.max()
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts['population_density'] = districts["population"] / (districts["area"] / 1000**2)
 districts.head()
@@ -467,7 +472,7 @@ districts.head()
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts.sort_values(by="population", ascending=False)
 ```
@@ -482,14 +487,14 @@ districts.sort_values(by="population", ascending=False)
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 arr3 = districts[districts["arrondissement"] == 3]
 arr3
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 arr3["population"].sum()
 ```
@@ -503,7 +508,7 @@ arr3["population"].sum()
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts[districts['population'] > 50000]
 ```
@@ -524,20 +529,20 @@ districts[districts['population'] > 50000]
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 subset = districts[districts['population'] > 50000]
 len(subset)
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 subset.shape
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 (districts['population'] > 50000).sum()
 ```
@@ -703,7 +708,7 @@ stations.head()
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts['population'].hist()  # or .plot(kind="hist")
 ```
@@ -717,7 +722,7 @@ districts['population'].hist()  # or .plot(kind="hist")
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts.groupby('arrondissement')['population'].sum()
 ```
@@ -731,7 +736,7 @@ districts.groupby('arrondissement')['population'].sum()
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 fig, ax = plt.subplots()
 stations["bike_stands"].hist(ax=ax, alpha=.5, label="Total bike stands")
@@ -748,13 +753,13 @@ ax.legend()
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 import seaborn
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 seaborn.boxplot(x="arrondissement", y="bike_stands", data=stations)
 ```
@@ -789,7 +794,7 @@ countries.loc[0, "name"]
 
 +++
 
-Pandas provides several ways to combine different DataFrames. If there is a common column on which you want to match both DataFrames, we can use the `pd.merge()` function: 
+Pandas provides several ways to combine different DataFrames. If there is a common column on which you want to match both DataFrames, we can use the `pd.merge()` function:
 
 ```{code-cell} ipython3
 cities = pd.read_csv("data/cities.csv")
@@ -803,7 +808,7 @@ cities.head()
 countries.head()
 ```
 
-Both DataFrames have the `'iso_a3'` column with a 3-character code of the country. Based on this, we can add information about the country to the cities dataset: 
+Both DataFrames have the `'iso_a3'` column with a 3-character code of the country. Based on this, we can add information about the country to the cities dataset:
 
 ```{code-cell} ipython3
 pd.merge(cities, countries, on="iso_a3")

@@ -39,7 +39,7 @@ First we download the dataset. We will use the [NOAA Extended Reconstructed Sea 
 
 +++
 
-Reading in the data set, ignoring the `time_bnds` variable: 
+Reading in the data set, ignoring the `time_bnds` variable:
 
 ```{code-cell} ipython3
 data = './sst.mnmean.v4.nc'
@@ -53,7 +53,7 @@ ds = ds.sel(time=slice('1960', '2018')).load()  # load into memory
 ds
 ```
 
-The data with the extension `nc` is a NetCDF format. NetCDF (Network Common Data Format) is the most widely used format for distributing geoscience data. NetCDF is maintained by the [Unidata](https://www.unidata.ucar.edu/) organization. Check the [netcdf website](https://www.unidata.ucar.edu/software/netcdf/docs/faq.html#whatisit) for more information. Xarray was designed to make reading netCDF files in python as easy, powerful, and flexible as possible. 
+The data with the extension `nc` is a NetCDF format. NetCDF (Network Common Data Format) is the most widely used format for distributing geoscience data. NetCDF is maintained by the [Unidata](https://www.unidata.ucar.edu/) organization. Check the [netcdf website](https://www.unidata.ucar.edu/software/netcdf/docs/faq.html#whatisit) for more information. Xarray was designed to make reading netCDF files in python as easy, powerful, and flexible as possible.
 
 +++
 
@@ -89,35 +89,35 @@ The data contains a single data variable `sst` and has 3 dimensions: lon, lat an
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # size attribute of array object
 ds["sst"].size
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # shape attribute of array object
 ds["sst"].shape
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # dims attribute of dataset object
 ds.dims
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # attributes of array
 ds["sst"].attrs
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # attributes of data set
 ds.attrs
@@ -155,7 +155,7 @@ Make an image plot of the SST in the first month of the data set, January 1960. 
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 sst.sel(time="1960-01-01").plot.pcolormesh(vmin=-2, vmax=30, 
                                            cmap="coolwarm")
@@ -185,7 +185,7 @@ Do you recognize the seasonality of the data?
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 sst.sel(lon=300, lat=50).plot.line();
 ```
@@ -212,13 +212,13 @@ Use the `ds_mm` variable to make a plot: For longitude `164`, make a comparison 
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 ds_mm = sst.groupby(sst.time.dt.month).mean(dim='time')
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 ds_mm.sel(lon=164, lat=[-23.4, 23.4], method="nearest").plot.line(hue="lat");
 ```
@@ -244,19 +244,19 @@ To check the mean climatology (aggregating over the longitudes) as a function of
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 ds_mm = sst.groupby(sst.time.dt.month).mean(dim='time')
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 ds_mm.mean(dim='lon').plot.imshow(x="month", y="lat", vmin=-2, vmax=30, cmap="coolwarm")
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # alternative using transpose instead of defining the x and y in the plot function
 ds_mm.mean(dim='lon').transpose().plot.imshow(vmin=-2, vmax=30, cmap="coolwarm")
@@ -283,7 +283,7 @@ Calculate the difference of the mean climatology between January an July and plo
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 (ds_mm.sel(month=1) - ds_mm.sel(month=7)).plot.imshow(vmax=10)
 ```
@@ -366,14 +366,14 @@ Make a line plot as a function of time for the location `lon=300`, `lat=50` of t
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # slice the point of interest
 ds_anom_loc = ds_anom.sel(lon=300, lat=50)
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # compute the resampling and rolling
 ds_anom_resample = ds_anom_loc.resample(time='5Y').median(dim='time')
@@ -381,7 +381,7 @@ ds_anom_rolling = ds_anom_loc.rolling(time=12, center=True).median()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # make a combined plot
 fig, ax = plt.subplots()
@@ -428,7 +428,7 @@ Make a plot of the `ds_anom` variable of 2018-01-01 with cartopy.
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 map_proj = ccrs.Orthographic(-20, 5)
 
@@ -504,14 +504,14 @@ Next, we want to plot a horizontal bar chart with the SST for each bar chart. To
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 basin_mean_sst = sst.groupby(basin_surface_interp).mean()
 basin_mean_sst = basin_mean_sst.mean(dim="time")
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # In such a situation, the ELLIPSIS can be used to aggregate over all dimensions
 basin_mean_sst = sst.groupby(basin_surface_interp).mean(dim=...) # ellipsis is shortcut for all dimensions
@@ -519,7 +519,7 @@ basin_mean_sst
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Convert to a Pandas DataFrame:
 basin_mean_df = basin_mean_sst.to_dataframe()
@@ -527,14 +527,14 @@ basin_mean_df
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Merge the data with the `basin_s` data on the index:
 basin_mean_df_merged = pd.merge(basin_mean_df, basin_s, left_index=True, right_index=True)
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Create a bar chart of the SST per basin data:
 basin_mean_df_merged.sort_values(by="sst").plot.barh(x="basin");

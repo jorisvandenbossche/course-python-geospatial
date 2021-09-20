@@ -72,7 +72,7 @@ To quickly scan the spatial metadata of a Raster data file, let's use the [`gdal
 
 > The `gdalinfo` command lists information about a raster dataset.
 
-It is not a Python command, but a program that need to be run from the terminal (aka command line). Using a small Jupyter notebook - `!` trick, we can use it within the notebook as well: 
+It is not a Python command, but a program that need to be run from the terminal (aka command line). Using a small Jupyter notebook - `!` trick, we can use it within the notebook as well:
 
 ```{code-cell} ipython3
 !gdalinfo -mm ./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff
@@ -104,7 +104,7 @@ Important information we get from the `gdalinfo` command are
 
 +++
 
-Let's see how Rasterio interprets this information: 
+Let's see how Rasterio interprets this information:
 
 ```{code-cell} ipython3
 src = rasterio.open(file_herstappe)
@@ -218,7 +218,7 @@ Within the context manager (the `with` statement) we use the `read()` method to 
 
 +++
 
-The `show` method is a convenience plotting function provided by the Rasterio Python package. By adding the `transform=src.transform` we get the information of the spatial extent as the x and y axis labels of the plot. We will later learn about other functionalities of Rasterio. 
+The `show` method is a convenience plotting function provided by the Rasterio Python package. By adding the `transform=src.transform` we get the information of the spatial extent as the x and y axis labels of the plot. We will later learn about other functionalities of Rasterio.
 
 ```{code-cell} ipython3
 herstappe
@@ -284,7 +284,7 @@ Any command that works at the command-line can be used in IPython/Jupyter by pre
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 !gdalinfo ./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff
 ```
@@ -306,7 +306,7 @@ Make a __plot of the FIRST channel__ of the data stored in the Geotiff file `./d
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gent_file = "./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff"
 with rasterio.open(gent_file) as gent_gif:
@@ -336,7 +336,7 @@ Make sure to use a context manager to access the data files!
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gent_file = "./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff"
 with rasterio.open(gent_file) as src:
@@ -346,7 +346,7 @@ gent_res, gent_extent
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 herstappe_file = "./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff"
 with rasterio.open(herstappe_file) as src:

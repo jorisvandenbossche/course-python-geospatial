@@ -108,7 +108,7 @@ while Matplotlib and image processing software like scikit-image, pillow are gen
 
 `(rows, columns, bands)`
 
-We can rely on Numpy to transpose the data : 
+We can rely on Numpy to transpose the data :
 
 ```{code-cell} ipython3
 plt.imshow(herstappe_data.transpose(1, 2, 0))
@@ -369,14 +369,14 @@ Make a plot of `gent_data` (band 4 `./data/gent/raster/2020-09-17_Sentinel_2_L1C
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Read the geojson vector data
 gent_vect = geopandas.read_file("./data/gent/vector/gent.geojson")
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Read the tiff raster data
 with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff") as src:
@@ -385,7 +385,7 @@ with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff") as s
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Combine both in a single plot
 fig, ax = plt.subplots(figsize=(12, 5))
@@ -416,7 +416,7 @@ The files `./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff` and `./data/ge
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Read the vector data sets #1
 with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff") as src:
@@ -427,7 +427,7 @@ with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B08.tiff") as s
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Stack both data sets and convert to uint32 data (#2)
 b48_bands = np.vstack((b4_data, b8_data))  # 0 is b4 and 1 is b8  
@@ -436,7 +436,7 @@ b48_bands.shape
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Update profile metadata (#3) and save to a new tiff file (#4)
 data_profile.update({"count": 2, 
@@ -471,7 +471,7 @@ Apply the function on each of the Geotiff files in the folder `./data/gent/raste
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Create a custom function
 def resample_raster_file(input_file, output_file, resampling_method, scaling_factor=2):
@@ -516,7 +516,7 @@ def resample_raster_file(input_file, output_file, resampling_method, scaling_fac
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Apply function to a single file 
 resample_raster_file("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff", 
@@ -524,7 +524,7 @@ resample_raster_file("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff",
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Apply function to all files in the directory
 from pathlib import Path

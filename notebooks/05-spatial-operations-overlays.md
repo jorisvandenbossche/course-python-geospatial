@@ -176,7 +176,6 @@ An overview of all methods provided by GeoPandas can be found here: https://geop
 
 </div>
 
-
 +++
 
 ## Let's practice!
@@ -230,7 +229,7 @@ seine
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Take a buffer
 seine_buffer = seine.buffer(150)
@@ -238,14 +237,14 @@ seine_buffer
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Use the intersection
 districts_seine = districts[districts.intersects(seine_buffer)]
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Make a plot
 fig, ax = plt.subplots(figsize=(20, 10))
@@ -283,7 +282,7 @@ In this exercise, we will read the data, explore it visually, and calculate the 
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Import the land use dataset
 land_use = geopandas.read_file("data/paris_land_use.zip")
@@ -291,21 +290,21 @@ land_use.head()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Make a plot of the land use with 'class' as the color
 land_use.plot(column='class', legend=True, figsize=(15, 10))
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Add the area as a new column
 land_use['area'] = land_use.geometry.area
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Calculate the total area for each land use class
 total_area = land_use.groupby('class')['area'].sum() / 1000**2
@@ -352,21 +351,21 @@ geopandas.GeoSeries([park_boulogne, muette]).plot(alpha=0.5, color=['green', 'bl
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Calculate the intersection of both polygons
 intersection = park_boulogne.intersection(muette)
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Plot the intersection
 geopandas.GeoSeries([intersection]).plot()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Print proportion of district area that occupied park
 print(intersection.area / muette.area)
@@ -402,35 +401,35 @@ muette = districts[districts.district_name == 'Muette'].geometry.item()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Calculate the intersection of the land use polygons with Muette
 land_use_muette = land_use.geometry.intersection(muette)
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Print the first five rows of the intersection
 land_use_muette.head()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Remove the empty geometries
 land_use_muette = land_use_muette[~land_use_muette.is_empty]
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Print the first five rows of the intersection
 land_use_muette.head()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Plot the intersection
 land_use_muette.plot(edgecolor='black')
@@ -441,7 +440,7 @@ You can see in the plot that we now only have a subset of the full land use data
 The `intersection()` method also returned only geometries. If we want to combine those intersections with the attributes of the original land use, we can take a copy of this and replace the geometries with the intersections (you can uncomment and run to see the code):
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 land_use_muette = land_use.copy()
 land_use_muette['geometry'] = land_use.geometry.intersection(muette)
@@ -450,13 +449,13 @@ land_use_muette.head()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 land_use_muette.plot(column="class") #edgecolor="black")
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 land_use_muette.dissolve(by='class')
 ```
@@ -481,7 +480,7 @@ Based on the `land_use_muette` dataframe with the land use for the Muette distri
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 land_use_muette['area'] = land_use_muette.geometry.area
 # Total land use per class
@@ -489,7 +488,7 @@ land_use_muette.groupby("class")["area"].sum()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Relative percentage of land use classes
 land_use_muette.groupby("class")["area"].sum() / land_use_muette.geometry.area.sum() * 100
@@ -616,14 +615,14 @@ districts = geopandas.read_file("data/paris_districts.geojson").to_crs(land_use.
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Overlay both datasets based on the intersection
 combined = geopandas.overlay(land_use, districts, how='intersection')
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Print the first five rows of the result
 combined.head()
@@ -652,28 +651,28 @@ Now that we created the overlay of the land use and districts datasets, we can m
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Add the area as a column
 combined['area'] = combined.geometry.area
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Take a subset for the Muette district
 land_use_muette = combined[combined['district_name'] == 'Muette']
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Visualize the land use of the Muette district
 land_use_muette.plot(column='class')
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Calculate the total area for each land use class
 print(land_use_muette.groupby('class')['area'].sum() / 1000**2)
@@ -693,39 +692,39 @@ Thanks to the result of the overlay operation, we can now more easily perform a 
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts_area = combined.groupby("district_name")["area"].sum()
 districts_area.head()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 urban_green = combined[combined["class"] == "Green urban areas"]
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 urban_green_area = urban_green.groupby("district_name")["area"].sum()
 urban_green_area.head()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 urban_green_fraction = urban_green_area / districts_area * 100
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 urban_green_fraction.nlargest()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 urban_green_fraction.nsmallest()
 ```

@@ -23,8 +23,6 @@ kernelspec:
 
 +++
 
-
-
 Air pollution remains a key environmental problem in an increasingly urbanized world. While concentrations of traffic-related pollutants like nitrogen dioxide (NO2) are known to vary over short distances, official monitoring networks remain inherently sparse, as reference stations are costly to construct and operate.
 
 The [**CurieuzeNeuzen**](https://curieuzeneuzen.be/curieuzeneuzen-vlaanderen-2018/) citizen science project collected a large, spatially distributed dataset that can complement official monitoring. In a first edition in 2016, in Antwerp, 2000 citizens were involved. This success was followed by a second edition in 2018 engaging 20.000 citizens across Flanders, a highly urbanized, industrialized and densely populated region in Europe. The participants measured the NO2 concentrations in front of their house using a low-cost sampler design (see picture below, where passive sampling tubes are attached using a panel to a window at the facade). 
@@ -56,14 +54,14 @@ import matplotlib.pyplot as plt
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 df = pd.read_csv("./data/CN_Flanders_open_dataset.csv")
 df
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 len(df)
 ```
@@ -86,7 +84,7 @@ The dataset contains longitude/latitude columns of the measurement locations, th
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 df["campaign"].value_counts()
 ```
@@ -118,13 +116,13 @@ Let's now explore the measured NO2 concentrations.
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 df["no2"].mean()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 df["no2"].describe()
 ```
@@ -132,7 +130,7 @@ df["no2"].describe()
 A histogram:
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 df['no2'].hist()  # plot.hist()
 ```
@@ -140,7 +138,7 @@ df['no2'].hist()  # plot.hist()
 A more expanded histogram (not asked in the exercise, but uncomment to check the code!)
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 fig, ax = plt.subplots()
 # using predefined bins
@@ -171,13 +169,13 @@ Tip: first create a boolean mask determining whether the NO2 concentration is ab
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 exceedances = df['no2'] > 40
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 exceedances.mean() * 100  # the mean is equivalent here to counting the True values and dividing by the total number of elements
 ```
@@ -204,13 +202,13 @@ We will also later see that this exceedance has a large spatial variation.
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 df[df['campaign'] == "background"]["no2"].mean()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 df.groupby('campaign')["no2"].mean()
 ```
@@ -245,19 +243,19 @@ The provided data was a CSV file, and we explored it above as a pandas DataFrame
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gdf = geopandas.GeoDataFrame(df, geometry=geopandas.points_from_xy(df['lon'], df['lat']), crs="EPSG:4326")
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gdf
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gdf.plot()
 ```
@@ -281,7 +279,7 @@ Let's make that last plot a bit more informative:
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gdf.plot(column="no2", figsize=(20, 10))
 ```
@@ -308,19 +306,19 @@ We downloaded the publicly available municipality reference from geopunt.be ([Vo
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 muni = geopandas.read_file("./data/VRBG/Refgem.shp")
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 muni.head()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 muni.plot()
 ```
@@ -346,25 +344,25 @@ Before performing the spatial join, we need to ensure the two datasets are using
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gdf.crs
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 muni.crs
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gdf_lambert = gdf.to_crs("EPSG:31370")  # or .to_crs(muni.crs)
 gdf_lambert.head()
 ```
 
-The EPSG:31370 or "Belgian Lambert 72" (https://epsg.io/31370) is the local, projected CRS most often used in Belgium. 
+The EPSG:31370 or "Belgian Lambert 72" (https://epsg.io/31370) is the local, projected CRS most often used in Belgium.
 
 +++
 
@@ -384,13 +382,13 @@ The EPSG:31370 or "Belgian Lambert 72" (https://epsg.io/31370) is the local, pro
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gdf_combined = geopandas.sjoin(gdf_lambert, muni[["NAAM", "geometry"]])
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gdf_combined.head()
 ```
@@ -413,21 +411,21 @@ gdf_combined.head()
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 muni_mean = gdf_combined.groupby("NAAM")["no2"].mean()
 muni_mean.head()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 muni_mean = muni_mean.reset_index()
 muni_mean.head()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 muni_no2 = pd.merge(muni, muni_mean, on="NAAM")
 muni_no2.head()
@@ -451,7 +449,7 @@ muni_no2.head()
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 muni_no2.plot(column="no2", figsize=(16, 5), legend=True)
 ```
@@ -461,7 +459,7 @@ When specifying a numerical column to color the polygons, by default this result
 However, it is very difficult for the human eye to process small differences in color in a continuous scale. 
 Therefore, to create effective choropleths, we typically classify the values into a set of discrete groups.
 
-With GeoPandas' `plot()` method, you can control this with the `scheme` keyword (indicating which classification scheme to use, i.e how to divide the continuous range into a set of discrete classes) and the `k` keyword to indicate how many classes to use. This uses the [mapclassify](https://pysal.org/mapclassify/) package under the hood. 
+With GeoPandas' `plot()` method, you can control this with the `scheme` keyword (indicating which classification scheme to use, i.e how to divide the continuous range into a set of discrete classes) and the `k` keyword to indicate how many classes to use. This uses the [mapclassify](https://pysal.org/mapclassify/) package under the hood.
 
 +++
 
@@ -474,7 +472,7 @@ With GeoPandas' `plot()` method, you can control this with the `scheme` keyword 
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 ax = muni_no2.plot(column="no2", figsize=(16, 5), legend=True, scheme="FisherJenks", k=7, cmap="plasma")
 ax.set_axis_off()
@@ -495,19 +493,19 @@ ax.set_axis_off()
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gdf_combined["exceedance"] = gdf_combined["no2"] > 40
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 exceedances_muni = gdf_combined.groupby("NAAM")["exceedance"].mean() * 100
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 exceedances_muni.sort_values(ascending=False).head(10)
 ```
@@ -535,7 +533,7 @@ The air quality is indirectly linked to land use, as the presence of pollution s
 With rasterio:
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 import rasterio
 import rasterio.plot
@@ -548,7 +546,7 @@ with rasterio.open("data/CLC2018_V2020_20u1_flanders.tif") as src:
 With xarray:
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 import xarray
 
@@ -557,7 +555,7 @@ raster
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 raster.plot(vmin=1, vmax=44)
 ```
@@ -580,7 +578,7 @@ The goal is now to query from the raster file the value of the land cover class 
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gdf_raster = gdf.to_crs("EPSG:3035")
 gdf_raster.head()
@@ -608,19 +606,19 @@ Note that the query operation can take a while. Don't worry if it runs for aroun
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 import rasterstats
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gdf['land_use'] = rasterstats.point_query(gdf_raster.geometry, "data/CLC2018_V2020_20u1_flanders.tif", interpolate='nearest')
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gdf['land_use'].value_counts()
 ```
@@ -648,7 +646,7 @@ The additional steps, provided for you, use this information to convert the colu
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 legend = pd.read_csv("data/CLC2018_V2018_legend_grouped.csv")
 legend
@@ -717,13 +715,13 @@ Don't forget to first import `seaborn`. We can use the `seaborn.boxplot()` funct
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 import seaborn
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 seaborn.boxplot(y="land_use_class", x="no2", data=subset)
 ```
@@ -731,7 +729,7 @@ seaborn.boxplot(y="land_use_class", x="no2", data=subset)
 Tweaking the figure a bit more (not asked in the exercise, but uncomment and run to see):
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # defining custom order of the classes (following the order in the CORINE hierarchy as defined in the legend csv)
 classes = legend["group"].unique()
@@ -774,7 +772,7 @@ Check this section of the Shapely docs (https://shapely.readthedocs.io/en/latest
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gent_region = gent.envelope
 gent_region
@@ -798,13 +796,13 @@ gent_region
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gdf_gent = gdf_lambert[gdf_lambert.within(gent_region)]
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 len(gdf_gent)
 ```
@@ -834,13 +832,13 @@ len(gdf_gent)
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 import contextily
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 fig, ax = plt.subplots(figsize=(15, 15))
 ax = gdf_gent.to_crs(3857).plot(column="no2", ax=ax, legend=True, vmax=50)
@@ -853,7 +851,7 @@ The solution above includes a `vmax=50` to indicate to use a max value of 50 for
 Further zooming in on the city center, using a discrete color scheme and a different tile provider (not asked in exercise, but uncomment and run to see):
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 fig, ax = plt.subplots(figsize=(12, 12))
 ax = gdf_gent.to_crs(3857).plot(column="no2", ax=ax, scheme="NaturalBreaks", k=6, legend=True)
@@ -881,26 +879,26 @@ The OpenStreetMap street network data includes information about the type of str
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 streets = geopandas.read_file("data/osm_network_gent.gpkg")
 streets.head()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 streets = streets.to_crs("EPSG:31370")
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 streets.plot()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 streets.plot(column="highway", figsize=(20, 20), legend=True, cmap="tab20")
 ```
@@ -940,38 +938,38 @@ point
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 streets.distance(point)
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 streets.distance(point).min()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 idx_closest = streets.distance(point).idxmin()
 idx_closest
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 streets.loc[idx_closest]
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 streets["highway"][idx_closest]
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 streets.loc[idx_closest, "highway"]
 ```
@@ -998,7 +996,7 @@ def closest_road_type(point, streets):
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 def closest_road_type(point, streets):
     """Type to the nearest road (OpenStreetMap)"""
@@ -1008,7 +1006,7 @@ def closest_road_type(point, streets):
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 closest_road_type(point, streets)
 ```
@@ -1035,25 +1033,25 @@ When running this, you can see it already takes a bit of time, even for the firs
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 streets_unioned = streets.dissolve("highway").reset_index()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gdf_gent["road_type"] = gdf_gent.geometry.apply(lambda point: closest_road_type(point, streets_unioned))
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gdf_gent.head()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gdf_gent["road_type"].value_counts()
 ```
@@ -1093,7 +1091,7 @@ mapping = {
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 gdf_gent["road_type"] = gdf_gent["road_type"].replace(mapping)
 ```
@@ -1105,13 +1103,13 @@ categories = ["primary", "secondary", "tertiary", "residential", "pedestrian"]
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 subset = gdf_gent[gdf_gent["road_type"].isin(categories)]
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 subset.groupby("road_type").size()  # subset["road_type"].value_counts()
 ```
@@ -1125,7 +1123,7 @@ subset.groupby("road_type").size()  # subset["road_type"].value_counts()
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 subset.groupby("road_type")['no2'].mean()
 ```
@@ -1139,13 +1137,13 @@ subset.groupby("road_type")['no2'].mean()
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 import seaborn
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 seaborn.boxplot(x="road_type", y="no2", data=subset, order=categories)
 ```

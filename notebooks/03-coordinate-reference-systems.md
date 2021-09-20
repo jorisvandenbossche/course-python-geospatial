@@ -222,56 +222,56 @@ For converting to projected coordinates, we will use the standard projected CRS 
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Import the districts dataset
 districts = geopandas.read_file("data/paris_districts.geojson")
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Check the CRS information
 districts.crs
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Show the first rows of the GeoDataFrame
 districts.head()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Plot the districts dataset
 districts.plot()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Calculate the area of all districts
 districts.geometry.area
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Convert the districts to the RGF93 reference system
 districts_RGF93 = districts.to_crs(epsg=2154)  # or to_crs("EPSG:2154")
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Plot the districts dataset again
 districts_RGF93.plot()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Calculate the area of all districts (the result is now expressed in m²)
 districts_RGF93.geometry.area
@@ -303,14 +303,14 @@ However, typically, your data will not come in Web Mercator (`EPSG:3857`) and yo
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 stations = geopandas.read_file("data/paris_bike_stations.geojson")
 stations.head()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Convert to the Web Mercator projection
 stations_webmercator = stations.to_crs("EPSG:3857")
@@ -318,7 +318,7 @@ stations.head()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Plot the stations with a background map
 import contextily

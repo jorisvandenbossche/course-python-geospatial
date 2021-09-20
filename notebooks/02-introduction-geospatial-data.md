@@ -264,25 +264,25 @@ We will start with exploring the bicycle station dataset (available as a GeoPack
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 stations = geopandas.read_file("data/paris_bike_stations_mercator.gpkg")
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 type(stations)
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 stations.head()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 stations.shape
 ```
@@ -297,7 +297,7 @@ stations.shape
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 stations.plot(figsize=(12,6))
 ```
@@ -319,13 +319,13 @@ We are going to make use of the [contextily](https://github.com/darribas/context
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 import contextily
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 ax = stations.plot(figsize=(12,6), markersize=5)
 contextily.add_basemap(ax)
@@ -348,7 +348,7 @@ contextily.add_basemap(ax)
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 stations['bike_stands'].hist()
 ```
@@ -366,7 +366,7 @@ Let's now visualize where the available bikes are actually stationed:
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 stations.plot(figsize=(12, 6), column='available_bikes', legend=True)
 ```
@@ -385,25 +385,25 @@ Next, we will explore the dataset on the administrative districts of Paris (avai
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts = geopandas.read_file("data/paris_districts_utm.geojson")
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts.head()
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts.shape
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts.plot(figsize=(12, 6))
 ```
@@ -428,20 +428,20 @@ What are the largest districts (biggest area)?
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts.geometry.area
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # dividing by 10^6 for showing km²
 districts['area'] = districts.geometry.area / 1e6
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 districts.sort_values(by='area', ascending=False)
 ```
@@ -457,21 +457,21 @@ districts.sort_values(by='area', ascending=False)
 </div>
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Add a population density column
 districts['population_density'] = districts['population'] / districts.geometry.area * 10**6
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # Make a plot of the districts colored by the population density
 districts.plot(column='population_density', figsize=(12, 6), legend=True)
 ```
 
 ```{code-cell} ipython3
-:clear_cell: true
+:tags: [nbtutor-solution]
 
 # As comparison, the misleading plot when not turning the population number into a density
 districts.plot(column='population', figsize=(12, 6), legend=True)

@@ -172,7 +172,7 @@ my_ + TAB
 
 +++
 
-* The  **SHIFT-TAB** combination is ultra essential to get information/help about the current operation 
+* The  **SHIFT-TAB** combination is ultra essential to get information/help about the current operation
 
 ```{code-cell} ipython3
 round(3.2)
