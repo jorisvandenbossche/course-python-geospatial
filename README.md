@@ -1,5 +1,9 @@
 # Python for GIS and Geoscience
 
+This repo contains the source code for the workshop (the notebooks with full
+content) as it is being developed. For the actual course repo, see for
+example [DS-python-geospatial](https://github.com/jorisvandenbossche/DS-python-geospatial).
+
 ## Introduction
 
 An important aspect of daily work in geographic information science and earth sciences is the handling of potentially large amounts of data. Reading in spatial data, exploring the data, creating visualisations and preparing the data for further analysis may become tedious tasks. Hence, increasing efficiency and reproducibility in this process without the need of a GUI interface is beneficial for many scientists. The usage of high-level scripting languages such as R and Python are increasingly popular for these tasks thanks to the development of GIS oriented packages.
@@ -30,6 +34,3 @@ Found any typo or have a suggestion, see [how to contribute](./CONTRIBUTING.md).
 
 ## Meta
 Authors: Joris Van den Bossche, Stijn Van Hoey
-
-<img src="img/logo_flanders+richtingmorgen.png" width="79%">
-<img src="img/doctoralschoolsprofiel_hq_rgb_web.png" width="20%">
