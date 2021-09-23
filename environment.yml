@@ -2,7 +2,7 @@ name: DS-geospatial
 channels:
   - conda-forge
 dependencies:
-  - python=3.8
+  - python=3.9
   - jupyter
   - jupyterlab
   - ipython
@@ -15,7 +15,6 @@ dependencies:
   - owslib
   - rasterstats
   - matplotlib
-  - descartes
   - mapclassify
   - cartopy
   - contextily
@@ -27,6 +26,7 @@ dependencies:
   - bokeh
   - intake
   - intake-xarray
+  - ipympl
   - ipyleaflet
   - folium
   - seaborn
@@ -37,5 +37,8 @@ dependencies:
   - zarr
   - h5netcdf
   - h5py
+  - cfgrib
+  - pooch
   - rioxarray
   - xarray-spatial
+
