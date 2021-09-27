@@ -495,11 +495,6 @@ averbode_data = rioxarray.open_rasterio(averbode_cog_rgb)
 averbode_data
 ```
 
-```{code-cell} ipython3
-with rasterio.open(averbode_cog_rgb) as averbode:
-    print(averbode.meta)
-```
-
 Downloading the entire data set would be 37645*35405\*4 pixels of 1 byte, so more or less 5.3 GByte
 
 ```{code-cell} ipython3
@@ -527,39 +522,52 @@ In the case of COG data, the data can sometimes be requested on different resolu
 
 ```{code-cell} ipython3
 with rasterio.open(averbode_cog_rgb) as src:
+    # check available overviews for band 1
     print(f"Available resolutions are {src.overviews(1)}")
 ```
 
 ```{code-cell} ipython3
-averbode_254 = rioxarray.open_rasterio(averbode_cog_rgb, overview_level=7)
+averbode_64 = rioxarray.open_rasterio(averbode_cog_rgb, overview_level=5)
 ```
 
 ```{code-cell} ipython3
-averbode_254.size / 1e6
+averbode_64.size / 1e6  # Mb
 ```
 
 ```{code-cell} ipython3
-averbode_254.rio.resolution()
+averbode_64.rio.resolution()
 ```
 
 Compare the thumbnail version of the data with our study area:
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots()
-averbode_254.sel(band=[1, 2, 3]).plot.imshow(ax=ax)
+averbode_64.sel(band=[1, 2, 3]).plot.imshow(ax=ax)
 averbode_study_area.plot(ax=ax, color='None', edgecolor='red', linewidth=2);
 ```
 
-Downloading the entire data file would be overkill. Instead, we only want to download the data of the study area:
-
-```{code-cell} ipython3
-output_file = "./averbode_orthophoto.tiff"
-```
-
-The resulting data set will still be around 35MB and will take a bit of time, but this is only a fraction of the original data file:
+Downloading the entire data file would be overkill. Instead, we only want to download the data of the study area. This can be done with the `clip()` method using the `from_disk` option. 
+The resulting data set will still be around 100MB and will take a bit of time to download, but this is only a fraction of the original data file:
 
 ```{code-cell} ipython3
 %%time
+# Only run this cell when sufficient band width ;-)
+averbode_subset = averbode_data.rio.clip(averbode_study_area.geometry, from_disk=True)
+```
+
+```{code-cell} ipython3
+averbode_subset.size / 1e6  # Mb
+```
+
+```{code-cell} ipython3
+averbode_subset.sel(band=[1, 2, 3]).plot.imshow(figsize=(10, 10))
+```
+
+The rasterio way:
+
+```python
+output_file = "./averbode_orthophoto.tiff"
+
 # Only run this cell when sufficient band width ;-)
 with rasterio.open(averbode_cog_rgb) as averbode_rgb:
     averbode_rgb_image, averbode_rgb_transform = rasterio.mask.mask(averbode_rgb, averbode_study_area.geometry, crop=True)
@@ -575,21 +583,6 @@ with rasterio.open(averbode_cog_rgb) as averbode_rgb:
         dest.write(averbode_rgb_image)
 ```
 
-```{code-cell} ipython3
-averbode_subset = rioxarray.open_rasterio(output_file)
-averbode_subset
-```
-
-```{code-cell} ipython3
-averbode_subset.size / 1e9
-```
-
-```{code-cell} ipython3
-averbode_subset.sel(band=[1, 2, 3]).plot.imshow(figsize=(10, 10))
-```
-
-```{code-cell} ipython3
-
-```
++++
 
 Thanks to https://geohackweek.github.io/raster/04-workingwithrasters/ for the inspiration
