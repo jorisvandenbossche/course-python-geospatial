@@ -39,3 +39,4 @@ dependencies:
   - h5py
   - rioxarray
   - xarray-spatial
+  - cmocean 
