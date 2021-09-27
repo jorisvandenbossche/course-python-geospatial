@@ -49,8 +49,8 @@ print('Using python in', sys.prefix)
 print(sys.version)
 pyversion = Version(sys.version)
 if pyversion >= "3":
-    if pyversion < "3.6":
-        print(FAIL, "Python version 3.6 is required,"
+    if pyversion < "3.7":
+        print(FAIL, "Python version 3.7 is required,"
                     " but %s is installed." % sys.version)
 else:
     print(FAIL, "Python 3 is required, but %s is installed." % sys.version)
@@ -58,7 +58,7 @@ else:
 print()
 requirements = {'numpy': "1.9", 'matplotlib': "2.0",
                 'pandas': "1.1", 'xarray': '0.16',
-                'geopandas': '0.8', 'rasterio': '1.1',
+                'geopandas': '0.9', 'rasterio': '1.1',
                 'owslib': '0.19', 'fsspec': '0.8',
                 's3fs': '0.3', 'pyproj': '2.4'}
 
