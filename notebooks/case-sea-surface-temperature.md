@@ -6,7 +6,7 @@ jupytext:
     format_version: 0.13
     jupytext_version: 1.12.0
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 ---
@@ -42,7 +42,7 @@ First we download the dataset. We will use the [NOAA Extended Reconstructed Sea 
 Reading in the data set, ignoring the `time_bnds` variable:
 
 ```{code-cell} ipython3
-data = './sst.mnmean.v4.nc'
+data = './data/sst.mnmean.v4.nc'
 ds = xr.open_dataset(data, drop_variables=['time_bnds'], engine="h5netcdf")
 ```
 
@@ -392,7 +392,7 @@ fig.legend(loc="upper center", ncol=3)
 ax.set_title("");
 ```
 
-## Make projection aware maps
+### Make projection aware maps
 
 +++
 

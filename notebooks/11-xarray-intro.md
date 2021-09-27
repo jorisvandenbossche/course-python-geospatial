@@ -23,6 +23,7 @@ kernelspec:
 ---
 
 ```{code-cell} ipython3
+import numpy as np
 import matplotlib.pyplot as plt
 ```
 
@@ -142,7 +143,7 @@ One typical use case for raster data is where you want to apply a mask to the da
 herstappe.where(herstappe > 0.2).sel(band="red").plot.imshow()
 ```
 
-## Let's practice!
+### Let's practice!
 
 We'll again look at some Sentinel GeoTiff data, this time from the region of the City of Ghent:
 
@@ -293,6 +294,70 @@ b4_data.plot.hist(bins=30, log=True, ax=ax0)
 b4_data_f.plot.hist(bins=30, log=True, ax=ax1);
 ```
 
+## Plotting
+
++++
+
+We already used `.plot.imshow` and `.plot.line` in the previous section and exercise. Similar to Pandas, `xarray` has a `plot` method, which can be used for different plot types.
+
+```{code-cell} ipython3
+xr_array = xr.open_rasterio("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B0408.tiff")
+xr_array = xr_array.assign_coords(band=("band", ["b4", "b8"]))
+```
+
+It supports both 2 dimensional (e.g. line) as 3 (e.g. imshow, pcolormesh) dimensional plots. When just using `plot`, xarray will do a _best guess_ on how to plot the data. However being explicit `plot.line`, `plot.imshow`, `plot.pcolormesh`, `plot.scatter`,...  gives you more control.
+
+```{code-cell} ipython3
+xr_array.sel(band="b4").plot();  # add .line() -> ValueError: For 2D inputs, please specify either hue, x or y.
+```
+
+```{code-cell} ipython3
+xr_array.sel(x=420000, method="nearest").plot.line(hue="band");
+```
+
+`facetting` splits the data in subplots according to a dimension, e.g. `band`
+
+```{code-cell} ipython3
+xr_array.plot.imshow(col="band", cmap="Reds");
+```
+
+Facetting also works for line plots:
+
+```{code-cell} ipython3
+xr_array.sel(x=420000, method="nearest").plot.line(col="band");  # row="band"
+```
+
+Use the `robust` option when there is a lack of visual difference. This will use the 2nd and 98th percentiles of the data to compute the color limits. The arrows on the color bar indicate that the colors include data points outside the bounds.
+
+```{code-cell} ipython3
+ax = xr_array.sel(band="b4").plot(cmap="Reds", robust=True, figsize=(12, 5))  # use False as well
+ax.axes.set_aspect('equal')
+```
+
+In case you want to show the output with a __discrete colormap__, one can define a [set of levels to split the colormap](http://xarray.pydata.org/en/stable/user-guide/plotting.html#discrete-colormaps) on:
+
+```{code-cell} ipython3
+ax = xr_array.sel(band="b8").plot(cmap="Reds", levels=[0, 0.04, 0.08, 0.1], figsize=(12, 5))  # plot without these levels
+ax.axes.set_aspect('equal')
+```
+
+For more control, defining the `Figure` and `Axes` Matplotlib object first provides more flexibility in terms of further adjustments. One can pass an `axes` object to an xarray `.plot` method in order to link the output:
+
+```{code-cell} ipython3
+fig, (ax0, ax1, ax2) = plt.subplots(1, 3, figsize=(20, 4))
+
+# first subplot a histogram of band 4
+xr_array.sel(band="b4").plot.hist(bins=30, ax=ax0);
+ax0.set_title("Histogram of b4");
+
+# second subplot a line plot at given x coordinate
+xr_array.sel(x=420000, method="nearest").plot.line(hue="band", ax=ax1);
+
+# third subplot a histogram of band 8
+xr_array.sel(band="b8").plot.hist(bins=30, ax=ax2);
+ax2.set_title("Histogram of b8");
+```
+
 ## Reductions, element-wise calculations and broadcasting
 
 ```{code-cell} ipython3
@@ -433,6 +498,8 @@ Make a plot of the end result and compare with a plot of the original data.
 </div>
 
 ```{code-cell} ipython3
+:tags: []
+
 herstappe_data = xr.open_rasterio("./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff")
 ```
 
@@ -637,6 +704,14 @@ To reclassify the values, we can use the `np.digitize` function. This function r
     
 * Apply the `np.digitize` function to `b4_data` using the `xr.apply_ufunc()` function. The first argument is the function to apply, the following arguments are the arguments that would be passed to the function (`np.digitize`). Call the result `b4_data_classified`.
 * Make a image plot of the reclassified variable `b4_data_classified`.
+    
+
+<details><summary>Hints</summary>
+
+* The `np.digitize` function is indeed 
+
+</details>   
+    
     
 </div>
 
