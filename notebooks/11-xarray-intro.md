@@ -1,187 +1,69 @@
 ---
 jupytext:
+  cell_metadata_filter: -run_control,-deletable,-editable,-jupyter,-slideshow
   text_representation:
     extension: .md
     format_name: myst
     format_version: 0.13
     jupytext_version: 1.12.0
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 ---
 
-<p><font size="6"><b>Xarray</b></font></p>
+<p><font size="6"><b>Xarray intro</b></font></p>
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2020*
+> *October, 2021*
 >
-> *© 2020, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
-```{code-cell}
+```{code-cell} ipython3
 import matplotlib.pyplot as plt
 ```
 
-## Introduction: meet `xarray`
+## Introduction
 
-+++
-
-Let's start with reading the Sentinel RGB bands for Herstappe again:
-
-```{code-cell}
+```{code-cell} ipython3
 import xarray as xr
 ```
 
-```{code-cell}
-data_file = "./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff"
+Let's start with reading the Sentinel RGB bands for Herstappe again:
+
+```{code-cell} ipython3
+herstappe_file = "./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff"
+herstappe = xr.open_rasterio(herstappe_file)
 ```
 
-```{code-cell}
-herstappe = xr.open_rasterio(data_file)
+```{code-cell} ipython3
 herstappe
 ```
 
-Xarray brings its own plotting methods, but relies on Matplotlib as well for the actual plotting:
-
-```{code-cell}
+```{code-cell} ipython3
 ax = herstappe.plot.imshow(figsize=(12, 5))
-# ax.axes.set_aspect('equal')
+ax.axes.set_aspect('equal')
 ```
 
-```{code-cell}
-ax = herstappe.sel(band=1).plot.imshow(cmap="Reds", figsize=(12, 5))  #, robust=True)
-# ax.axes.set_aspect('equal')
-```
+We can further make the dimension information more useful by renaming the labels of the 'band' dimension:
 
-As a preview, plot the intersection of the data at x coordinate closest to 400000 for each band:
-
-```{code-cell}
-herstappe.sel(x=600_000, method='nearest').plot.line(col='band')
-```
-
-But first, let's have a look at the data again:
-
-```{code-cell}
-herstappe
-```
-
-The output of xarray is a bit different to what we've previous seen. Let's go through the different elements:
-
-- It is a `xarray.DataArray`, one of the main data types provided by xarray
-- It has 3 __dimensions__:
-    - `band`: 3 bands (RGB)
-    - `y`: the y coordinates of the data set
-    - `x`: the x coordinates of the data set
-- Each of these dimensions are defined by a __coordinate__ (1D) array
-- Other metadata provided by the `tiff` are stored in the __`Attributes`__
-
-Looking to the data itself (click on the icons on the right), we can see this is still a Numpy array
-
-```{code-cell}
-herstappe.values
-```
-
-```{code-cell}
-type(herstappe.values)
-```
-
-```{code-cell}
-herstappe.dtype
-```
-
-## Xarray adds context to NumPy arrays
-
-+++
-
-On of the most fundamental parts of the scientific python 'ecosystem' is [numpy](https://numpy.org/). A lot of other packages - you already used Pandas and GeoPandas in this course, and now also xarray - are built on top of NumPy and the `ndarray`  (n-dimensional array) object it provides.
-
-```{code-cell}
-import numpy as np
-```
-
-We could also read the GeoTiff data directly into a numpy array using `rasterio`:
-
-```{code-cell}
-import rasterio
-
-with rasterio.open(data_file) as src:
-    herstappe_array = src.read()
-    herstappe_meta = src.meta
-```
-
-```{code-cell}
-herstappe_array
-```
-
-As we learnt in the previous lesson, Rasterio returns a Numpy `ndarray`:
-
-```{code-cell}
-type(herstappe_array)
-```
-
-Numpy supports different `dtype`s (`float`, `int`,...), but all elements of an array do have the same dtype. Note that NumPy auto-detects the data-type from the input.
-
-```{code-cell}
-herstappe_array.dtype
-```
-
-The data type of this specific array `herstappe_array` is float32. More information on the data types Numpy supports is available in the [documentation](https://numpy.org/devdocs/user/basics.types.html#array-types-and-conversions-between-types).
-
-+++
-
-Converting to another data type is supported by `astype` method. When floats are preferred during calculation:
-
-```{code-cell}
-herstappe_array.astype(int)
-```
-
-Just as any other object in Python, the `ndarray` has a number of attributes. We already checkes the `dtype` attribute. The `shape` and `ndim` of the array are other relevant attribute:
-
-```{code-cell}
-herstappe_array.shape, herstappe_array.ndim
-```
-
-Hence, we have three bands with dimensions (227, 447) and data type `float32`. Compare this to the metadata stored in the geotiff file:
-
-```{code-cell}
-# !gdalinfo ./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff
-```
-
-The metadata on the dimensions and the datatype correspond, but the spatial information is lost when we only store the Numpy array. While if we use `xarray.DataArray` to wrap this NumPy array, we can keep the data and the spatial context together.
-
-+++
-
-<div class="alert alert-info" style="font-size:120%">
-
-**REMEMBER**: <br>
-
-The [`numpy` package](https://numpy.org/) is the backbone of the scientific Python ecosystem. The `ndarray` provides an efficient data type to store and manipulate raster data, but it does NOT contain any spatial information.
-
-The [11-numpy.ipynb](11-numpy.ipynb) notebook provides more content on using pure numpy with rasterio and how to keep track of the spatial extent (eg when plotting), but for this notebooks, we will use xarray to provide context to our numpy array dimensions.
-
-</div>
-
-+++
-
-Let's take a look at our xarray.DataArray again:
-
-```{code-cell}
-herstappe
-```
-
-We can further make the dimension information more useful by renaming the labels of the "band" dimension:
-
-```{code-cell}
+```{code-cell} ipython3
 herstappe = herstappe.assign_coords(band=("band", ["red", "green", "blue"]))
 herstappe
 ```
 
-Hence, we can __name dimensions__ and also extract (slice) data using these names...
+Or just rename the coordinate names itself:
 
-```{code-cell}
+```{code-cell} ipython3
+herstappe.rename({"x": "longitude", "y": "latitude"})
+```
+
+These __name dimensions__ can be used to extract (slice) data using these names making data selections very declarative:
+
+```{code-cell} ipython3
 herstappe.sel(band='red')
 ```
 
@@ -209,48 +91,44 @@ The [`xarray` package](xarray.pydata.org/en/stable/) introduces __labels__ in th
 
 Xarray’s labels make working with multidimensional data much easier:
 
-```{code-cell}
+```{code-cell} ipython3
 herstappe = xr.open_rasterio(data_file)
 herstappe = herstappe.assign_coords(band=("band", ["red", "green", "blue"]))
 ```
 
 We could use the Numpy style of data slicing:
 
-```{code-cell}
+```{code-cell} ipython3
 herstappe[0]
 ```
 
-However, it is often much more powerful to use xarray’s `.sel()` method to use label-based indexing:
+However, it is often much more powerful to use xarray’s `.sel()` method to use label-based indexing, making the selection more declarative:
 
-```{code-cell}
+```{code-cell} ipython3
 herstappe.sel(band="red")
 ```
 
 We can select a specific set of coordinate values as a __list__ and take the value that is most near to the given value:
 
-```{code-cell}
-herstappe.plot.imshow()
-```
-
-```{code-cell}
+```{code-cell} ipython3
 herstappe.sel(x=[600_000, 610_000, 620_000], method="nearest").sel(band="red").plot.line(hue="x");
 ```
 
 Sometimes, a specific range is required. The `.sel()` method also supports __slicing__, so we can select the green band and slice a subset of the data along the x direction:
 
-```{code-cell}
+```{code-cell} ipython3
 herstappe.sel(x=slice(580_000, 620_000), band="green").plot.imshow(cmap="Greens")
 ```
 
-The *positional* indexing as you can do with the underlying numpy array is still possible as well:
+The __positional indexing__ as you would do with the underlying Numpy array is still possible as well:
 
-```{code-cell}
+```{code-cell} ipython3
 herstappe[0, 100:200:10, 100:200:10]
 ```
 
 Use a __condition__ to select data, also called fancy indexing or boolean indexing:
 
-```{code-cell}
+```{code-cell} ipython3
 herstappe > 0.2
 ```
 
@@ -258,7 +136,9 @@ However, with xarray we cannot use a mask like this to directly filter the array
 
 One typical use case for raster data is where you want to apply a mask to the data and set those values to some "NODATA" value. For plotting, this can for example be `np.nan`, and for this we can use the `where()` method:
 
-```{code-cell}
+```{code-cell} ipython3
+:tags: []
+
 herstappe.where(herstappe > 0.2).sel(band="red").plot.imshow()
 ```
 
@@ -287,19 +167,19 @@ We'll again look at some Sentinel GeoTiff data, this time from the region of the
     
 </div>
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 tc_data = xr.open_rasterio("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff")
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 tc_data
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # Get the green channel
@@ -307,14 +187,14 @@ tc_g = tc_data.sel(band=2)
 tc_g
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # Plot the green channel
 tc_g.plot.imshow(cmap="Greens")
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # Convert all values above 15000
@@ -325,23 +205,27 @@ tc_g.where(tc_g < 15000, 65535)
 
 **EXERCISE**:
 
-Subsample the ndarray `tc_data` by taking only the one out of each 5 data points for all layers at the same time (Be aware that this is a naive resampling implementation for educational purposes only). 
+Subsample the ndarray `tc_data` by taking only the one out of each 5 data points for all layers at the same time. Use _positional indexing_ to subsample the data.
+    
+(Be aware that this is a naive resampling implementation for educational purposes only). 
     
 <details><summary>Hints</summary>
 
+* Slicing in Numpy is similar to Python lists, but in multiple dimensions, e.g. for 2 dimensions `my_array[start:end:step-size, start:end:step-size]`.
+* When selecting all elements in a given dimension, just use a single colon, e.g. `my_array[:]`. When slicing from `start` to `end` of an array, leave these values empty, e.g. `my_array[::step-size]`.
 * The result should still be a 3-D array with 3 elements in the first dimension.
 
 </details>   
     
 </div>
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 tc_data = xr.open_rasterio("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff")
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # subsample the data
@@ -360,7 +244,6 @@ Elements with the value `65535` do represent 'Not a Number' (NaN) values. Howeve
 * Count the number of Nan values in the `b4_data_f` data
 * Make a histogram of both the `b4_data` and `b4_data_f` data. Can you spot the difference?
     
-    
 <details><summary>Hints</summary>
 
 * `np.nan` represents _Not a Number (NaN)_ in Numpy. You can mask an array with np.nan values using the `where()`method
@@ -373,20 +256,20 @@ Elements with the value `65535` do represent 'Not a Number' (NaN) values. Howeve
    
 </div>
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 b4_data = xr.open_rasterio("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff")
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # Count the number of cells with value 65535
 np.sum(b4_data == 65535)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # Convert to float and make 65535 equal to Nan
@@ -394,14 +277,14 @@ b4_data_f = b4_data.astype(float)
 b4_data_f = b4_data_f.where(b4_data != 65535)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # Count the number of cells with value 0
 np.sum(np.isnan(b4_data_f))
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # Create the histogram plots
@@ -412,10 +295,10 @@ b4_data_f.plot.hist(bins=30, log=True, ax=ax1);
 
 ## Reductions, element-wise calculations and broadcasting
 
-```{code-cell}
-herstappe = xr.open_rasterio(data_file)
+```{code-cell} ipython3
+herstappe = xr.open_rasterio(herstappe_file)
 herstappe = herstappe.assign_coords(band=("band", ["red", "green", "blue"]))
-herstappeR = herstappe.sel(band="red")
+herstappe_red = herstappe.sel(band="red")
 ```
 
 ### Reductions
@@ -426,33 +309,33 @@ The __reductions__ (aggregations) are provided as methods and can be applied alo
 
 +++
 
-By default, the array is reduced over all dimensions:
+By default, the array is reduced over all dimensions, returning a single value as a DataArray:
 
-```{code-cell}
-herstappeR.mean()
+```{code-cell} ipython3
+herstappe_red.mean()
 ```
 
-In NumPy, the dimensions are called the __axis__:
+In Numpy, the dimensions are called the __axis__:
 
-```{code-cell}
-herstappeR.mean(axis=1)
+```{code-cell} ipython3
+herstappe_red.mean(axis=1)
 ```
 
-But we have __dimensions with labels__, so rather than performing reductions on axes (as in Numpy), we can perform them on __dimensions__. This turns out to be a huge convenience:
+But we have __dimensions with labels__, so rather than performing reductions on axes (as in Numpy), we can perform them on __dimensions__. This turns out to be convenient and declarative:
 
-```{code-cell}
-herstappeR.mean(dim="x").dims
+```{code-cell} ipython3
+herstappe_red.mean(dim="x").dims
 ```
 
 Calculate the mean values for each of the bands separately:
 
-```{code-cell}
-herstappe.mean(dim=["x", "y"])
+```{code-cell} ipython3
+herstappe.mean(dim=["x", "y"])  # read as: 'take the mean over the dimensions x and y combined'
 ```
 
 Or some quantiles:
 
-```{code-cell}
+```{code-cell} ipython3
 herstappe.quantile([0.1, 0.5, 0.9], dim=["x", "y"])
 ```
 
@@ -462,40 +345,40 @@ herstappe.quantile([0.1, 0.5, 0.9], dim=["x", "y"])
 
 The __for each element__ is crucial for NumPy and Xarray. The typical answer in programming would be a `for`-loop, but Numpy is optimized to do these calculations __element-wise__ (i.e. for all elements together):
 
-```{code-cell}
+```{code-cell} ipython3
 dummy = np.arange(1, 10)
 dummy
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 dummy*10
 ```
 
 Instead of:
 
-```{code-cell}
+```{code-cell} ipython3
 [el*20 for el in dummy]
 ```
 
 Numpy provides most of the familiar arithmetic operators to apply on an element-by-element basis:
 
-```{code-cell}
+```{code-cell} ipython3
 np.exp(dummy), np.sin(dummy), dummy**2, np.log(dummy)
 ```
 
 Xarray works seamlessly with those arithmetic operators and numpy array functions.
 
-```{code-cell}
-herstappeR * 10.
+```{code-cell} ipython3
+herstappe_red * 10.
 ```
 
-```{code-cell}
-np.log(herstappeR)
+```{code-cell} ipython3
+np.log(herstappe_red)
 ```
 
 We can combine multiple xarray arrays in arithemetic operations:
 
-```{code-cell}
+```{code-cell} ipython3
 herstappe.sel(band="red") - herstappe.sel(band="green")
 ```
 
@@ -507,12 +390,12 @@ When we combine arrays with different shapes during arithmetic operations, NumPy
 
 Perfoming an operation on arrays with different coordinates will result in automatic broadcasting:
 
-```{code-cell}
-herstappe.x.shape, herstappeR.shape
+```{code-cell} ipython3
+herstappe.x.shape, herstappe_red.shape
 ```
 
-```{code-cell}
-herstappeR + herstappe.x  # Note, this calculaton does not make much sense, but illustrates broadcasting
+```{code-cell} ipython3
+herstappe_red + herstappe.x  # Note, this calculaton does not make much sense, but illustrates broadcasting
 ```
 
 <div class="alert alert-info" style="font-size:120%">
@@ -549,11 +432,11 @@ Make a plot of the end result and compare with a plot of the original data.
     
 </div>
 
-```{code-cell}
+```{code-cell} ipython3
 herstappe_data = xr.open_rasterio("./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff")
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # Calculate the min and max for each channel
@@ -561,14 +444,14 @@ h_min = herstappe_data.min(dim=["x", "y"])
 h_max = herstappe_data.max(dim=["x", "y"])
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # Rescale the data
 herstappe_rescaled = ((herstappe_data - h_min)/(h_max - h_min))
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # Make a plot
@@ -606,20 +489,20 @@ In this excercise, we will convert the data to floats so we can plot it as RGB v
     
 </div>
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 gent = xr.open_rasterio("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff")
 gent
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 gent.plot.imshow()
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # Convert to float and make 65535 equal to Nan
@@ -627,14 +510,14 @@ gent_f = gent.astype(float)
 gent_f = gent_f.where(gent != 65535)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # Divide by the maximum of the int16 range to get [0-1] data
 gent_f = gent_f / 2**16
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # Make a RGB plot
@@ -645,79 +528,23 @@ gent_f.plot.imshow(figsize=(9, 5))
 
 **EXERCISE**:
 
-Next, plot a greyscale version of the data as well. Instead of using a custom function just rely on the sum of the 3 bands as a proxy.
+Next, plot a greyscale version of the data as well. Instead of using a custom function just rely on the sum of the 3 bands as a quick proxy.
     
 <details><summary>Hints</summary>
 
-* A greyscale image requires a greyscale `cmap`, checkt he available names in [the documentation online](https://matplotlib.org/tutorials/colors/colormaps.html)
+* A greyscale image requires a greyscale `cmap`, check the available names in [the documentation online](https://matplotlib.org/tutorials/colors/colormaps.html)
+* Xarray provides the common aggregation functions as methods to a DataArray, e.g. `my_array.sum(...)`
+* To do a reduction over a given dimension, use the `dim`-ension name as parameter of the method.
 
 </details>    
     
 </div>
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # Make a Grey scale plot
 gent_f.sum(dim="band").plot.imshow(cmap="Greys", figsize=(9, 5))
-```
-
-<div class="alert alert-success">
-
-**EXERCISE**:
-    
-You want to reclassify the values of the 4th band data to a fixed set of classes:
-    
-* x < 0.05 need to be 0
-* 0.05 < x < 0.1 need to be 1
-* x > 0.1 need to be 2
-       
-Use the data set `./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff` (assign data to variable `b4_data`):
-    
-* Read the data set and exclude the single-value dimension to end up with a 2D array. 
-* Convert to float data type. and normalize the values to the range [0., 1.].
-
-To reclassify the values, we can use the `np.digitize` function. This function return the indices of the bins to which each value in input array belongs. As such, it can be used to select and manipulate values containing to a specific bin.
-    
-* Apply the `np.digitize` function to `b4_data` using the `xr.apply_ufunc()` function. The first argument is the function to apply, the following arguments are the arguments that would be passed to the function (`np.digitize`). Call the result `b4_data_classified`.
-* Make a image plot of the reclassified variable `b4_data_classified`.
-    
-</div>
-
-```{code-cell}
-:clear_cell: false
-
-b4_data = xr.open_rasterio("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff")
-```
-
-```{code-cell}
-:tags: [nbtutor-solution]
-
-# Convert to 2D float array 
-b4_data = b4_data.sel(band=1).astype(float)
-```
-
-```{code-cell}
-:tags: [nbtutor-solution]
-
-# Rescale the data
-b4_data = (b4_data - b4_data.min())/(b4_data.max() - b4_data.min())
-```
-
-```{code-cell}
-:tags: [nbtutor-solution]
-
-# Classify the array into 3 bins
-b4_data_classified = xr.apply_ufunc(np.digitize, b4_data, [0.05, 0.1])
-```
-
-```{code-cell}
-:tags: [nbtutor-solution]
-
-# Create an image plot
-fig, ax = plt.subplots(figsize=(12, 5))
-img = b4_data_classified.plot.imshow(ax=ax, add_colorbar=False, interpolation="antialiased")
-fig.colorbar(img, values=[0, 1, 2], ticks=[0, 1, 2])
 ```
 
 <div class="alert alert-success">
@@ -743,14 +570,14 @@ Process the images and create a plot of the NDVI:
            
 </div>
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 b4_data = xr.open_rasterio("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff").sel(band=1)
 b8_data = xr.open_rasterio("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B08.tiff").sel(band=1)
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # Rescale the data to 0-1
@@ -758,7 +585,7 @@ b4_data = (b4_data - b4_data.min())/(b4_data.max() - b4_data.min())
 b8_data = (b8_data - b8_data.min())/(b8_data.max() - b8_data.min())
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # Calculate the ndvi
@@ -769,7 +596,7 @@ ndvi = (b8_data - b4_data)/(b8_data + b4_data)
 
 Using a Matplotlib norm to adjust colormap influence on image https://matplotlib.org/api/_as_gen/matplotlib.colors.TwoSlopeNorm.html
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # A Sequential colormap `YlGn` with a normalization on the color limits
@@ -780,7 +607,7 @@ ll = ndvi.plot.imshow(ax=ax, cmap="YlGn", norm=div_norm)
 ax.set_aspect("equal")
 ```
 
-```{code-cell}
+```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # A Diverging colormap `RdYlGn` with a normalization on the color limits in two directions of the central point:
@@ -789,4 +616,62 @@ fig, ax = plt.subplots(figsize=(14, 5))
 ll = ax.imshow(ndvi.values, cmap="RdYlGn", norm=div_norm)
 fig.colorbar(ll);
 ax.set_axis_off();
+```
+
+<div class="alert alert-success">
+
+**(ADVANCED) EXERCISE**:
+    
+You want to reclassify the values of the 4th band data to a fixed set of classes:
+    
+* x < 0.05 need to be 0
+* 0.05 < x < 0.1 need to be 1
+* x > 0.1 need to be 2
+       
+Use the data set `./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff` (assign data to variable `b4_data`):
+    
+* Read the data set and exclude the single-value dimension to end up with a 2D array. 
+* Convert to float data type. and normalize the values to the range `[0., 1.]`.
+
+To reclassify the values, we can use the `np.digitize` function. This function return the indices of the bins to which each value in input array belongs. As such, it can be used to select and manipulate values containing to a specific bin.
+    
+* Apply the `np.digitize` function to `b4_data` using the `xr.apply_ufunc()` function. The first argument is the function to apply, the following arguments are the arguments that would be passed to the function (`np.digitize`). Call the result `b4_data_classified`.
+* Make a image plot of the reclassified variable `b4_data_classified`.
+    
+</div>
+
+```{code-cell} ipython3
+:clear_cell: false
+
+b4_data = xr.open_rasterio("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff")
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+# Convert to 2D float array 
+b4_data = b4_data.sel(band=1).astype(float)
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+# Rescale the data
+b4_data = (b4_data - b4_data.min())/(b4_data.max() - b4_data.min())
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+# Classify the array into 3 bins
+b4_data_classified = xr.apply_ufunc(np.digitize, b4_data, [0.05, 0.1])
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+# Create an image plot
+fig, ax = plt.subplots(figsize=(12, 5))
+img = b4_data_classified.plot.imshow(ax=ax, add_colorbar=False, interpolation="antialiased")
+fig.colorbar(img, values=[0, 1, 2], ticks=[0, 1, 2])
 ```
