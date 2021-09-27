@@ -473,15 +473,11 @@ gent = geopandas.GeoDataFrame.from_features(json.loads(r.content), crs="epsg:313
 gent.plot()
 ```
 
-```{code-cell} ipython3
-
-```
-
 ## Cloud: only download what you need
 
 Rasterio/rioxarray only reads the data from disk that is requested to overcome loading entire data sets into memory. The same applies to downloading data, overcoming entire downloads when only a fraction is required (when the online resource supports this). An example is https://zenodo.org/record/2654620, which is available as [Cloud Optimized Geotiff (COG)](https://www.cogeo.org/). Also cloud providers (AWS, google,...) do support COG files, e.g. [Landstat images](https://docs.opendata.aws/landsat-pds/readme.html).
 
-These files are typically very large to download, whereas we might only need a small subset of the data. COG files support downloading a subset of the data you need using the masking approach.
+These files are typically very large to download, whereas we might only need a small subset of the data. COG files support downloading a subset of the data you need using a masking approach.
 
 Let's use the Averbode nature reserve data as an example, available at the URL: http://s3-eu-west-1.amazonaws.com/lw-remote-sensing/cogeo/20160401_ABH_1_Ortho.tif
 
