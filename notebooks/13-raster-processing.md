@@ -38,7 +38,7 @@ import xarray as xr
 import matplotlib.pyplot as plt
 ```
 
-# `rioxarray`: xarray extension based on rasterio
+## `rioxarray`: xarray extension based on rasterio
 
 +++
 
@@ -436,7 +436,7 @@ cities.sort_values(by="elevation", ascending=False).head()
 
 -----------
 
-### A bit more about WFS
+## A bit more about WFS
 
 > The Web Feature Service (WFS) represents a change in the way geographic information is created, modified and exchanged on the Internet. Rather than sharing geographic information at the file level using File Transfer Protocol (FTP), for example, the WFS offers direct fine-grained...
 
