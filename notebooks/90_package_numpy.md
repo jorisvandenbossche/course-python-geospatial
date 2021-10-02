@@ -6,7 +6,7 @@ jupytext:
     format_version: 0.13
     jupytext_version: 1.12.0
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 ---
@@ -15,9 +15,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2020*
+> *October, 2021*
 >
-> *© 2020, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -34,7 +34,9 @@ from rasterio.plot import plotting_extent, show
 
 +++
 
-On of the most fundamental parts of the scientific python 'ecosystem' is [numpy](https://numpy.org/). A lot of other packages - you already used Pandas and GeoPandas in this course - are built on top of Numpy and the `ndarray`  (n-dimensional array) data type it provides.
+> __In this notebook, the usage of Numpy when working with spatial data is explained and some exercises from xarray are solved using Numpy directly.__
+
+On of the most fundamental parts of the scientific python 'ecosystem' is [numpy](https://numpy.org/). A lot of other packages - you use Pandas, GeoPandas and xarray in this course - are built on top of Numpy and the `ndarray`  (n-dimensional array) data type it provides.
 
 ```{code-cell} ipython3
 import numpy as np
@@ -49,7 +51,7 @@ with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff") as s
     show(src)
 ```
 
-As we learnt in the previous lesson, Rasterio returns a Numpy `ndarray`:
+When reading in data, Rasterio returns a Numpy `ndarray`:
 
 ```{code-cell} ipython3
 type(b4_data)
@@ -986,8 +988,4 @@ grad = signal.convolve(b4_data, window, mode='same')
 fig, (ax0, ax1) = plt.subplots(1, 2, figsize=(16, 6))
 ax0.imshow(b4_data, extent=b4_data_extent)
 ax1.imshow(grad, extent=b4_data_extent)
-```
-
-```{code-cell} ipython3
-
 ```

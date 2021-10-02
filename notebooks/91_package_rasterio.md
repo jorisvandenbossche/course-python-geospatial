@@ -6,7 +6,7 @@ jupytext:
     format_version: 0.13
     jupytext_version: 1.12.0
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 ---
@@ -15,15 +15,17 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2020*
+> *October, 2021*
 >
-> *© 2020, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
 +++
 
-In the previous notebook we focused on the Numpy package using [Rasterio](https://rasterio.readthedocs.io/en/latest/) as the interface to read the data from disk. 
+> __In this notebook, the tupical workflow when doing operations with Rasterio to handle spatial data is explained .__
+
+Both when working with Numpy as in xarray, [Rasterio](https://rasterio.readthedocs.io/en/latest/) is the interface to read the data from disk. 
 
 Whereas Numpy is a powerful package for calculation, it does not provide any spatial information so lacking support for reprojection, warping,... Apart from reading in a broad set of GIS raster formats, Rasterio also provides some of these GIS raster operations.
 
@@ -610,7 +612,7 @@ Downloading the entire data file would be overkill. Instead, we only want to dow
 output_file = "./averbode_orthophoto.tiff"
 ```
 
-The resulting data set will still be around 35MB and will take a bit of time, but this is only a fraction of the original data file:
+The resulting data set will still be around 120MB and will take a bit of time, but this is only a fraction of the original data file (GBs):
 
 ```{code-cell} ipython3
 # Only run this cell when sufficient band width ;-)
