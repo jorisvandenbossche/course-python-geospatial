@@ -31,7 +31,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 ```
 
-## Meet `xarray.Dataset`
+## `xarray.Dataset` for multiple variables
 
 +++
 
@@ -160,6 +160,8 @@ Plotting for data set level is rather limited. A typical use case that is suppor
 ```{code-cell} ipython3
 ds.plot.scatter("temperature", "precipitation", s=1, alpha=0.1)
 ```
+
+`facetting` is also supported here, by linking the `col` or `row` parameter to a data variable.
 
 ```{code-cell} ipython3
 ds.plot.scatter("temperature", "precipitation", s=1, alpha=0.1, col="year")  # try also hue instead of col; requires hue_style="discrete"
@@ -339,36 +341,14 @@ era5_renamed["speed_of_light_m_s"] = 331.5 + (0.6*era5_renamed["temperature_c"])
 era5_renamed.plot.scatter("temperature_c", "speed_of_light_m_s", s=1, alpha=0.1)
 ```
 
-```{code-cell} ipython3
-
-```
-
-```{code-cell} ipython3
-
-```
-
-------- TODO ------
-
-```{code-cell} ipython3
-
-```
-
-```{code-cell} ipython3
-
-```
-
-```{code-cell} ipython3
-
-```
-
-```{code-cell} ipython3
-
-```
-
 ## Working with time series
 
++++
+
+Let's start again from the ERA5 data set we worked with in the previous exercises, and rename the variables for convenience:
+
 ```{code-cell} ipython3
-era5 = xr.open_dataset("./data/era5-land-monthly-means.nc")
+era5 = xr.open_dataset("./data/era5-land-monthly-means_example.nc")
 mapping = {
     "sf": "snowfall_m",
     "sp": "pressure_pa",
@@ -380,7 +360,33 @@ era5_renamed = era5.rename(mapping)
 era5_renamed
 ```
 
-### groupby
+Apart from the different coordinates, the data set also contains a `time` dimension. xarray borrows the indexing machinery from Pandas, also for datetime coordinates:
+
+```{code-cell} ipython3
+era5_renamed.time
+```
+
+With a DateTime-aware index (see `datetime64[ns]` as dtype), selecting dates can be done using the string representation, e.g.
+
+```{code-cell} ipython3
+era5_renamed.sel(time="2002").time 
+```
+
+```{code-cell} ipython3
+era5_renamed.sel(time=slice("2001-05", "2002-08")).time
+```
+
+And you can access the datetime components, e.g. "year", "month",..., "dayofyear", "week", "dayofweek",... but also "season". Do not forget to use the `.dt`-accessor to access these components:
+
+```{code-cell} ipython3
+era5_renamed["time"].dt.season
+```
+
+Xarray contains some more powerful functionalities to work with time series, e.g. `groupby`, `resample` and `rolling`. All have a similar syntax as Pandas/GeoPandas, but applied on an N-dimensional array instead of a DataFrame.
+
++++
+
+### split-apply-combine, aka `groupby`
 
 +++
 
@@ -396,38 +402,60 @@ We already learned about the [split-apply-combine](https://pandas.pydata.org/pan
 
 +++
 
-First, extract the month of the year (1-> 12) from each of the date coordinates:
+First, extract the month of the year (1 -> 12) from each of the time coordinate/dimension:
 
 ```{code-cell} ipython3
 era5_renamed["time"].dt.month  # The coordinates is a Pandas datetime index
 ```
 
-We can use these arrays in a groupby operation:
+We can use this array in a `groupby` operation:
 
 ```{code-cell} ipython3
 era5_renamed.groupby(era["time"].dt.month)
 ```
 
-Xarray also offers a more concise syntax when the variable you're grouping on is already present in the dataset. This is identical to the previous line:
+_split the data in (12) groups where each element is grouped according to the month it belongs to._
+
++++
+
+__Note:__ Xarray also offers a more concise syntax when the variable you're grouping on is already present in the dataset. The following statement is identical to the previous line:
 
 ```{code-cell} ipython3
 era5_renamed.groupby("time.month")
 ```
 
-Next, we apply an aggregation function _for each of the months_ over the `date` dimension in order to end up with: _for each month of the year, the average (over time) for each of the levels_:
+Next, we apply an aggregation function _for each of the months_ over the `time` dimension in order to end up with: _for each month of the year, the average (over time) for each of the levels_:
 
 ```{code-cell} ipython3
 era5_renamed.groupby("time.month").mean(dim="time")
 ```
 
+The resulting dimension month contains the 12 groups on which the data set was split up. 
+
++++
+
+<img align="center" src="../img/pandas/06_groupby1.svg">
+
++++
+
+<div class="alert alert-info" style="font-size:120%">
+
+**REMEMBER**: <br>
+
+The `groupby` method splits the data set in groups, applies some function _on each of the groups_ and combines again the results of each of the groups. It is not limited to time series data, but can be used in any situation where the data can be split up by a categorical variable. 
+
+</div>
+
++++
+
 ### resample/rolling
 
 +++
 
-Another (alike) operation - specifically for time series data - is to `resample` the data to another time-aggregation. For example, resample to monthly (`1M`) or yearly (`1Y`) median values:
+Another (alike) operation - specifically for time series data - is to `resample` the data to another time-aggregation. For example, resample to monthly (`4M`) or yearly (`1Y`) median values:
 
 ```{code-cell} ipython3
-era5_renamed.resample(time="Y").median()  # 1Y
+era5_renamed.resample(time="1Y").median()  # 4M
 ```
 
 ```{code-cell} ipython3
@@ -442,10 +470,9 @@ era5_renamed.rolling(time=12, center=True).median()
 ```
 
 ```{code-cell} ipython3
-# TODO - convert to new era data set
-argo["salinity"].sel(date='2012-10-31').plot.line(y="level", yincrease=False, color="grey");
-argo["salinity"].sel(date='2012-10-31').rolling(level=10, center=True).median().plot.line(y="level", yincrease=False, linewidth=3, color="crimson");
-plt.legend(), plt.title("");
+era5_renamed["temperature_k"].sel(latitude=51., longitude=4., method="nearest").plot.line()
+era5_renamed["temperature_k"].sel(latitude=51., longitude=4., method="nearest").rolling(time=12, center=True).min().plot.line()
+era5_renamed["temperature_k"].sel(latitude=51., longitude=4., method="nearest").rolling(time=12, center=True).max().plot.line()
 ```
 
 <div class="alert alert-info" style="font-size:120%">
@@ -463,6 +490,105 @@ __Note:__ Xarray adds a [`groupby_bins`](http://xarray.pydata.org/en/stable/gene
 ### Let's practice
 
 +++
+
+Run this cell before doing the exercises, so the starting point is again the `era5_renamed` data set:
+
+```{code-cell} ipython3
+era5 = xr.open_dataset("./data/era5-land-monthly-means_example.nc")
+mapping = {
+    "sf": "snowfall_m",
+    "sp": "pressure_pa",
+    "t2m": "temperature_k",
+    "tp": "precipitation_m",
+    "u10": "wind_ms"
+}
+era5_renamed = era5.rename(mapping)
+```
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+Select the pressure data for the pixel closest to the center of Ghent (lat: -51.05, lon: 3.71) and assign the outcome to a new variable `ghent_pressure`.
+
+Define a Matplotlib `Figure` and `Axes` (respectively named `fig, ax`) and use it to create a plot that combines the yearly average of the pressure data in Gent with the monthly pressure data as function of time for that same pixel as line plots. Change the name of the y-label to `'Pressure (Pa)'` and the title of the plot to `'Pressure (Pa) in Ghent (at -51.05, 3.71)'` (see notebook [visualization-01-matplotlib.ipynb](./visualization-01-matplotlib.ipynb#An-small-cheat-sheet-reference-for-some-common-elements) for more information)
+
+<details><summary>Hints</summary>
+    
+* For the yearly average, actually both `resample(time="Y")` as `groupby("time.year")` can be used. The main difference is the returned dimension after the grouping: `resample` returns a DateTimeIndex, whereas `groupby` returns a dimension called `year` and no longer contains the DateTimeIndex. To combine the data with other time series data, using the DateTimeIndex is preferred (i.e. `resample`). 
+* `fig, ax = plt.subplots()` is a useful shortcut to prepare a Matplotlib Figure. You can add a label `set_label()` and title `set_title()` to the `axes` object.
+
+</details>    
+    
+</div>
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+ghent_pressure = era5_renamed.sel(latitude=51.05, longitude=3.71, method="nearest")["pressure_pa"]
+
+fig, ax = plt.subplots(figsize=(18, 6))
+ghent_pressure.plot.line(ax=ax)
+ghent_pressure.resample(time="Y").mean().plot.line(ax=ax)
+
+ax.set_ylabel('Pressure (Pa)')
+ax.set_title('Pressure (Pa) in Ghent (-51.05, 3.71)')
+```
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+    
+Select the precipitation data for the pixel closest to the center of Ghent (lat: -51.05, lon: 3.71) and assign the outcome to a new variable `ghent_precipitation`.
+    
+For the Ghent pixel, calculate the maximal precipitation _for each month of the year_ (1 -> 12) and convert it to mm precipitation.
+    
+To make a bar-chart (not supported in xarray) of the maximal precipitation for each month of the year, convert the output to a Pandas DataFrame using the `to_dataframe()` method and create a horizontal bar chart with the month in the y-axis and the maximal precipitation in the x-axis. Feel free to improve the axis labels.
+
+<details><summary>Hints</summary>
+    
+* You need to group based on the month of the data point, hence `groupby("...")` with `time` as an existing dimension, the `time.month` shortcut to get the corresponding month will work.
+* Plotting in Pandas is very similar to xarray, use `.plot.barh()` to create a horizontal bar chart.
+
+</details>    
+    
+</div>
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+ghent_precipitation = era5_renamed.sel(latitude=51.05, longitude=3.71, method="nearest")["precipitation_m"]
+ghent_precipitation_month_max = ghent_precipitation.groupby("time.month").max()*1000
+
+fig, ax = plt.subplots()
+ghent_precipitation_month_max.to_dataframe()["precipitation_m"].plot.barh(ax=ax)
+ax.set_xlabel("Maximal monthly precipitation (mm)")
+ax.set_ylabel("Month of the year")
+```
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+    
+Calculate the pixel-based maximal temperature _for each season_. Make a plot (`imshow`) with each of the seasons in a separate subplot next to each other. 
+
+<details><summary>Hints</summary>
+    
+* You need to group based on the season of the data point, hence `groupby("...")` with `time` as an existing dimension, the `time.season` shortcut to get the corresponding season will work.
+* The labels of the season groups are sorted on the strings in the description instead of the seasons. The workaround is to `sortby` and provide a correctly sorted version to sort the `season` with, see the open issue https://github.com/pydata/xarray/issues/757.
+* Use facetting to plot each of the seasons next to each other, with `col="season"`.
+
+
+</details>    
+    
+</div>
+
+```{code-cell} ipython3
+seaons_temp = era5_renamed["temperature_k"].groupby("time.season").max()
+# See https://github.com/pydata/xarray/issues/757 for getting well-sorted groups for plotting
+seaons_temp = seaons_temp.sortby(xr.DataArray(['DJF','MAM','JJA', 'SON'],dims=['season']))
+seaons_temp.plot.imshow(col="season", cmap="Reds")
+```
 
 <div class="alert alert-success">
 
@@ -486,6 +612,8 @@ Make sure to update the name of the snowfall variable and/or colorbar label to m
 </div>
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 snowfall_1991_2005 = era5_renamed.sel(time=slice("1991", "2005"))["snowfall_m"]
 snowfall_yearly = snowfall_1991_2005.resample(time="Y").sum()*100
 snowfall_yearly = snowfall_yearly.rename("snowfall_cm")
@@ -493,106 +621,66 @@ snowfall_yearly.plot.imshow(col="time", col_wrap=5, cmap=cmocean.cm.ice,
                             cbar_kwargs={"label": "snowfall (cm)"})
 ```
 
-```{code-cell} ipython3
+## xarray lazy data loading
 
+Values are only read from disk when needed. For example, the following statement only reads the coordinate information and the metadata. The data itself is not yet loaded:
+
+```{code-cell} ipython3
+data_file = "./data/2016-2017_global_rain-temperature.nc"
 ```
 
 ```{code-cell} ipython3
-
-```
-
----------------
-
-__Note:__ Values are only read from disk when needed. For example, the following statement only reads the coordinate information and the metadata. The data itself is not yet loaded:
-
-```{code-cell} ipython3
-data_file = "./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff"
-```
-
-```{code-cell} ipython3
-gent = xr.open_rasterio(data_file)
-gent
+ds = xr.open_dataset(data_file)
 ```
 
 `load()` will explicitly load the data into memory:
 
 ```{code-cell} ipython3
-xr.open_rasterio(data_file).load()
+xr.open_dataset(data_file).load()
 ```
 
-```{code-cell} ipython3
-
-```
-
-## From DataSet to DataArray and back
+## (Optional) From DataSet to DataArray and back
 
 +++
 
-Conversion from and to __TODO__
+Consider the sentinel images of Gent used in a previous notebook:
 
 ```{code-cell} ipython3
-xr_array = xr_array.assign_coords(band=("band", ["b4", "b8"]))
-xr_data = xr_array.to_dataset(dim="band")
-xr_data
+gent_file = "./data/gent/raster/2020-09-17_Sentinel_2_L1C_B0408.tiff"
+gent_array = xr.open_rasterio(gent_file)
+gent_array.plot.imshow(col="band")
 ```
 
-Why do we want to use a Dataset instead of DataArray?
-
-* We can actually have multiple arrays that are logically different variables, eg temperature and pressure with the same (lon, lat, time) dimensions
-* For some cases it can be more convenient to work with
-
-+++
-
-Recap the NDVI exercise of the previous notebook, using a stacked version of the 4th and 8th Sentinel band:
+The data is a `xarray.DataArray` with 3 dimensions and corresponding coordinates. Assigning the names `b4` and `b8` to the individual bands, makes the data more self-describing:
 
 ```{code-cell} ipython3
-xr_array = xr.open_rasterio("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B0408.tiff")
-xr_array
+gent_array = gent_array.assign_coords(band=("band", ["b4", "b8"]))
+gent_array
 ```
 
-In Numpy, we would do:
+In case one wants to work with the different bands as DataSet variables instead of a dimension of a single DataArray, the conversion `to_dataset` can be done, defining the dimension to convert to data set variables, e.g. 
 
 ```{code-cell} ipython3
-b48_bands = xr_array.values  # 0 is band 4 and 1 is band 8
-b48_bands.shape
+gent_ds = gent_array.to_dataset(dim="band")
+gent_ds
 ```
 
+Consider the calculation of the NDVI for Gent using a xarray DataArray:
+
 ```{code-cell} ipython3
-ndvi_np = (b48_bands[1] - b48_bands[0])/(b48_bands[0] + b48_bands[1]) # or was it b48_bands[0] -  b48_bands[1] ?
+ndvi_array = (gent_array.sel(band="b8") - gent_array.sel(band="b4"))/(gent_array.sel(band="b8") + gent_array.sel(band="b4"))
+ndvi_array.plot.imshow(cmap="YlGn")
 ```
 
-```{code-cell} ipython3
-plt.imshow(ndvi_np, cmap="YlGn")
-```
+One might find the usage of data variable in this case more convenient, as it provides the ability to:
 
-In __xarray__:
+1. work with the variable names directly
+2. Add the output tot the data set as a new variable
+3. The output can be converted to an Array again using `to_array`
 
-```{code-cell} ipython3
-xr_array = xr_array.assign_coords(band=("band", ["b4", "b8"]))
-xr_data = xr_array.to_dataset(dim="band")
-```
+For example:
 
 ```{code-cell} ipython3
-ndvi_xr = (xr_data["b8"] - xr_data["b4"])/(xr_data["b8"] + xr_data["b4"])
-```
-
-```{code-cell} ipython3
-plt.imshow(ndvi_xr, cmap="YlGn")
-```
-
-The result is the same, but no more struggling on what index is representing which variable!
-
-```{code-cell} ipython3
-np.allclose(ndvi_xr.data, ndvi_np)
-```
-
-We can keep the result together with the other data variables by adding a new variable to the data, in a very similar way as we created a new column in Pandas:
-
-```{code-cell} ipython3
-xr_data["ndvi"] = ndvi_xr
-xr_data
-```
-
-```{code-cell} ipython3
-
+gent_ds["ndvi"] = (gent_ds["b8"] - gent_ds["b4"])/(gent_ds["b8"] + gent_ds["b4"])
+gent_ds.to_array(dim="layer")
 ```
