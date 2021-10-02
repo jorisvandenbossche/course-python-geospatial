@@ -430,7 +430,7 @@ Next, we apply an aggregation function _for each of the months_ over the `time` 
 era5_renamed.groupby("time.month").mean(dim="time")
 ```
 
-The resulting dimension month contains the 12 groups on which the data set was split up. 
+The resulting dimension month contains the 12 groups on which the data set was split up.
 
 +++
 
@@ -584,6 +584,8 @@ Calculate the pixel-based maximal temperature _for each season_. Make a plot (`i
 </div>
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 seaons_temp = era5_renamed["temperature_k"].groupby("time.season").max()
 # See https://github.com/pydata/xarray/issues/757 for getting well-sorted groups for plotting
 seaons_temp = seaons_temp.sortby(xr.DataArray(['DJF','MAM','JJA', 'SON'],dims=['season']))
@@ -658,7 +660,7 @@ gent_array = gent_array.assign_coords(band=("band", ["b4", "b8"]))
 gent_array
 ```
 
-In case one wants to work with the different bands as DataSet variables instead of a dimension of a single DataArray, the conversion `to_dataset` can be done, defining the dimension to convert to data set variables, e.g. 
+In case one wants to work with the different bands as DataSet variables instead of a dimension of a single DataArray, the conversion `to_dataset` can be done, defining the dimension to convert to data set variables, e.g.
 
 ```{code-cell} ipython3
 gent_ds = gent_array.to_dataset(dim="band")
