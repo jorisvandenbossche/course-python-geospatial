@@ -33,7 +33,7 @@ For this use case, we do a data exploration of the [Argo floats](https://argo.uc
 
 > Argo is an international program that collects information from inside the ocean using a fleet of robotic instruments that drift with the ocean currents and move up and down between the surface and a mid-water level. Each instrument (float) spends almost all its life below the surface.
 
-These data do __not represent full coverage image data__ (like remote sensing images), but measurements of salinity and temperature as a function of water `level` (related to the pressure). Each measurements happens at a given `date` on a given location (`lon`/`lat`).
+These data do __NOT represent full spatial coverage data__ (like remote sensing images), but measurements of salinity and temperature as a function of water `level` (related to the pressure). Each measurements happens at a given `date` on a given location (`lon`/`lat`).
 
 ```{code-cell} ipython3
 import xarray as xr
