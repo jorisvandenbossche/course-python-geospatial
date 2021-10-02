@@ -124,21 +124,23 @@ The output of xarray is a bit different to what we've previous seen. Let's go th
 - It contains 304407 (227*447*3) data values (stored as float32)
 - Other metadata, such as the spatial information) provided by the `tiff` are stored in the __`Attributes`__
 
-Looking to the data itself (click on the icons on the right), we can see these are Numpy arrays.
-
-```{code-cell} ipython3
-herstappe.values
-```
-
-```{code-cell} ipython3
-type(herstappe.values), type(herstappe.x.values), type(herstappe.y.values)
-```
-
-These are all Numpy arrays. Numpy is on of the most fundamental parts of the scientific python 'ecosystem'. A lot of other packages - you already used Pandas and GeoPandas in this course, and now also xarray - are built on top of NumPy and the ndarray (n-dimensional array) object it provides.
+Looking to the data itself (click on the icons on the right), we can see these are Numpy arrays...
 
 +++
 
 ## Xarray adds (spatial) context to NumPy arrays
+
++++
+
+Both the data values as the values of the coordinates are...
+
+```{code-cell} ipython3
+type(herstappe.values), type(herstappe.x.values), type(herstappe.y.values), type(herstappe.band.values)
+```
+
+... all Numpy arrays! 
+
+Numpy is on of the most fundamental parts of the scientific python 'ecosystem'. A lot of other packages - you already used Pandas and GeoPandas in this course, and now also xarray - are built on top of NumPy and the ndarray (n-dimensional array) object it provides.
 
 +++
 
@@ -154,6 +156,10 @@ herstappe_array
 
 ```{code-cell} ipython3
 type(herstappe_array), herstappe_array.dtype
+```
+
+```{code-cell} ipython3
+type(herstappe.x.values), type(herstappe.y.values)
 ```
 
 Numpy supports different dtypes (float, int,...), but __all elements of an array do have the same dtype__. Note that NumPy auto-detects the data-type from the input. The data type of this specific array `herstappe_array` is float32. More information on the data types Numpy supports is available in the [documentation](https://numpy.org/devdocs/user/basics.types.html#array-types-and-conversions-between-types).
@@ -192,7 +198,7 @@ To quickly scan the spatial metadata of a Raster data file, let's use the [`gdal
 
 > The `gdalinfo` command lists information about a raster dataset.
 
-It is not a Python command, but a program that need to be run from the terminal (aka command line). Using a small Jupyter notebook - `!` trick, we can use it within the notebook as well: 
+It is not a Python command, but a program that need to be run from the terminal (aka command line). Using a small Jupyter notebook - `!` trick, we can use it within the notebook as well:
 
 ```{code-cell} ipython3
 !gdalinfo -mm ./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff
@@ -211,7 +217,7 @@ Important information we get from the `gdalinfo` command are
 
 +++
 
-Let's see how `xarray.open_rasterio` interprets this information: 
+Let's see how `xarray.open_rasterio` interprets this information:
 
 ```{code-cell} ipython3
 herstappe = xr.open_rasterio(file_herstappe)
@@ -244,7 +250,7 @@ herstappe.x[1] - herstappe.x[0], herstappe.y[1] - herstappe.y[0]
 
     >  The x and y coordinates are generated automatically from the file’s geoinformation, shifted to the center of each pixel.
     
-Hence, the minimal and maximum values of the coordinates are nog the same as the boundaries defined by the metadata:
+Hence, the minimal and maximum values of the coordinates are still the same as the boundaries defined by the metadata:
 
 ```{code-cell} ipython3
 herstappe.x.min(), herstappe.x.max(), herstappe.y.min(), herstappe.y.max()
