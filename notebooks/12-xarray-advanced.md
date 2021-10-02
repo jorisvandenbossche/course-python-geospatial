@@ -191,7 +191,7 @@ __Note__ Using the names of the data variables (which is actually element-wise o
 
 +++
 
-For the next set of exercises, we introduce the [ERA5-Land monthly averaged data](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land-monthly-means?tab=overview). 
+For the next set of exercises, we use the [ERA5-Land monthly averaged data](https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land-monthly-means?tab=overview), provided by the ECMWF (European Centre for Medium-Range Weather Forecasts).
 
 > ERA5-Land is a reanalysis dataset providing a consistent view of the evolution of land variables over several decades. Reanalysis combines model data with observations from across the world into a globally complete and consistent dataset using the laws of physics. 
 
@@ -209,6 +209,26 @@ The dimensions are the `longitude`, `latitude` and `time`, which are each repres
 era5 = xr.open_dataset("./data/era5-land-monthly-means_example.nc")
 era5
 ```
+
+To get a feeling on the spatial subset of the data set for these exercises, the following code creates a cartopy map of the average temperature with country borders added:
+
+```{code-cell} ipython3
+import cartopy
+import cartopy.crs as ccrs
+
+fig = plt.figure(figsize=(9,6))
+ax = plt.axes(projection=ccrs.PlateCarree())
+
+ax.add_feature(cartopy.feature.BORDERS, linestyle=':')
+era5_mean_temp = era5["t2m"].mean(dim="time") - 273.15
+era5_mean_temp.plot.imshow(ax=ax, cmap="coolwarm", 
+                           transform=ccrs.PlateCarree(),
+                           cbar_kwargs={'shrink': 0.65});
+```
+
+(See notebook [visualization-03-cartopy](./visualization-03-cartopy.ipynb) for more information on the usage of Cartopy)
+
++++
 
 <div class="alert alert-success">
 
@@ -309,15 +329,15 @@ era5_renamed["snowfall_m"].sum(dim=["latitude", "longitude"]).plot.line(figsize=
 
 **EXERCISE**:
 
-The speed to sound is temperature linearly dependent:
+The speed to sound is linearly dependent on temperature:
     
 $v = 331.5 + (0.6 \cdot T)$
     
-with $v$ the speed of light and $T$ the temperature in degrees celsius.    
+with $v$ the speed of sound and $T$ the temperature in degrees celsius.    
     
-Add a new variable to the `era5_renamed` data set, called `speed_of_light_m_s`, that calculates for each location and each time stamp in the data set the temperature corrected speed of light.
+Add a new variable to the `era5_renamed` data set, called `speed_of_sound_m_s`, that calculates for each location and each time stamp in the data set the temperature corrected speed of sound.
     
-Create a scatter plot to check the (linear) relationship you just calculated by comparing all the `speed_of_light_m_s` and `temperature_c` data points in the data set.
+Create a scatter plot to control the (linear) relationship you just calculated by comparing all the `speed_of_sound_m_s` and `temperature_c` data points in the data set.
 
 <details><summary>Hints</summary>
 
@@ -332,13 +352,13 @@ Create a scatter plot to check the (linear) relationship you just calculated by 
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-era5_renamed["speed_of_light_m_s"] = 331.5 + (0.6*era5_renamed["temperature_c"])
+era5_renamed["speed_of_sound_m_s"] = 331.5 + (0.6*era5_renamed["temperature_c"])
 ```
 
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-era5_renamed.plot.scatter("temperature_c", "speed_of_light_m_s", s=1, alpha=0.1)
+era5_renamed.plot.scatter("temperature_c", "speed_of_sound_m_s", s=1, alpha=0.1)
 ```
 
 ## Working with time series
@@ -411,7 +431,7 @@ era5_renamed["time"].dt.month  # The coordinates is a Pandas datetime index
 We can use this array in a `groupby` operation:
 
 ```{code-cell} ipython3
-era5_renamed.groupby(era["time"].dt.month)
+era5_renamed.groupby(era5_renamed["time"].dt.month)
 ```
 
 _split the data in (12) groups where each element is grouped according to the month it belongs to._
@@ -570,7 +590,7 @@ ax.set_ylabel("Month of the year")
 
 **EXERCISE**:
     
-Calculate the pixel-based maximal temperature _for each season_. Make a plot (`imshow`) with each of the seasons in a separate subplot next to each other. 
+Calculate the pixel-based average temperature _for each season_. Make a plot (`imshow`) with each of the seasons in a separate subplot next to each other. 
 
 <details><summary>Hints</summary>
     
@@ -586,10 +606,34 @@ Calculate the pixel-based maximal temperature _for each season_. Make a plot (`i
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-seaons_temp = era5_renamed["temperature_k"].groupby("time.season").max()
+seaons_temp = era5_renamed["temperature_k"].groupby("time.season").mean()
 # See https://github.com/pydata/xarray/issues/757 for getting well-sorted groups for plotting
-seaons_temp = seaons_temp.sortby(xr.DataArray(['DJF','MAM','JJA', 'SON'],dims=['season']))
+seaons_temp = seaons_temp.sortby(xr.DataArray(['DJF','MAM','JJA', 'SON'], dims=['season']))
 seaons_temp.plot.imshow(col="season", cmap="Reds")
+```
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+Calculate the average temperature of the entire region of the dataset in function of time. From this time series, use only those years for which all 12 months of the year are included in the data set and calculate the yearly average temperature.
+    
+Create a line plot showing the yearly average temperature in the y-axis and time in the x-axis.
+
+<details><summary>Hints</summary>
+
+* You need to calculate the average (`mean`) temperature in function of time, i.e. aggregate over both the `longitude` and `latitude` dimensions.
+* Year 2021 is only available till June, so exclude the year (e.g. slice till 2020).
+* Resample to yearly values.
+* As the result is a DataArray with a single dimension, the default `plot` will show a line, but you can be more explicit by saying `.plot.line()`.
+
+</details>    
+    
+</div>
+
+```{code-cell} ipython3
+temp_mean = era5_renamed["temperature_k"].mean(dim=["latitude", "longitude"]).sel(time=slice("1981", "2020"))
+temp_mean.resample(time="Y").mean().plot.line(figsize=(12, 5))
 ```
 
 <div class="alert alert-success">
