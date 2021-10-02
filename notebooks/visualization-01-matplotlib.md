@@ -1,23 +1,23 @@
 ---
 jupytext:
+  cell_metadata_filter: -run_control,-deletable,-editable,-jupyter,-slideshow
   text_representation:
     extension: .md
     format_name: myst
     format_version: 0.13
     jupytext_version: 1.12.0
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 ---
 
-<p><font size="6"><b>Matplotlib: Introduction </b></font></p>
+<p><font size="6"><b>Visualization - Matplotlib</b></font></p>
 
-
-> *DS Data manipulation, analysis and visualisation in Python*  
-> *December, 2019*
-
-> *© 2016-2020, Joris Van den Bossche and Stijn Van Hoey  (<mailto:jorisvandenbossche@gmail.com>, <mailto:stijnvanhoey@gmail.com>). Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *DS Python for GIS and Geoscience*  
+> *October, 2021*
+>
+> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -46,7 +46,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 ```
 
-## - dry stuff - The matplotlib `Figure`, `axes` and `axis`
+## - dry stuff - The matplotlib `Figure`, `Axes` and `Axis`
 
 At the heart of **every** plot is the figure object. The "Figure" object is the top level concept which can be drawn to one of the many output formats, or simply just to screen. Any object which can be drawn in this way is known as an "Artist" in matplotlib.
 
@@ -61,15 +61,33 @@ On its own, drawing the figure artist is uninteresting and will result in an emp
 
 By far the most useful artist in matplotlib is the **Axes** artist. The Axes artist represents the "data space" of a typical plot, a rectangular axes (the most common, but not always the case, e.g. polar plots) will have 2 (confusingly named) **Axis** artists with tick labels and tick marks.
 
+![](../img/matplotlib_fundamentals.png)
+
 There is no limit on the number of Axes artists which can exist on a Figure artist. Let's go ahead and create a figure with a single Axes artist, and show it using pyplot:
 
 ```{code-cell} ipython3
 ax = plt.axes()
 ```
 
+```{code-cell} ipython3
+fig.set_t
+```
+
+```{code-cell} ipython3
+type(ax)
+```
+
+```{code-cell} ipython3
+type(ax.xaxis), type(ax.yaxis)
+```
+
+```{code-cell} ipython3
+ax.xaxis.set_tic
+```
+
 Matplotlib's ``pyplot`` module makes the process of creating graphics easier by allowing us to skip some of the tedious Artist construction. For example, we did not need to manually create the Figure artist with ``plt.figure`` because it was implicit that we needed a figure when we created the Axes artist.
 
-Under the hood matplotlib still had to create a Figure artist, its just we didn't need to capture it into a variable. We can access the created object with the "state" functions found in pyplot called **``gcf``** and **``gca``**.
+Under the hood matplotlib still had to create a Figure artist, its just we didn't need to capture it into a variable.
 
 +++
 
@@ -91,14 +109,24 @@ Observe the following difference:
 **1. pyplot style: plt...** (you will see this a lot for code online!)
 
 ```{code-cell} ipython3
-plt.plot(x, y, '-')
+ax = plt.plot(x, y, '-')
 ```
 
 **2. creating objects**
 
 ```{code-cell} ipython3
+from matplotlib import ticker
+```
+
+```{code-cell} ipython3
+x = np.linspace(0, 5, 10)
+y = x ** 10
+
 fig, ax = plt.subplots()
 ax.plot(x, y, '-')
+ax.set_title("My data")
+
+ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
 ```
 
 Although a little bit more code is involved, the advantage is that we now have **full control** of where the plot axes are placed, and we can easily add more than one axis to the figure:
@@ -132,9 +160,6 @@ ax.plot(x, y, '-')
 ## An small cheat-sheet reference for some common elements
 
 ```{code-cell} ipython3
-import matplotlib.pyplot as plt
-import numpy as np
-
 x = np.linspace(-1, 0, 100)
 
 fig, ax  = plt.subplots(figsize=(10, 7))
@@ -166,8 +191,14 @@ ax.text(0.5, 0.5, 'Text centered at (0.5, 0.5)\nin Figure coordinates.',
         horizontalalignment='center', fontsize=14, 
         transform=ax.transAxes, color='grey')
 
-ax.legend(loc='upper right', frameon=True, ncol=2, fontsize=14);
+ax.legend(loc='lower right', frameon=True, ncol=2, fontsize=14)
 ```
+
+Adjusting specific parts of a plot is a matter of accessing the correct element of the plot:
+
+![](https://matplotlib.org/stable/_images/anatomy.png)
+
++++
 
 For more information on legend positioning, check [this post](http://stackoverflow.com/questions/4700614/how-to-put-the-legend-out-of-the-plot) on stackoverflow!
 
@@ -199,7 +230,7 @@ plt.style.available
 ```{code-cell} ipython3
 x = np.linspace(0, 10)
 
-with plt.style.context('seaborn'):  # 'seaborn', ggplot', 'bmh', 'grayscale', 'seaborn-whitegrid', 'seaborn-muted'
+with plt.style.context('seaborn-whitegrid'):  # 'seaborn', ggplot', 'bmh', 'grayscale', 'seaborn-whitegrid', 'seaborn-muted'
     fig, ax = plt.subplots()
     ax.plot(x, np.sin(x) + x + np.random.randn(50))
     ax.plot(x, np.sin(x) + 0.5 * x + np.random.randn(50))
@@ -239,8 +270,18 @@ import pandas as pd
 ```
 
 ```{code-cell} ipython3
-df = pd.DataFrame(np.random.randn(100, 3), columns=["A", "B", "C"], index=pd.date_range("2020-01-01", periods=100))
+flowdata = pd.read_csv('data/vmm_flowdata.csv', 
+                       index_col='Time', 
+                       parse_dates=True)
 ```
+
+```{code-cell} ipython3
+flowdata.head()
+```
+
+Under the hood, it creates an Matplotlib Figure with an Axes object.
+
++++
 
 ### Pandas versus matplotlib
 
@@ -249,14 +290,14 @@ df = pd.DataFrame(np.random.randn(100, 3), columns=["A", "B", "C"], index=pd.dat
 #### Comparison 1: single plot
 
 ```{code-cell} ipython3
-df.plot(figsize=(16, 6)) # shift tab this!
+flowdata.plot(figsize=(16, 6), ylabel="Discharge m3/s") # SHIFT + TAB this!
 ```
 
 Making this with matplotlib...
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(16, 6))
-ax.plot(df)
+ax.plot(flowdata)
 ax.legend(["L06_347", "LS06_347", "LS06_348"])
 ```
 
@@ -267,25 +308,26 @@ is still ok!
 #### Comparison 2: with subplots
 
 ```{code-cell} ipython3
-axs = df.plot(subplots=True, sharex=True,
-              figsize=(16, 8), colormap='viridis', # Dark2
-              fontsize=15, rot=0)
+axs = flowdata.plot(subplots=True, sharex=True,
+                    figsize=(16, 8), colormap='viridis', # Dark2
+                    fontsize=15, rot=0)
+axs[0].set_title("EXAMPLE");
 ```
 
-Mimicking this in matplotlib (just as a reference):
+Mimicking this in matplotlib (just as a reference, it is basically what Pandas is doing under the hood):
 
 ```{code-cell} ipython3
 from matplotlib import cm
 import matplotlib.dates as mdates
 
-colors = [cm.viridis(x) for x in np.linspace(0.0, 1.0, len(df.columns))] # list comprehension to set up the colors
+colors = [cm.viridis(x) for x in np.linspace(0.0, 1.0, len(flowdata.columns))] # list comprehension to set up the colors
 
 fig, axs = plt.subplots(3, 1, figsize=(16, 8))
 
-for ax, col, station in zip(axs, colors, df.columns):
-    ax.plot(df.index, df[station], label=station, color=col)
+for ax, col, station in zip(axs, colors, flowdata.columns):
+    ax.plot(flowdata.index, flowdata[station], label=station, color=col)
     ax.legend()
-    if not ax.is_last_row():
+    if not ax.get_subplotspec().is_last_row():
         ax.xaxis.set_ticklabels([])
         ax.xaxis.set_major_locator(mdates.YearLocator())
     else:
@@ -302,32 +344,32 @@ Is already a bit harder ;-)
 ### Best of both worlds...
 
 ```{code-cell} ipython3
-fig, ax = plt.subplots() #prepare a matplotlib figure
+fig, (ax0, ax1) = plt.subplots(2, 1) #prepare a Matplotlib figure
 
-df.plot(ax=ax) # use pandas for the plotting
+flowdata.plot(ax=ax0) # use Pandas for the plotting
 ```
 
 ```{code-cell} ipython3
 fig, ax = plt.subplots(figsize=(15, 5)) #prepare a matplotlib figure
 
-df.plot(ax=ax) # use pandas for the plotting
+flowdata.plot(ax=ax) # use pandas for the plotting
 
 # Provide further adaptations with matplotlib:
 ax.set_xlabel("")
 ax.grid(which="major", linewidth='0.5', color='0.8')
-fig.suptitle('Flow time series', fontsize=15)
+fig.suptitle('Flow station time series', fontsize=15)
 ```
 
 ```{code-cell} ipython3
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 6)) #provide with matplotlib 2 axis
+fig, (ax0, ax1) = plt.subplots(2, 1, figsize=(16, 6)) #provide with matplotlib 2 axis
 
-df[["A", "B"]].plot(ax=ax1) # plot the two timeseries of the same location on the first plot
-df["C"].plot(ax=ax2, color='0.2') # plot the other station on the second plot
+flowdata[["L06_347", "LS06_347"]].plot(ax=ax0) # plot the two timeseries of the same location on the first plot
+flowdata["LS06_348"].plot(ax=ax1, color='0.2') # plot the other station on the second plot
 
 # further adapt with matplotlib
-ax1.set_ylabel("Y label 1")
-ax2.set_ylabel("Y label 2")
-ax2.legend()
+ax0.set_ylabel("L06_347")
+ax1.set_ylabel("LS06_348")
+ax1.legend()
 ```
 
 <div class="alert alert-info">
@@ -347,9 +389,67 @@ If you take the time to make your perfect/spot-on/greatest-ever matplotlib-figur
 
 +++
 
+An example of such a reusable function to plot data:
+
+```{code-cell} ipython3
+%%file plotter.py  
+#this writes a file in your directory, check it(!)
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+
+from matplotlib import cm
+from matplotlib.ticker import MaxNLocator
+
+def vmm_station_plotter(flowdata, label="flow (m$^3$s$^{-1}$)"):
+    colors = [cm.viridis(x) for x in np.linspace(0.0, 1.0, len(flowdata.columns))] # list comprehension to set up the color sequence
+
+    fig, axs = plt.subplots(3, 1, figsize=(16, 8))
+
+    for ax, col, station in zip(axs, colors, flowdata.columns):
+        ax.plot(flowdata.index, flowdata[station], label=station, color=col) # this plots the data itself
+        
+        ax.legend(fontsize=15)
+        ax.set_ylabel(label, size=15)
+        ax.yaxis.set_major_locator(MaxNLocator(4)) # smaller set of y-ticks for clarity
+        
+        if not ax.get_subplotspec().is_last_row():  # hide the xticklabels from the none-lower row x-axis
+            ax.xaxis.set_ticklabels([])
+            ax.xaxis.set_major_locator(mdates.YearLocator())
+        else:                     # yearly xticklabels from the lower x-axis in the subplots
+            ax.xaxis.set_major_locator(mdates.YearLocator())
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+        ax.tick_params(axis='both', labelsize=15, pad=8) # enlarge the ticklabels and increase distance to axis (otherwise overlap)
+    return fig, axs
+```
+
+```{code-cell} ipython3
+from plotter import vmm_station_plotter
+# fig, axs = vmm_station_plotter(flowdata)
+```
+
+```{code-cell} ipython3
+fig, axs = vmm_station_plotter(flowdata, 
+                               label="NO$_3$ (mg/l)")
+fig.suptitle('Ammonium concentrations in the Maarkebeek', 
+             fontsize='17')
+fig.savefig('ammonium_concentration.png', dpi=150)
+```
+
+<div class="alert alert-warning">
+
+**NOTE**
+
+- Let your hard work pay off, write your own custom functions!
+
+</div>
+
++++
+
 <div class="alert alert-info" style="font-size:18px">
 
- <b>Remember</b>: 
+**Remember** 
 
 `fig.savefig()` to save your Figure object!
 
@@ -357,7 +457,7 @@ If you take the time to make your perfect/spot-on/greatest-ever matplotlib-figur
 
 +++
 
-# Need more matplotlib inspiration?
+# Need more matplotlib inspiration? 
 
 +++
 
@@ -370,12 +470,9 @@ For more in-depth material:
 
 <div class="alert alert-info" style="font-size:18px">
 
-**Galleries!**
+**Remember**
 
-Galleries are great to get inspiration, see the plot you want, and check the code how it is created:
-    
-* [matplotlib gallery](http://matplotlib.org/gallery.html") is an important resource to start from
-* [seaborn gallery](https://seaborn.pydata.org/examples/index.html)
-* The Python Graph Gallery (https://python-graph-gallery.com/)
+- <a href="https://matplotlib.org/stable/gallery/index.html">matplotlib gallery</a> is an important resource to start from
+- Matplotlib has some great [cheat sheets](https://github.com/matplotlib/cheatsheets) available
 
 </div>
