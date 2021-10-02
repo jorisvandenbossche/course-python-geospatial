@@ -93,6 +93,10 @@ If you rather use an alternative name for a given variable, use the `rename` met
 ds.rename({"precipitation": "rain"})
 ```
 
+__Note:__ _the renaming is not entirely correct as rain is just a part of all precipitation (see https://en.wikipedia.org/wiki/Precipitation)._
+
++++
+
 Adding new variables to the data set is very similar to Pandas/GeoPandas:
 
 ```{code-cell} ipython3
@@ -175,7 +179,7 @@ ds.mean()
 ds.max(dim=["x", "y"])
 ```
 
-__Note__ Using the names of the data variables (which is actually element-wise opertaions with DataArrays) makes a calculation very self-describing, e.g.
+__Note__ Using the names of the data variables (which is actually element-wise operations with DataArrays) makes a calculation very self-describing, e.g.
 
 ```{code-cell} ipython3
 (ds["temperature"] * ds["precipitation"]).sel(year=2016).plot.imshow()
@@ -189,7 +193,7 @@ For the next set of exercises, we introduce the [ERA5-Land monthly averaged data
 
 > ERA5-Land is a reanalysis dataset providing a consistent view of the evolution of land variables over several decades. Reanalysis combines model data with observations from across the world into a globally complete and consistent dataset using the laws of physics. 
 
-For this course, a subset of the data set focusing on Belgium has been prepared, containing the following variables:
+For these exercises, a subset of the data set focusing on Belgium has been prepared, containing the following variables:
 
 - `sf`: Snowfall (_m of water equivalent_)
 - `sp`: Surface pressure (_Pa_)
@@ -197,7 +201,7 @@ For this course, a subset of the data set focusing on Belgium has been prepared,
 - `tp`: Total precipitation (_m_)
 - `u10`: 10 metre U wind component (_m/s_)
 
-The dimensions are the `longitud`, `latitude` and `time`, which are each represented by a corresponding coordinate.
+The dimensions are the `longitude`, `latitude` and `time`, which are each represented by a corresponding coordinate.
 
 ```{code-cell} ipython3
 era5 = xr.open_dataset("./data/era5-land-monthly-means_example.nc")
@@ -242,7 +246,7 @@ era5_renamed = era5.rename(mapping)
 era5_renamed
 ```
 
-__Note:__ Make sure you have the variable `era5_renamed` correctly loaded for the following exercises. If not, load the solution of the previous exercise.
+__Note:__ _Make sure you have the variable `era5_renamed` correctly loaded for the following exercises. If not, load the solution of the previous exercise._
 
 +++
 
@@ -260,7 +264,7 @@ Create a histogram of the `temperature_c` to check the distribution of all the t
 
 * Xarray - similar to Numpy - applies the mathematical operation element-wise, so no need for loops.
 * Most plot functions work on `DataArray`, so make sure to select the variable to apply the `.plot.hist()`.
-* One can define the number of bins using the `bins` parameter.
+* One can define the number of bins using the `bins` parameter in the `hist` method.
 
 </details>    
     
@@ -278,42 +282,66 @@ era5_renamed["temperature_c"] = era5_renamed["temperature_k"] - 273.15
 era5_renamed["temperature_c"].plot.hist(bins=50);
 ```
 
-```{code-cell} ipython3
-import cmocean
-```
-
 <div class="alert alert-success">
 
 **EXERCISE**:
 
-TODO
+Calculate the total snowfall of the entire region of the dataset in function of time and create a line plot showing total snowfall in the y-axis and time in the x-axis.
 
 <details><summary>Hints</summary>
 
-* 
+* You need to calculate the total (`sum`) snowfall (`snowfall_m`) in function of time, i.e. aggregate over both the `longitude` and `latitude` dimensions (`dim=["latitude", "longitude"]`).
+* As the result is a DataArray with a single dimension, the default `plot` will show a line, but you can be more explicit by saying `.plot.line()`.
 
 </details>    
     
 </div>
 
 ```{code-cell} ipython3
-import cmocean
-ds["rain"].sel(year=2016).plot(cmap=cmocean.cm.rain, vmax=2000, figsize=(20, 10))
+:tags: [nbtutor-solution]
+
+era5_renamed["snowfall_m"].sum(dim=["latitude", "longitude"]).plot.line(figsize=(18, 5))
 ```
 
 <div class="alert alert-success">
 
 **EXERCISE**:
 
-TODO
+The speed to sound is temperature linearly dependent:
+    
+$v = 331.5 + (0.6 \cdot T)$
+    
+with $v$ the speed of light and $T$ the temperature in degrees celsius.    
+    
+Add a new variable to the `era5_renamed` data set, called `speed_of_light_m_s`, that calculates for each location and each time stamp in the data set the temperature corrected speed of light.
+    
+Create a scatter plot to check the (linear) relationship you just calculated by comparing all the `speed_of_light_m_s` and `temperature_c` data points in the data set.
 
 <details><summary>Hints</summary>
 
-* 
+* Creating a new variable is similar to GeoPandas/Pandas/dictionaries, `ds["MY_NEW_VAR"] = ...`.
+* Remember, calculations are __element-wise__ just as in Numpy/Pandas; so no need for loops. The numbers (331.5, 0.6) are broadcasted to all elements in the data set to do the calculation.
+* To compare two variables in a data set visually, `plot.scatter()` it is.
 
 </details>    
     
 </div>
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+era5_renamed["speed_of_light_m_s"] = 331.5 + (0.6*era5_renamed["temperature_c"])
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+era5_renamed.plot.scatter("temperature_c", "speed_of_light_m_s", s=1, alpha=0.1)
+```
+
+```{code-cell} ipython3
+
+```
 
 ```{code-cell} ipython3
 
@@ -348,7 +376,6 @@ mapping = {
     "tp": "precipitation_m",
     "u10": "wind_ms"
 }
-
 era5_renamed = era5.rename(mapping)
 era5_renamed
 ```
