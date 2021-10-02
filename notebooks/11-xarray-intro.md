@@ -25,6 +25,7 @@ kernelspec:
 ```{code-cell} ipython3
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 ```
 
 ## Introduction
@@ -59,20 +60,28 @@ herstappe
 Or just rename the coordinate names itself:
 
 ```{code-cell} ipython3
-herstappe.rename({"x": "longitude", "y": "latitude"})
+herstappe.rename({"x": "easting", "y": "northing"})
 ```
 
-These __name dimensions__ can be used to extract (slice) data using these names making data selections very declarative:
+These __dimension coordinate names__ can be used to extract (slice) data making data selections very declarative:
 
 ```{code-cell} ipython3
 herstappe.sel(band='red')
 ```
 
+The data type of this `xarray.DataArray` `herstappe` is 'float32'. Xarray uses the data types provided by Numpy. More information on the data types Numpy supports is available in the [documentation](https://numpy.org/devdocs/user/basics.types.html#array-types-and-conversions-between-types).
+
+Converting to another data type is supported by `astype()` method:
+
+```{code-cell} ipython3
+herstappe.astype('float64')   # .nbytes
+```
+
 Using xarray:
 
-- Data stored as a Numpy arrays
-- Dimensions do have a name
-- The coordinates of each of the dimensions can represent geographical coordinates, categories, dates, ... instead of just an index
+- Data stored as a Numpy arrays.
+- Dimensions do have a coordinate with a name.
+- The coordinates of each of the dimensions can represent geographical coordinates, categories, dates, ... instead of just an index.
 
 +++
 
@@ -93,7 +102,7 @@ The [`xarray` package](xarray.pydata.org/en/stable/) introduces __labels__ in th
 Xarray’s labels make working with multidimensional data much easier:
 
 ```{code-cell} ipython3
-herstappe = xr.open_rasterio(data_file)
+herstappe = xr.open_rasterio(herstappe_file)
 herstappe = herstappe.assign_coords(band=("band", ["red", "green", "blue"]))
 ```
 
@@ -627,11 +636,22 @@ Process the images and create a plot of the NDVI:
 - Read both data sets and store them in resp. `b4_data` and `b8_data`. 
 - Transform the data range of each of the layers to the range .0 - 1.
 - Calculate the NDVI
-- Plot the NDVI and select an appropriate colormap.
+- Make a plot of the NDVI plot the data as such using the "Greens" colormap. 
+
+__IMPROVE THE COLORMAP__
+    
+Using these default plot settings, the NDVI visualisation is not very informative. Actually, whereas the range is [-1, 1], values of around 0.1 and below are not considered living plants. Consider two alternative methods to improve the colormap taking into account this information:
+    
+1. Normalize the data linearly into the range 0.1 to 0.8 and apply this normalization to the `imshow` while using the colormap `YlGn` (so values just above 0.1 are still yellow, whereas only higher values are green). Use the Matplotlib function `mcolors.Normalize` for the data normalization.
+2. To improve the contrast between vegetation versus no-vegetation, use a diverging colormap (`RdYlGn`) in combination with a [`TwoSlopeNorm`](https://matplotlib.org/stable/api/_as_gen/matplotlib.colors.TwoSlopeNorm.html) to normalize the data. Let the range vary from -0.1 till 0.8 with the center on 0.4.    
 
 <details><summary>Hints</summary>
 
-* For more specific adjustments to the colormap, have a check on the [Matplotlib documentation on colormap normalization](https://matplotlib.org/3.3.2/tutorials/colors/colormapnorms.html)
+* For more specific adjustments to the colormap, have a check on the [Matplotlib documentation on colormap normalization](https://matplotlib.org/3.3.2/tutorials/colors/colormapnorms.html). 
+* Check out the available normalization by exploring the `mcolors.` module of Matplotlib. 
+* The `imshow` method can accept a `norm` parameter to normalize the data.  
+* It is a two step process: 1/ define a normalization; 2/ pass the normalization to the `norm` parameter of the plot function.
+
 
 </details>   
            
@@ -659,17 +679,25 @@ b8_data = (b8_data - b8_data.min())/(b8_data.max() - b8_data.min())
 ndvi = (b8_data - b4_data)/(b8_data + b4_data)
 ```
 
-+++ {"clear_cell": false}
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
 
-Using a Matplotlib norm to adjust colormap influence on image https://matplotlib.org/api/_as_gen/matplotlib.colors.TwoSlopeNorm.html
+# As a quick reference, plot using the `"Greens"` colormap as such:
+fig, ax = plt.subplots(figsize=(14, 5))
+ll = ndvi.plot.imshow(ax=ax, cmap="Greens")
+ax.set_aspect("equal")
+```
 
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-# A Sequential colormap `YlGn` with a normalization on the color limits
+# A sequential colormap `YlGn` using a Matplotlib norm to adjust colormap influence on image 
+# https://matplotlib.org/stable/tutorials/colors/colormapnorms.html
 import matplotlib.colors as mcolors
-div_norm = mcolors.Normalize(0.1, 0.8)
+
 fig, ax = plt.subplots(figsize=(14, 5))
+
+div_norm = mcolors.Normalize(0.1, 0.8)
 ll = ndvi.plot.imshow(ax=ax, cmap="YlGn", norm=div_norm)
 ax.set_aspect("equal")
 ```
@@ -677,9 +705,12 @@ ax.set_aspect("equal")
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-# A Diverging colormap `RdYlGn` with a normalization on the color limits in two directions of the central point:
-div_norm = mcolors.TwoSlopeNorm(vmin=-0.1, vcenter=0.4, vmax=0.8)
+# A Diverging colormap `RdYlGn` with a normalization on the color limits in two directions of the central point - 
+# https://matplotlib.org/stable/api/_as_gen/matplotlib.colors.TwoSlopeNorm.html
 fig, ax = plt.subplots(figsize=(14, 5))
+
+div_norm = mcolors.TwoSlopeNorm(vmin=-0.1, vcenter=0.4, vmax=0.8)
+
 ll = ax.imshow(ndvi.values, cmap="RdYlGn", norm=div_norm)
 fig.colorbar(ll);
 ax.set_axis_off();
@@ -698,7 +729,7 @@ You want to reclassify the values of the 4th band data to a fixed set of classes
 Use the data set `./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff` (assign data to variable `b4_data`):
     
 * Read the data set and exclude the single-value dimension to end up with a 2D array. 
-* Convert to float data type. and normalize the values to the range `[0., 1.]`.
+* Convert to float data type and normalize the values to the range `[0., 1.]`.
 
 To reclassify the values, we can use the `np.digitize` function. This function return the indices of the bins to which each value in input array belongs. As such, it can be used to select and manipulate values containing to a specific bin.
     
@@ -708,7 +739,8 @@ To reclassify the values, we can use the `np.digitize` function. This function r
 
 <details><summary>Hints</summary>
 
-* The `np.digitize` function is indeed 
+* The `apply_ufunc` function requires as input another function (in this case `np.digitize`) and is a way to use [external functionalities within xarray](http://xarray.pydata.org/en/stable/user-guide/computation.html#wrapping-custom-computation).   
+* The `np.digitize` function would have as inputs the data `b4_data` and the bins to split the data, `[0.05, 0.1]`.
 
 </details>   
     
@@ -750,3 +782,5 @@ fig, ax = plt.subplots(figsize=(12, 5))
 img = b4_data_classified.plot.imshow(ax=ax, add_colorbar=False, interpolation="antialiased")
 fig.colorbar(img, values=[0, 1, 2], ticks=[0, 1, 2])
 ```
+
+__Note:__ When only interested in a discrete colormap for plotting, xarray provides the `levels` parameter whe plotting, see http://xarray.pydata.org/en/stable/user-guide/plotting.html#discrete-colormaps.
