@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.13.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -183,7 +183,7 @@ moisture_index_lazy.to_zarr("moisture_index_stacked.zarr")
 xr.open_dataset("moisture_index_stacked.zarr", engine="zarr")    
 ```
 
-_clean up of these examplefiles_
+_clean up of these example files_
 
 ```{code-cell} ipython3
 import shutil
@@ -221,7 +221,7 @@ We want to download the surface temperature data from 1990 till 2000 and combine
 <details>
     
 <summary>Hints</summary>
-    
+
 * Python works with string formatting, e.g. f'{base_url}.{year}.nc' will nicely create the required links.
 * Xarray can both work with file names on a computer as a compatible network link.
 * As the netcdf data provided by NOAA is already well structured and confomr, no further adjustments are required as input to the 
@@ -251,13 +251,13 @@ ds
 
 +++
 
-__Note__ _These dependencies are not included in the environment, to run this section, install the required packages first in your conda environment: `conda install stackstac sat-search`._
+__Note__ _These dependencies are not included in the environment, to run this section, install the required packages first in your conda environment: `conda install stackstac pystac-client=0.1.1`._
 
 +++
 
 Multiple initiatives do exist which publish data online which enables (lazy) loading of the data directly in xarray, such as [OpenDAP](https://www.opendap.org/) and [THREDDS](https://www.unidata.ucar.edu/software/tds/current/) which are well-known and used in the oceanographic and climate studies communities (see exercise). See for example the [ROMS Ocean Model Example](http://xarray.pydata.org/en/stable/examples/ROMS_ocean_model.html) tutorial of xarray. 
 
-Another initiative that interacts well with xarray is the [SpatioTemporal Asset Catalogs](https://stacspec.org/) specification, which is increasingly used to publish remote sensing products. 
+Another initiative that interacts well with xarray is the [SpatioTemporal Asset Catalogs](https://stacspec.org/) specification, which is increasingly used to publish remote sensing products.
 
 ```{code-cell} ipython3
 import stackstac
@@ -283,18 +283,18 @@ results.matched()
 ```
 
 ```{code-cell} ipython3
-results.get_all_items()[0]
+list(results.items())[0]
 ```
 
 ```{code-cell} ipython3
-stack = stackstac.stack(results.get_all_items())
+stacked = stackstac.stack(results.items_as_collection())
 ```
 
 ```{code-cell} ipython3
-stack
+stacked
 ```
 
-See also https://github.com/stac-utils/pystac-client and https://stackstac.readthedocs.io/en/latest/. 
+See also https://github.com/stac-utils/pystac-client and https://stackstac.readthedocs.io/en/latest/.
 
 +++
 
