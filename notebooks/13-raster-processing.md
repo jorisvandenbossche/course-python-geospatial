@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.13.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -369,7 +369,7 @@ img.axes.set_aspect("equal")
 
 **TIP**: <br>
     
-In the GIS world,also other libraries do provide a large set of functionalities as command line instructions with a `FILE IN` -> `RUN COMMAND` -> `FILE OUT` approach, with some of them providing a Python interface as well. Some important once are:
+In the GIS world, also other libraries do provide a large set of functionalities as command line instructions with a `FILE IN` -> `RUN COMMAND` -> `FILE OUT` approach, with some of them providing a Python interface as well. Some important once are:
     
 - The [`gdal` library](https://gdal.org/programs/index.html#raster-programs) is the open source Swiss Army knife for raster and vector geospatial data handling. 
 - The [SAGA GIS](http://www.saga-gis.org/en/index.html) has a [huge set](http://www.saga-gis.org/saga_tool_doc/8.0.0/a2z.html) of CLI commands, going from flow accumulation to classification algorithms.
@@ -432,7 +432,7 @@ We start with the Digital Elevation Model (DEM) for Flanders. The data is availa
 <details><summary>Hints</summary>
 
 * Rasterio can directly read from a zip-file. If one wants read the file `./data/gent/FILENAME.zip`, add the `zip://.data/gent/FILENAME.zip` to read the zip file directly.
-* The `CRS` is a class attribute, not a function, so no `()` required.
+* The `crs` is an attribute, not a function, so no `()` required.
 * Selecting in xarray is done with `sel`
 * We will improve the plot in the following exercises, but as a quick solution, we already learnt about the `robust=True` plot option of xarray. 
 * Just pick a color map that you like.
@@ -696,7 +696,7 @@ Such a reprojection can be done with the `reproject()` method by providing the t
 <details><summary>Hints</summary>
 
 * Check the help of the `.rio.reproject_match` method (SHIFT + TAB) to know which input ou need. For the sake of the exercise, pick any resampling algorithm or just the default (nearest) option.
-* The method is applied on the data to transofmr and he input parameter is the target to match.
+* The data calling the method is being transformed, and the input parameter is the target to match.
 
 </details>   
     
@@ -730,7 +730,7 @@ Let's find the preferential locations to live, assuming we want to be future-pro
     
 <details><summary>Hints</summary>
 
-* To select for multiple options, one can either combina multiple conditions using `|` (or) or us the `isin([...,...])` option, both will do.
+* To select for multiple options, one can either combine multiple conditions using `|` (or) or us the `isin([...,...])` option, both will do.
 * The output of a condition is a Boolean map that can be plot just like other maps, e.g. `(dem_gent > 10).plot.imshow()`.
 * Fo the `suitable_locations`, both boolean conditions need to be True, so combine them with either `&` or just multiply them with `*`.
 
@@ -828,7 +828,7 @@ We are interested in the big roads, as these are the ones we want to avoid: "Mot
 <details><summary>Hints</summary>
 
 * Selecting multiple options at the same time is most convenient with the `isin()` method.
-* Use the GeoPandas `.plot` method and use the `frc_omschrijving` columns to show.
+* Use the GeoPandas `.plot` method and specifh the `frc_omschrijving` column to the `column` parameter.
 
 </details>   
     
@@ -969,7 +969,7 @@ Make a plot with a background map of the selected locations.
 
 * The `fig, ax = plt.subplots(figsize=(15, 15))` is a convenient shortcut to prepare a Matplotlib Figure and Axes. 
 * Make sure to define the `crs="EPSG:31370"` for contextily.
-* `where(...)` is a powerfull way to exclude data as it - by default - adds Nan values for piels where the condition is not True.
+* `where(...)` is a powerfull way to exclude data as it - by default - adds NaN values for piels where the condition is not True.
 </details>   
     
 </div>
