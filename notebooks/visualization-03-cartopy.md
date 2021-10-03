@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.13.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -408,15 +408,15 @@ sst.plot(ax=ax, transform=ccrs.PlateCarree(),
          vmin=2, vmax=30, cbar_kwargs={'shrink': 0.4})
 ```
 
-## Add OGC WMS and WMTS services to cartopy 
+## Add OGC WMS and WMTS services to cartopy
 
 +++
 
-A lot of online map services are available, which are capable of providing background layers to a map similar as these are used in online applications. The [OGC WMS/WMTS](https://www.ogc.org/standards/wms) are important standards by which a lot of map layers are made available. 
+A lot of online map services are available, which are capable of providing background layers to a map similar as these are used in online applications. The [OGC WMS/WMTS](https://www.ogc.org/standards/wms) (Web Map Service) are important standards by which a lot of map layers are made available.
 
-A (non-official, but very comprehensive) list of services is made available by Michel Stuyts, see https://wms.michelstuyts.be. It is always a matter of finding the correct URL and the `layer_name` for a given service. 
+A (non-official, but very comprehensive) list of such services for Belgium is made available by Michel Stuyts, see https://wms.michelstuyts.be. It is always a matter of finding the correct URL and the `layer_name` for a given service.
 
-As an example, consider the Orthophoto WMS (provided by the National Geographic Institute): 
+As an example, consider the Orthophoto WMS (provided by the National Geographic Institute):
 
 - WMS: https://wms.ngi.be/inspire/ortho/service
 - GetCapabilities: https://wms.ngi.be/inspire/ortho/service?REQUEST=GetCapabilities&SERVICE=WMS
