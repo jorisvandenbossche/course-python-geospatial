@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.13.0
+    jupytext_version: 1.12.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -15,17 +15,15 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2020*
+> *October, 2021*
 >
-> *© 2020, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
-+++
++++ {"tags": []}
 
-In the previous notebooks, we mostly worked with either vector data or raster data. 
-But, often you will encounter both types of data and will have to combine them.
-In this notebook, we show *some* examples of raster/vector interactions.
+In the previous notebooks, we focused either on vector data or raster data. Often you encounter both types of data and want to combine them. In this notebook, we show *some* examples of typical raster/vector interactions.
 
 ```{code-cell} ipython3
 import pandas as pd
@@ -44,11 +42,9 @@ import matplotlib.pyplot as plt
 
 In the previous notebooks, we already used `rasterio` (https://rasterio.readthedocs.io/en/latest/) to read raster files such as GeoTIFFs (through the `xarray.open_rasterio()` function). Rasterio provides support for reading and writing geospatial raster data as numpy N-D arrays, mainly through bindings to the GDAL library. 
 
-In addition, rasterio provides a Python API to perform some GIS raster operations (clip, mask, warp, merge, transformation,...) and can be used to only load a subset of a large dataset into memory. However, the main complexity in using `rasterio`, is that the spatial information is decoupled from the data itself (i.e. the numpy array). This means that you need to keep track and organize the extent and metadata throughout the operations (e.g. the "transform") and you need to keep track of what each dimension represents (y-first, as arrays are organized along rows first). Notebook [12-rasterio.ipynb](12-rasterio.ipynb) goes into more depth on the rasterio package itself. 
+In addition, rasterio provides a Python API to perform some GIS raster operations (clip, mask, warp, merge, transformation,...) and can be used to only load a subset of a large dataset into memory. However, the main complexity in using `rasterio`, is that the spatial information is decoupled from the data itself (i.e. the numpy array). This means that you need to keep track and organize the extent and metadata throughout the operations (e.g. the "transform") and you need to keep track of what each dimension represents (y-first, as arrays are organized along rows first). Notebook [91_package_rasterio](./91_package_rasterio.ipynb) goes into more depth on the rasterio package itself. 
 
-
-
-Enter `rioxarray` (https://corteva.github.io/rioxarray/stable/index.html), which extends xarray with geospatial functionality powered by rasterio.
+Enter `rioxarray` (https://corteva.github.io/rioxarray/stable/index.html), which extends xarray with geospatial functionalities powered by rasterio.
 
 ```{code-cell} ipython3
 import rioxarray
@@ -153,10 +149,13 @@ clipped = data.rio.clip(herstappe_vect.geometry)
 ```
 
 ```{code-cell} ipython3
-fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(10,4))
-data.plot.imshow(ax=ax1)
+fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(10,4))
+data.plot.imshow(ax=ax0)
+herstappe_vect.plot(ax=ax0, facecolor="none", edgecolor="red")
+
+clipped.plot.imshow(ax=ax1)
 herstappe_vect.plot(ax=ax1, facecolor="none", edgecolor="red")
-clipped.plot.imshow(ax=ax2)
+
 fig.tight_layout()
 ```
 
@@ -184,7 +183,7 @@ with rasterio.open(data_file) as src:
         dest.write(out_image)
 ```
 
-The [12-rasterio.ipynb](12-rasterio.ipynb) notebook explains this workflow in more detail.
+The [91_package_rasterio](./91_package_rasterio.ipynb) notebook explains this workflow in more detail.
 
 One important difference, though, is that the above `rasterio` workflow will not load the full raster into memory when only loading (clipping) a small part of it. This can also be achieved in `rioxarray` with the `from_disk` keyword.
 
@@ -205,6 +204,8 @@ The digital elevation model (DEM) can be downloaded via the [governmental websit
 ```{code-cell} ipython3
 dem_zwalm_file = "data/DHMVIIDSMRAS5m_k30/GeoTIFF/DHMVIIDSMRAS5m_k30.tif"
 ```
+
+_Make sure you have downloaded the data set ([download link](https://downloadagiv.blob.core.windows.net/dhm-vlaanderen-ii-dsm-raster-5m/DHMVIIDSMRAS5m_k30.zip)), saved it in the `./data` subfolder and unzipped the folder_
 
 ```{code-cell} ipython3
 dem_zwalm = xr.open_rasterio(dem_zwalm_file).sel(band=1)
@@ -231,7 +232,11 @@ params = dict(service='WFS', version='1.1.0', request='GetFeature',
 r = requests.get(wfs_rivers, params=params)
 ```
 
-And convert this to a GeoDataFrame:
+__Note__: A WFS is a standardized way to share vector GIS data sets on the internet, typically also used by web application, see ['A bit more about WFS'](#a_bit_more_about_WFS) section for more info.
+
++++
+
+And convert the output of the wfs call to a GeoDataFrame:
 
 ```{code-cell} ipython3
 # Create GeoDataFrame from geojson
@@ -252,7 +257,7 @@ The catchment extent is much smaller than the DEM file, so clipping the data fir
 
 +++
 
-Let's first download the catchment area of the Zwalm river from the Flemish government:
+Let's first download the catchment area of the Zwalm river from the Flemish government (using WFS again):
 
 ```{code-cell} ipython3
 import json
@@ -352,11 +357,31 @@ rm ./dem_masked_gdal.tiff
 ```
 
 ```{code-cell} ipython3
+:tags: []
+
 clipped_gdal = rioxarray.open_rasterio("./dem_masked_gdal.tiff", masked=True).sel(band=1)
 img = clipped_gdal.plot.imshow(
     cmap="terrain", figsize=(10, 6), interpolation='antialiased')
 img.axes.set_aspect("equal")
 ```
+
+<div class="alert alert-info" style="font-size:120%">
+
+**TIP**: <br>
+    
+In the GIS world,also other libraries do provide a large set of functionalities as command line instructions with a `FILE IN` -> `RUN COMMAND` -> `FILE OUT` approach, with some of them providing a Python interface as well. Some important once are:
+    
+- The [`gdal` library](https://gdal.org/programs/index.html#raster-programs) is the open source Swiss Army knife for raster and vector geospatial data handling. 
+- The [SAGA GIS](http://www.saga-gis.org/en/index.html) has a [huge set](http://www.saga-gis.org/saga_tool_doc/8.0.0/a2z.html) of CLI commands, going from flow accumulation to classification algorithms.
+- The [WhiteboxTools](https://www.whiteboxgeo.com/geospatial-software/) is another example of a library with a lot of functionalities, e.g. hydrological, agricultural and terrain analysis tools.
+    
+Other important initiatives like [Grass](https://grasswiki.osgeo.org/wiki/GRASS-Wiki) and [PCRaster](https://pcraster.geo.uu.nl/) are worthwhile to check out. Most of these libraries of tools can also be used with QGIS.
+    
+__NOTE:__ You can run a CLI command inside a Jupyter Notebook by prefixing it with the `!` character.
+
+</div>
+
++++
 
 ## Convert vector to raster
 
@@ -383,15 +408,15 @@ img
 ```{code-cell} ipython3
 fig, (ax0, ax1) = plt.subplots(1, 2)
 ax0.imshow(img*50)
-ll = ax1.imshow(clipped.values - img*20, vmin=0, cmap="terrain") # just as an example
-plt.tight_layout()
+ax1.imshow(clipped.values - img*20, vmin=0, cmap="terrain") # just as an example
+fig.tight_layout()
 ```
 
 # Let's practice!
 
-For the exercises, we have a set of raster and vector datasets for the region of Ghent. Throughout the exercises, the goal is to map preferential locations to live given a set of conditions (certain level above sea-level, quiet and green neighbourhood, ..).
+For these exercises, a set of raster and vector datasets for the region of Ghent is available. Throughout the exercises, the goal is to map preferential locations to live given a set of conditions (certain level above sea-level, quiet and green neighbourhood, ..).
 
-We start with the Digital Elevation Model (DEM) for Flanders. The data is available at https://overheid.vlaanderen.be/informatie-vlaanderen/producten-diensten/digitaal-hoogtemodel-dhmv, and we downloaded the 25m resolution raster image, and provided a subset of this dataset as a zipped Tiff file in the course materials.
+We start with the Digital Elevation Model (DEM) for Flanders. The data is available at https://overheid.vlaanderen.be/informatie-vlaanderen/producten-diensten/digitaal-hoogtemodel-dhmv, We downloaded the 25m resolution raster image, and provided a subset of this dataset as a zipped Tiff file in the course material.
 
 +++
 
