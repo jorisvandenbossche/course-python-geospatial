@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.13.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -376,12 +376,8 @@ ax1.legend()
 
  <b>Remember</b>: 
 
- <ul>
-  <li>You can do anything with matplotlib, but at a cost... <a href="http://stackoverflow.com/questions/tagged/matplotlib">stackoverflow</a></li>
-      
-  <li>The preformatting of Pandas provides mostly enough flexibility for quick analysis and draft reporting. It is not for paper-proof figures or customization</li>
-</ul>
-<br>
+* You can do anything with matplotlib, but at a cost... <a href="http://stackoverflow.com/questions/tagged/matplotlib">stackoverflow</a>
+* The preformatting of Pandas provides mostly enough flexibility for quick analysis and draft reporting. It is not for paper-proof figures or customization
 
 If you take the time to make your perfect/spot-on/greatest-ever matplotlib-figure: Make it a <b>reusable function</b>!
 
@@ -457,7 +453,7 @@ fig.savefig('ammonium_concentration.png', dpi=150)
 
 +++
 
-# Need more matplotlib inspiration? 
+# Need more matplotlib inspiration?
 
 +++
 
@@ -470,9 +466,12 @@ For more in-depth material:
 
 <div class="alert alert-info" style="font-size:18px">
 
-**Remember**
+**Galleries!**
 
-- <a href="https://matplotlib.org/stable/gallery/index.html">matplotlib gallery</a> is an important resource to start from
-- Matplotlib has some great [cheat sheets](https://github.com/matplotlib/cheatsheets) available
+Galleries are great to get inspiration, see the plot you want, and check the code how it is created:
+    
+* [matplotlib gallery](http://matplotlib.org/gallery.html) is an important resource to start from
+* [seaborn gallery](https://seaborn.pydata.org/examples/index.html)
+* The Python Graph Gallery (https://python-graph-gallery.com/)
 
 </div>
