@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.13.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -80,7 +80,7 @@ herstappe.astype('float64')   # .nbytes
 Using xarray:
 
 - Data stored as a Numpy arrays.
-- Dimensions do have a coordinate with a name.
+- Dimensions do have a name.
 - The coordinates of each of the dimensions can represent geographical coordinates, categories, dates, ... instead of just an index.
 
 +++
