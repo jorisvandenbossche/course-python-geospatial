@@ -33,6 +33,7 @@ dependencies:
   - hvplot
   - geoviews
   - datashader
+  - cmocean 
   - pygeoprocessing
   - zarr
   - h5netcdf
@@ -41,4 +42,3 @@ dependencies:
   - pooch
   - rioxarray
   - xarray-spatial
-
