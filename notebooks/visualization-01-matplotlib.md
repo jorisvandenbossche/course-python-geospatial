@@ -69,22 +69,6 @@ There is no limit on the number of Axes artists which can exist on a Figure arti
 ax = plt.axes()
 ```
 
-```{code-cell} ipython3
-fig.set_t
-```
-
-```{code-cell} ipython3
-type(ax)
-```
-
-```{code-cell} ipython3
-type(ax.xaxis), type(ax.yaxis)
-```
-
-```{code-cell} ipython3
-ax.xaxis.set_tic
-```
-
 Matplotlib's ``pyplot`` module makes the process of creating graphics easier by allowing us to skip some of the tedious Artist construction. For example, we did not need to manually create the Figure artist with ``plt.figure`` because it was implicit that we needed a figure when we created the Axes artist.
 
 Under the hood matplotlib still had to create a Figure artist, its just we didn't need to capture it into a variable.
