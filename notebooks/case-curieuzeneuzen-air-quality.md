@@ -6,7 +6,7 @@ jupytext:
     format_version: 0.13
     jupytext_version: 1.12.0
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 ---
@@ -15,9 +15,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2020*
+> *October, 2021*
 >
-> *© 2020, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -34,6 +34,7 @@ In this case study, we are going to make use of the data collected across Flande
 <img src="../img/CN_measurement_setup.png" alt="Measurement panel" style="width:800px">
 
 ```{code-cell} ipython3
+import numpy as np
 import pandas as pd
 import geopandas
 
@@ -158,7 +159,7 @@ ax.axvline(x=40, color='C3', linewidth=3)
 
 * Determine the percentage of locations that exceed the EU and WHO yearly limit value of 40 µg/m³.
 
-Tip: first create a boolean mask determining whether the NO2 concentration is above 40 or not. Using this boolean mask, you can determine the percentage of values that follow the condition.
+__Tip__: first create a boolean mask determining whether the NO2 concentration is above 40 or not. Using this boolean mask, you can determine the percentage of values that follow the condition.
     
 <details><summary>Hints</summary>
 
@@ -524,26 +525,9 @@ The air quality is indirectly linked to land use, as the presence of pollution s
 
 **EXERCISE**:
 
-* Open the land cover raster file (`data/CLC2018_V2020_20u1_flanders.tif`) with rasterio or xarray, inspect the metadata, and do a quick visualization.
+* Open the land cover raster file (`data/CLC2018_V2020_20u1_flanders.tif`) with xarray, inspect the metadata, and do a quick visualization.
 
 </div>
-
-+++
-
-With rasterio:
-
-```{code-cell} ipython3
-:tags: [nbtutor-solution]
-
-import rasterio
-import rasterio.plot
-
-with rasterio.open("data/CLC2018_V2020_20u1_flanders.tif") as src:
-    print(src.meta)
-    rasterio.plot.show(src)
-```
-
-With xarray:
 
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
@@ -623,7 +607,10 @@ gdf['land_use'] = rasterstats.point_query(gdf_raster.geometry, "data/CLC2018_V20
 gdf['land_use'].value_counts()
 ```
 
-As you can see, we have obtained a large variety of land cover classes. To make this more practical to work with, we a) want to convert the numbers into a class name, and b) reduce the number of classes.
+As you can see, we have obtained a large variety of land cover classes. To make this more practical to work with, we 
+
+ 1. want to convert the numbers into a class name, and 
+ 2. reduce the number of classes.
 
 The full hierarchy (with 3 levels) of the 44 classes can be seen at https://wiki.openstreetmap.org/wiki/Corine_Land_Cover. For keeping the exercise a bit practical here, we prepared a simplified set of classes and provided a csv file with this information.  
 
@@ -683,18 +670,26 @@ We can see in the `value_counts()` result  above that we have a few classes with
 </div>
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 counts = gdf['land_use_class'].value_counts()
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 frequent_categories = counts[counts > 50].index
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 subset = gdf[gdf["land_use_class"].isin(frequent_categories)]
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 subset.groupby("land_use_class")['no2'].mean()
 ```
 
@@ -903,7 +898,7 @@ streets.plot()
 streets.plot(column="highway", figsize=(20, 20), legend=True, cmap="tab20")
 ```
 
-(Note: for interactively exploring such data, there are better solutions as the GeoPandas `.plot()` method, such as opening the data in QGIS, or using an interactive visualization library)
+(Note: for interactively exploring such data, there are better solutions as the GeoPandas `.plot()` method, such as opening the data in QGIS, or using an interactive visualization library, see notebook [visualization-04-interactive](./visualization-04-interactive.ipynb)).
 
 To relate the measured concentration with the road type, we want to determine for each location at what type of street it is located. Since the measurements are not exactly located on one of the lines, we are going to look at the closest street for each location.
 
