@@ -413,20 +413,28 @@ We start with the Digital Elevation Model (DEM) for Flanders. The data is availa
 </div>
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 dem = rioxarray.open_rasterio("zip://./data/gent/DHMVIIDTMRAS25m.zip")
 dem
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 dem.rio.crs
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 dem = rioxarray.open_rasterio("zip://./data/gent/DHMVIIDTMRAS25m.zip").sel(band=1)
 dem
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 dem.plot.imshow()
 ```
 
@@ -449,18 +457,26 @@ The dataset uses a large negative value to denote the "nodata" value (in this ca
 </div>
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 dem.rio.nodata
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 dem.plot.imshow(vmin=0)
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 dem_masked = dem.where(dem != dem.rio.nodata)
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 dem_masked.plot.imshow()
 ```
 
@@ -496,18 +512,26 @@ We want to limit our search for locations to the surroundings of the centre of G
 </div>
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 from shapely.geometry import Point
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 gent_centre = Point(3.721741, 51.053932)
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 gent_centre_31370 = geopandas.GeoSeries([gent_centre], crs="EPSG:4326").to_crs("EPSG:31370")
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 gent_bounds = gent_centre_31370.buffer(10*1000).total_bounds
 # or first extracting the Point again:
 # gent_bounds = gent_centre_31370[0].buffer(10*1000).bounds
@@ -532,11 +556,15 @@ With this bounding box, we can now clip a subset of the DEM raster for the area 
 </div>
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 dem_gent = dem.rio.clip_box(*gent_bounds)
 dem_gent
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 img = dem_gent.plot.imshow(
     cmap="terrain", figsize=(10, 10), interpolation='antialiased', vmin=0, vmax=30)
 img.axes.set_aspect("equal")
@@ -567,19 +595,27 @@ The data for the whole of Europe can be downloaded from the website (latest vers
 </div>
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 land_use = rioxarray.open_rasterio("data/CLC2018_V2020_20u1_flanders.tif").sel(band=1)
 land_use
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 land_use.plot.imshow(vmin=0)
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 land_use.rio.resolution()
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 land_use.rio.crs
 ```
 
@@ -600,11 +636,15 @@ The land use dataset is a European dataset and using a Europe-wide projected CRS
 </div>
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 land_use_reprojected = land_use.rio.reproject(dem_gent.rio.crs)
 land_use_reprojected
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 land_use_reprojected.plot.imshow(vmin=0)
 ```
 
@@ -628,10 +668,14 @@ Such a reprojection can be done with the `reproject()` method by providing the t
 </div>
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 land_use_gent = land_use.rio.reproject_match(dem_gent)
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 land_use_gent.plot.imshow()
 ```
 
@@ -658,23 +702,33 @@ Let's find the preferential locations to live assuming we want to be future-proo
 </div>
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 land_use_residential = (land_use_gent == 1) | (land_use_gent == 2)
 land_use_residential
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 land_use_residential.plot.imshow()
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 (dem_gent > 10).plot.imshow()
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 suitable_locations = land_use_residential * (dem_gent > 10)
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 suitable_locations.plot.imshow()
 ```
 
@@ -698,14 +752,20 @@ We downloaded the road segments open data from Ghent (https://data.stad.gent/exp
 </div>
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 roads = geopandas.read_file("./data/gent/vector/wegsegmenten-gent.geojson.zip")
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 roads.head()
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 roads["frc_omschrijving"].value_counts()
 ```
 
@@ -735,10 +795,14 @@ road_types = [
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 roads_subset = roads[roads["frc_omschrijving"].isin(road_types)].copy()
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 roads_subset.plot(column="frc_omschrijving", figsize=(10, 10), legend=True)
 ```
 
@@ -768,11 +832,15 @@ buffer_per_roadtype = {
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 buffers = roads_subset["frc_omschrijving"].replace(buffer_per_roadtype)
 buffers
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 roads_buffer = roads_subset.to_crs("EPSG:31370").buffer(buffers)
 roads_buffer.plot()
 ```
@@ -801,6 +869,8 @@ import rasterio.features
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 roads_buffer_arr = rasterio.features.rasterize(
     roads_buffer.geometry, 
     out_shape=dem_gent.shape, 
@@ -808,18 +878,26 @@ roads_buffer_arr = rasterio.features.rasterize(
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 1 - roads_buffer_arr
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 plt.imshow(1 - roads_buffer_arr)
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 suitable_locations = land_use_residential * (dem_gent > 10) * (1 - roads_buffer_arr)
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 suitable_locations.plot.imshow()
 ```
 
@@ -849,6 +927,8 @@ gent = geopandas.read_file("data/gent/vector/gent.geojson")
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 fig, ax = plt.subplots(figsize=(15, 15))
 gent.to_crs("EPSG:31370").plot(ax=ax, alpha=0.1)
 contextily.add_basemap(ax, crs="EPSG:31370")
@@ -879,22 +959,23 @@ We downloaded the data about urban green areas in Ghent (https://data.stad.gent/
 </div>
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 green = geopandas.read_file("data/gent/vector/parken-gent.geojson")
+green.head()
 ```
 
 ```{code-cell} ipython3
-green
-```
+:tags: [nbtutor-solution]
 
-```{code-cell} ipython3
 green.plot()
 ```
 
 ```{code-cell} ipython3
-import rasterio.features
-```
+:tags: [nbtutor-solution]
 
-```{code-cell} ipython3
+import rasterio.features
+
 green_arr = rasterio.features.rasterize(
     green.to_crs("EPSG:31370").geometry, 
     out_shape=dem_gent.shape, 
@@ -902,10 +983,14 @@ green_arr = rasterio.features.rasterize(
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 green_arr = xr.DataArray(green_arr, coords=dem_gent.coords)
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 green_arr.plot.imshow()
 ```
 
@@ -941,11 +1026,15 @@ kernel = convolution.circle_kernel(x, y, 500)
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 %%time
 green_area = focal.focal_stats(green_arr, kernel, stats_funcs=["sum"])
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 green_area.sel(stats="sum").plot.imshow()
 ```
 
@@ -956,11 +1045,15 @@ from scipy import signal
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 %%time
 green_area_arr = signal.convolve(green_arr, kernel, mode='same')
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 xr.DataArray(green_area_arr, coords=dem_gent.coords).plot.imshow(vmin=0)
 ```
 
@@ -982,10 +1075,14 @@ Make a plot with a background map of the selected locations.
 </div>
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 green_area10 = green_area.sel(stats="sum").where(green_area.sel(stats="sum") > 10, 0)
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 suitable_locations = land_use_residential * (dem_gent > 10) * (1 - roads_buffer_arr) * green_area10
 ```
 
@@ -998,6 +1095,8 @@ gent = geopandas.read_file("data/gent/vector/gent.geojson")
 ```
 
 ```{code-cell} ipython3
+:tags: []
+
 fig, ax = plt.subplots(figsize=(10, 10))
 gent.to_crs("EPSG:31370").plot(ax=ax, alpha=0.1)
 ax.set(ylim=(190_000, 200_000), xlim=(100_000, 110_000))
