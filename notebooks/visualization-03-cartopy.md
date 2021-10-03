@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.13.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -406,6 +406,69 @@ ax.coastlines()
 ax.gridlines()
 sst.plot(ax=ax, transform=ccrs.PlateCarree(),
          vmin=2, vmax=30, cbar_kwargs={'shrink': 0.4})
+```
+
+## Add OGC WMS and WMTS services to cartopy
+
++++
+
+A lot of online map services are available, which are capable of providing background layers to a map similar as these are used in online applications. The [OGC WMS/WMTS](https://www.ogc.org/standards/wms) (Web Map Service) are important standards by which a lot of map layers are made available.
+
+A (non-official, but very comprehensive) list of such services for Belgium is made available by Michel Stuyts, see https://wms.michelstuyts.be. It is always a matter of finding the correct URL and the `layer_name` for a given service.
+
+As an example, consider the Orthophoto WMS (provided by the National Geographic Institute):
+
+- WMS: https://wms.ngi.be/inspire/ortho/service
+- GetCapabilities: https://wms.ngi.be/inspire/ortho/service?REQUEST=GetCapabilities&SERVICE=WMS
+
+With the following layers available (see website Stuyts or GetCapabilities overview):
+
+- orthoimage_coverage: Orthoimage coverage
+- orthoimage_coverage_2016: Orthoimage coverage - 2016
+- orthoimage_coverage_2018: Orthoimage coverage - 2018
+
+Let's use the `orthoimage_coverage` incombination with our city of Ghent contours data set:
+
+```{code-cell} ipython3
+base_uri = 'https://wms.ngi.be/inspire/ortho/service'
+layer_name = 'orthoimage_coverage'
+
+plain_crs = ccrs.Mercator()
+fig, ax = plt.subplots(subplot_kw={"projection": plain_crs}, figsize=(10, 10))
+ax.set_extent([3.57, 3.85, 50.98, 51.19], crs=ccrs.PlateCarree())
+
+# Add WMS imaging.
+ax.add_wms(base_uri, layers=layer_name)
+
+# Add city of Ghent boundary from file
+gent = geopandas.read_file("./data/gent/vector/gent.geojson")
+gent = gent.to_crs(plain_crs.proj4_init)  # adjust to projection
+gent.plot(ax=ax, facecolor="none", edgecolor="white", linewidth=2)
+```
+
+Someone interested in flood control, might want to know the sensitive areas for inundation in this area. Looking in the available services, https://inspirepub.waterinfo.be/arcgis/rest/services/overstroombaargebied/MapServer/WMTS/1.0.0/WMTSCapabilities.xml has the available layer `overstroombaargebied: overstroombaargebied` (dutch for inundation sensitive area).
+
+Hence, we can combine this WMTS layer into the map as well:
+
+```{code-cell} ipython3
+plain_crs = ccrs.Mercator()
+fig, ax = plt.subplots(subplot_kw={"projection": plain_crs}, figsize=(10, 10))
+ax.set_extent([3.57, 3.85, 50.98, 51.19], crs=ccrs.PlateCarree())
+
+# Add WMS imaging of ortophoto.
+base_uri = 'https://wms.ngi.be/inspire/ortho/service'
+layer_name = 'orthoimage_coverage'
+ax.add_wms(base_uri, layers=layer_name)
+
+# Add WMTS of sensitive areas for inundation.
+base_uri = 'https://inspirepub.waterinfo.be/arcgis/rest/services/archief/Overstromingsgevoelige_gebieden_2006/MapServer/WMTS'
+layer_name = 'archief_Overstromingsgevoelige_gebieden_2006'
+ax.add_wmts(base_uri, layer_name=layer_name, alpha=0.8)
+
+# Add city of Ghent boundary from file
+gent = geopandas.read_file("./data/gent/vector/gent.geojson")
+gent = gent.to_crs(plain_crs.proj4_init)  # adjust to projection
+gent.plot(ax=ax, facecolor="none", edgecolor="#433d78", linewidth=2)
 ```
 
 ## Doing More

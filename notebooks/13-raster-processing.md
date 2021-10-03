@@ -4,9 +4,9 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.13.0
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 ---
@@ -15,17 +15,15 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2020*
+> *October, 2021*
 >
-> *© 2020, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
-+++
++++ {"tags": []}
 
-In the previous notebooks, we mostly worked with either vector data or raster data. 
-But, often you will encounter both types of data and will have to combine them.
-In this notebook, we show *some* examples of raster/vector interactions.
+In the previous notebooks, we focused either on vector data or raster data. Often you encounter both types of data and want to combine them. In this notebook, we show *some* examples of typical raster/vector interactions.
 
 ```{code-cell} ipython3
 import pandas as pd
@@ -38,17 +36,15 @@ import xarray as xr
 import matplotlib.pyplot as plt
 ```
 
-## `rioxarray`: xarray extension based on rasterio
+# `rioxarray`: xarray extension based on rasterio
 
 +++
 
 In the previous notebooks, we already used `rasterio` (https://rasterio.readthedocs.io/en/latest/) to read raster files such as GeoTIFFs (through the `xarray.open_rasterio()` function). Rasterio provides support for reading and writing geospatial raster data as numpy N-D arrays, mainly through bindings to the GDAL library. 
 
-In addition, rasterio provides a Python API to perform some GIS raster operations (clip, mask, warp, merge, transformation,...) and can be used to only load a subset of a large dataset into memory. However, the main complexity in using `rasterio`, is that the spatial information is decoupled from the data itself (i.e. the numpy array). This means that you need to keep track and organize the extent and metadata throughout the operations (e.g. the "transform") and you need to keep track of what each dimension represents (y-first, as arrays are organized along rows first). Notebook [12-rasterio.ipynb](12-rasterio.ipynb) goes into more depth on the rasterio package itself. 
+In addition, rasterio provides a Python API to perform some GIS raster operations (clip, mask, warp, merge, transformation,...) and can be used to only load a subset of a large dataset into memory. However, the main complexity in using `rasterio`, is that the spatial information is decoupled from the data itself (i.e. the numpy array). This means that you need to keep track and organize the extent and metadata throughout the operations (e.g. the "transform") and you need to keep track of what each dimension represents (y-first, as arrays are organized along rows first). Notebook [91_package_rasterio](./91_package_rasterio.ipynb) goes into more depth on the rasterio package itself. 
 
-
-
-Enter `rioxarray` (https://corteva.github.io/rioxarray/stable/index.html), which extends xarray with geospatial functionality powered by rasterio.
+Enter `rioxarray` (https://corteva.github.io/rioxarray/stable/index.html), which extends xarray with geospatial functionalities powered by rasterio.
 
 ```{code-cell} ipython3
 import rioxarray
@@ -65,7 +61,7 @@ data
 
 The `rioxarray.open_rasterio` function is similar to `xarray.open_rasterio`, but in addition adds a `spatial_ref` coordinate to keep track of the spatial reference information.
 
-Once `rioxarray` is imported, it also provides a `.rio` accessor on the xarray.DataArray object, which gives access to some properties of the raster data:
+Once `rioxarray` is imported, it provides a `.rio` accessor on the xarray.DataArray object, which gives access to some properties of the raster data:
 
 ```{code-cell} ipython3
 data.rio.crs
@@ -83,11 +79,29 @@ data.rio.resolution()
 data.rio.nodata
 ```
 
-It provides a handy method to reproject a raster:
+```{code-cell} ipython3
+data.rio.transform()
+```
+
+## Reprojecting rasters
+
++++
+
+`rioxarray` gives access to a set of raster processing functions from rasterio/GDAL. 
+
+One of those is to reproject (transform and resample) rasters, for example to reproject to different coordinate reference system, up/downsample to a different resolution, etc. In all those case, in the transformation of a source raster to a destination raster, pixel values need to be recalculated. There are different "resampling" methods this can be done: taking the nearest pixel value, calculating the average, a (non-)linear interpolation, etc.
+
+The functionality is available through the `reproject()` method. Let's start with reprojecting the Herstappe tiff to a different CRS:
+
+```{code-cell} ipython3
+data.rio.crs
+```
 
 ```{code-cell} ipython3
 data.rio.reproject("EPSG:31370").plot.imshow(figsize=(10,6))
 ```
+
+The default resampling method is "nearest", which is often not a suitable method (especially for continuous data). We can change the method using the `rasterio.enums.Resampling` enumeration (see [docs](https://rasterio.readthedocs.io/en/latest/api/rasterio.enums.html#rasterio.enums.Resampling) for a overview of all methods):
 
 ```{code-cell} ipython3
 from rasterio.enums import Resampling
@@ -97,7 +111,7 @@ from rasterio.enums import Resampling
 data.rio.reproject("EPSG:31370", resampling=Resampling.bilinear).plot.imshow(figsize=(10,6))
 ```
 
-Or downsample at the same time:
+The method can also be used to downsample at the same time:
 
 ```{code-cell} ipython3
 data.rio.reproject(data.rio.crs, resolution=120, resampling=Resampling.cubic).plot.imshow(figsize=(10,6))
@@ -135,10 +149,13 @@ clipped = data.rio.clip(herstappe_vect.geometry)
 ```
 
 ```{code-cell} ipython3
-fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(10,4))
-data.plot.imshow(ax=ax1)
+fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(10,4))
+data.plot.imshow(ax=ax0)
+herstappe_vect.plot(ax=ax0, facecolor="none", edgecolor="red")
+
+clipped.plot.imshow(ax=ax1)
 herstappe_vect.plot(ax=ax1, facecolor="none", edgecolor="red")
-clipped.plot.imshow(ax=ax2)
+
 fig.tight_layout()
 ```
 
@@ -166,7 +183,7 @@ with rasterio.open(data_file) as src:
         dest.write(out_image)
 ```
 
-The [12-rasterio.ipynb](12-rasterio.ipynb) notebook explains this workflow in more detail.
+The [91_package_rasterio](./91_package_rasterio.ipynb) notebook explains this workflow in more detail.
 
 One important difference, though, is that the above `rasterio` workflow will not load the full raster into memory when only loading (clipping) a small part of it. This can also be achieved in `rioxarray` with the `from_disk` keyword.
 
@@ -187,6 +204,8 @@ The digital elevation model (DEM) can be downloaded via the [governmental websit
 ```{code-cell} ipython3
 dem_zwalm_file = "data/DHMVIIDSMRAS5m_k30/GeoTIFF/DHMVIIDSMRAS5m_k30.tif"
 ```
+
+_Make sure you have downloaded the data set ([download link](https://downloadagiv.blob.core.windows.net/dhm-vlaanderen-ii-dsm-raster-5m/DHMVIIDSMRAS5m_k30.zip)), saved it in the `./data` subfolder and unzipped the folder_
 
 ```{code-cell} ipython3
 dem_zwalm = xr.open_rasterio(dem_zwalm_file).sel(band=1)
@@ -213,7 +232,11 @@ params = dict(service='WFS', version='1.1.0', request='GetFeature',
 r = requests.get(wfs_rivers, params=params)
 ```
 
-And convert this to a GeoDataFrame:
+__Note__: A WFS is a standardized way to share vector GIS data sets on the internet, typically also used by web application, see ['A bit more about WFS'](#a_bit_more_about_WFS) section for more info.
+
++++
+
+And convert the output of the wfs call to a GeoDataFrame:
 
 ```{code-cell} ipython3
 # Create GeoDataFrame from geojson
@@ -234,7 +257,7 @@ The catchment extent is much smaller than the DEM file, so clipping the data fir
 
 +++
 
-Let's first download the catchment area of the Zwalm river from the Flemish government:
+Let's first download the catchment area of the Zwalm river from the Flemish government (using WFS again):
 
 ```{code-cell} ipython3
 import json
@@ -334,13 +357,33 @@ rm ./dem_masked_gdal.tiff
 ```
 
 ```{code-cell} ipython3
+:tags: []
+
 clipped_gdal = rioxarray.open_rasterio("./dem_masked_gdal.tiff", masked=True).sel(band=1)
 img = clipped_gdal.plot.imshow(
     cmap="terrain", figsize=(10, 6), interpolation='antialiased')
 img.axes.set_aspect("equal")
 ```
 
-### Convert vector to raster
+<div class="alert alert-info" style="font-size:120%">
+
+**TIP**: <br>
+    
+In the GIS world, also other libraries do provide a large set of functionalities as command line instructions with a `FILE IN` -> `RUN COMMAND` -> `FILE OUT` approach, with some of them providing a Python interface as well. Some important once are:
+    
+- The [`gdal` library](https://gdal.org/programs/index.html#raster-programs) is the open source Swiss Army knife for raster and vector geospatial data handling. 
+- The [SAGA GIS](http://www.saga-gis.org/en/index.html) has a [huge set](http://www.saga-gis.org/saga_tool_doc/8.0.0/a2z.html) of CLI commands, going from flow accumulation to classification algorithms.
+- The [WhiteboxTools](https://www.whiteboxgeo.com/geospatial-software/) is another example of a library with a lot of functionalities, e.g. hydrological, agricultural and terrain analysis tools.
+    
+Other important initiatives like [Grass](https://grasswiki.osgeo.org/wiki/GRASS-Wiki) and [PCRaster](https://pcraster.geo.uu.nl/) are worthwhile to check out. Most of these libraries of tools can also be used with QGIS.
+    
+__NOTE:__ You can run a CLI command inside a Jupyter Notebook by prefixing it with the `!` character.
+
+</div>
+
++++
+
+## Convert vector to raster
 
 +++
 
@@ -365,11 +408,745 @@ img
 ```{code-cell} ipython3
 fig, (ax0, ax1) = plt.subplots(1, 2)
 ax0.imshow(img*50)
-ll = ax1.imshow(clipped.values - img*20, vmin=0, cmap="terrain") # just as an example
-plt.tight_layout()
+ax1.imshow(clipped.values - img*20, vmin=0, cmap="terrain") # just as an example
+fig.tight_layout()
 ```
 
-## Extracting values from rasters based on vector data
+## Let's practice!
+
+For these exercises, a set of raster and vector datasets for the region of Ghent is available. Throughout the exercises, the goal is to map preferential locations to live given a set of conditions (certain level above sea-level, quiet and green neighbourhood, ..).
+
+We start with the Digital Elevation Model (DEM) for Flanders. The data is available at https://overheid.vlaanderen.be/informatie-vlaanderen/producten-diensten/digitaal-hoogtemodel-dhmv, We downloaded the 25m resolution raster image, and provided a subset of this dataset as a zipped Tiff file in the course material.
+
++++
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+* Read the DEM using `rioxarray`. The zip file is available at `data/gent/DHMVIIDTMRAS25m.zip"`. You can either unzip the file, and use the path to the unzipped file, or prepend `zip://` to the path. 
+* What is the CRS of this dataset?
+* The dataset has a third dimension with a single band. This doesn't work for plotting, so create a new `DataArray` by selecting the single band. Assign the result to a variable `dem`.
+* Make a quick plot of the dataset.
+
+<details><summary>Hints</summary>
+
+* Rasterio can directly read from a zip-file. If one wants read the file `./data/gent/FILENAME.zip`, add the `zip://.data/gent/FILENAME.zip` to read the zip file directly.
+* The `crs` is an attribute, not a function, so no `()` required.
+* Selecting in xarray is done with `sel`
+* We will improve the plot in the following exercises, but as a quick solution, we already learnt about the `robust=True` plot option of xarray. 
+* Just pick a color map that you like.
+
+</details>   
+    
+</div>
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+dem = rioxarray.open_rasterio("zip://./data/gent/DHMVIIDTMRAS25m.zip")
+dem
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+dem.rio.crs
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+dem = rioxarray.open_rasterio("zip://./data/gent/DHMVIIDTMRAS25m.zip").sel(band=1)
+dem
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+dem.plot.imshow(robust=True, cmap="terrain")
+```
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+The dataset uses a large negative value to denote the "nodata" value (in this case meaning "outside of Flanders").
+    
+* Check the value that is used as "nodata" value.
+* Repeat the plot from the previous exercise, but now set a fixed minimum value of 0 for the colorbar, to ignore the negative "nodata" in the color scheme.
+* Replace the "nodata" value with `np.nan` using the `where()` method. 
+    
+<details><summary>Hints</summary>
+
+* The `nodata` attribute is provided by the rioxarray package. Rioxarray loads this information from the geotiff file metadata and makes it available as `.rio.nodata`. 
+* The `.rio.nodata` is a class attribute, not a function, so no `()` required.
+* `vmin` and `vmax` define the colormap limits.
+* `ẁhere` expects a condition (i.e. boolean values), e.g. `... != dem.rio.nodata`.
+</details>   
+    
+</div>
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+dem.rio.nodata
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+dem.plot.imshow(robust=True, vmin=0, cmap="terrain")
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+dem_masked = dem.where(dem != dem.rio.nodata)
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+dem_masked.plot.imshow(robust=True, cmap="terrain")
+```
+
+Alternatively to masking the nodata value yourself, you can do this directly when loading the data as well, using the `masked=True` keyword of `open_rasterio()`:
+
+```{code-cell} ipython3
+dem_masked = rioxarray.open_rasterio("zip://./data/gent/DHMVIIDTMRAS25m.zip", masked=True).sel(band=1)
+```
+
+```{code-cell} ipython3
+dem_masked.plot.imshow(robust=True, cmap="terrain")
+```
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+We want to limit our search for locations to the surroundings of the centre of Ghent.
+
+* Create a `Point` object for the centre of Ghent. Latitude/longitude coordinates for the Korenmarkt are: 51.05393, 3.72174
+* We need our point in the same Coordinate Reference System as the DEM raster (i.e. EPSG:31370, or Belgian Lambert 72). Use GeoPandas to reproject the point:
+    * Create a GeoSeries with this single point and specify its CRS with the `crs` keyword.
+    * Reproject this series with the `to_crs` method. Assign the resulting GeoSeries to a variable `gent_centre_31370`.
+* Calculcate a buffer of 10km radius around the point.
+* Get the bounding box coordinates of this buffer. Assign this to `gent_bounds`.
+    
+<details><summary>Hints</summary>
+
+* Remember the introduction on geospatial data and the shapely objects, e.g. `shapely.geometry.Point`?
+* Use `geopandas.GeoSeries` to create a new GeoSeries and add the `crs` parameter. The lat/lon of the Kornmarkt are provided as EPSG:4326. 
+* In EPSG:31370, the unit is meter, so make sure to use meter to define the buffer size.
+* `.total_bounds` is a class attribute.
+
+</details>   
+    
+</div>
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+from shapely.geometry import Point
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+gent_centre = Point(3.72174, 51.05393)
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+gent_centre_31370 = geopandas.GeoSeries([gent_centre], crs="EPSG:4326").to_crs("EPSG:31370")
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+gent_bounds = gent_centre_31370.buffer(10*1000).total_bounds
+# or first extracting the Point again:
+# gent_bounds = gent_centre_31370[0].buffer(10*1000).bounds
+gent_bounds
+```
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+With this bounding box, we can now clip a subset of the DEM raster for the area of interest. 
+    
+* Clip the `dem` raster layer. To clip with a bounding box instead of a geometry, you can use the `rio.clip_box()` method instead of `rio.clip()`.
+* Make a plot. Use the "terrain" color map, and set the bounds of the color scale to 0 - 30.
+
+<details><summary>Hints</summary>
+
+* The `gent_bounds` is an array of 4 elements, whereas `clip_box` requires these as seperate input parameters... Did you know that in Python you can unpack these 4 values with the `*`: `*gent_bounds` will unpack to 4 individual input.
+
+</details>   
+    
+</div>
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+dem_gent = dem.rio.clip_box(*gent_bounds)
+dem_gent
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+img = dem_gent.plot.imshow(
+    cmap="terrain", figsize=(10, 10), interpolation='antialiased', vmin=0, vmax=30)
+img.axes.set_aspect("equal")
+```
+
+The CORINE Land Cover (https://land.copernicus.eu/pan-european/corine-land-cover) is a program by the European Environment Agency (EEA) to provide an inventory of land cover in 44 classes of the European Union. The data is provided in both raster as vector format and with a resolution of 100m.
+
+The data for the whole of Europe can be downloaded from the website (latest version: https://land.copernicus.eu/pan-european/corine-land-cover/clc2018?tab=download). This is however a large dataset, so we downloaded the raster file and cropped it to cover Flanders, and this subset is included in the repo as `data/CLC2018_V2020_20u1_flanders.tif` (the code to do this cropping can be see at [data/preprocess_data.ipynb#CORINE-Land-Cover](data/preprocess_data.ipynb#CORINE-Land-Cover)).
+
++++
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+* Read the land use data provided as a tif (`data/CLC2018_V2020_20u1_flanders.tif`). 
+* Make a quick plot. The raster is using a negative value as "nodata", consider using the `robust=True` option.
+* What is the resolution of this raster?
+* What is the CRS?
+
+<details><summary>Hints</summary>
+
+* `rio.resolution()` is a method, so it requires the `()`.
+* `rio.crs` is an attribute, so it does not require the `()`.
+
+</details>   
+    
+</div>
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+land_use = rioxarray.open_rasterio("data/CLC2018_V2020_20u1_flanders.tif").sel(band=1)
+land_use
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+land_use.plot.imshow(robust=True)
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+land_use.rio.resolution()
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+land_use.rio.crs
+```
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+The land use dataset is a European dataset and uses a Europe-wide projected CRS (https://epsg.io/3035).
+
+* Reproject the land use raster to the same CRS as the DEM raster (EPSG:31370), and plot the result.
+
+<details><summary>Hints</summary>
+
+* For the sake of the exercise, pick any resampling algorithm or just the default option.
+
+</details>   
+    
+</div>
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+land_use_reprojected = land_use.rio.reproject(dem_gent.rio.crs)
+land_use_reprojected
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+land_use_reprojected.plot.imshow(robust=True)
+```
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+In addition to reprojecting to a new CRS, we also want to upsample the land use dataset to the same resolution as the DEM raster, and to use the exact same grid layout, so we can compare and combine those rasters pixel-by-pixel.
+
+Such a reprojection can be done with the `reproject()` method by providing the target geospatial "transform" (which has the information for the bounds and resolution) and shape for the result. `rioxarray` provides a short-cut for this operation with the `reproject_match()` method, to reproject one raster to the CRS, extent and resolution of another raster.  
+
+* Reproject the land use raster to the same CRS and extent as the DEM subset for Ghent (`dem_gent`). Call the result `land_use_gent`.
+* Make a plot of the result.
+
+<details><summary>Hints</summary>
+
+* Check the help of the `.rio.reproject_match` method (SHIFT + TAB) to know which input ou need. For the sake of the exercise, pick any resampling algorithm or just the default (nearest) option.
+* The data calling the method is being transformed, and the input parameter is the target to match.
+
+</details>   
+    
+</div>
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+land_use_gent = land_use.rio.reproject_match(dem_gent)
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+land_use_gent.plot.imshow()
+```
+
+The land use dataset is a raster with discrete values (i.e. different land use classes). The [CurieuzeNeuzen case study](case-curieuzeneuzen-air-quality.ipynb#Combining-with-Land-Use-data) goes into more depth on those values, but for this exercise it is sufficient to know that values 1 and 2 are the Continuous and Discontinuous urban fabric (residential areas).
+
++++
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+Let's find the preferential locations to live, assuming we want to be future-proof and live at least 10m above sea level in a residential area.
+
+* Create a new array denoting the residential areas (where `land_use_gent` is equal to 1 or 2). Call this `land_use_residential`, and make a quick plot.
+* Plot those locations that are 10m above sea-level.
+* Combine the residential areas and areas > 10m in a single array called `suitable_locations`, and plot the result.
+    
+<details><summary>Hints</summary>
+
+* To select for multiple options, one can either combine multiple conditions using `|` (or) or us the `isin([...,...])` option, both will do.
+* The output of a condition is a Boolean map that can be plot just like other maps, e.g. `(dem_gent > 10).plot.imshow()`.
+* Fo the `suitable_locations`, both boolean conditions need to be True, so combine them with either `&` or just multiply them with `*`.
+
+</details>   
+    
+</div>
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+land_use_residential = (land_use_gent == 1) | (land_use_gent == 2)
+land_use_residential
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+# Alternative solution using `isin`
+land_use_residential = land_use_gent.isin([1, 2])
+land_use_residential
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+land_use_residential.plot.imshow()
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+(dem_gent > 10).plot.imshow()
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+suitable_locations = land_use_residential * (dem_gent > 10)
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+suitable_locations.plot.imshow()
+```
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+In addition to the previous conditions, assume we also don't want to live close to major roads.
+
+We downloaded the road segments open data from Ghent (https://data.stad.gent/explore/dataset/wegsegmenten-gent/) as a GeoJSON file, and provided this in the course materials: `/data/gent/vector/wegsegmenten-gent.geojson.zip`
+    
+* Read the GeoJSON road segments file into a variable `roads` and check the first few rows.
+* The column "frc_omschrijving" contains a description of the type of road for each segment. Get an overview of the available segments and types by doing a "value counts" of this column.
+
+<details><summary>Hints</summary>
+
+* GeoPandas does NOT need the `zip://...` to read in zip files.
+* The first few rows are also the `head` of a data set.
+* The `value_counts` provides the number of records for each of the different values in a column.
+
+</details>   
+    
+</div>
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+roads = geopandas.read_file("./data/gent/vector/wegsegmenten-gent.geojson.zip")
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+roads.head()
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+roads["frc_omschrijving"].value_counts()
+```
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+We are interested in the big roads, as these are the ones we want to avoid: "Motorway or Freeway", "Major Road" and "Other Major Road".
+
+* Filter the `roads` table based on the provided list of road types: select those rows where the "frc_omschrijving" column is equal to one of those values, and call this `roads_subset`.
+* Make a quick plot of this subset and use the "frc_omschrijving" colum to color the lines.
+
+<details><summary>Hints</summary>
+
+* Selecting multiple options at the same time is most convenient with the `isin()` method.
+* Use the GeoPandas `.plot` method and specifh the `frc_omschrijving` column to the `column` parameter.
+
+</details>   
+    
+</div>
+
+```{code-cell} ipython3
+road_types = [
+    "Motorway, Freeway, or Other Major Road",
+    "a Major Road Less Important than a Motorway",
+    "Other Major Road",
+]
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+roads_subset = roads[roads["frc_omschrijving"].isin(road_types)]
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+roads_subset.plot(column="frc_omschrijving", figsize=(10, 10), legend=True)
+```
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+Before we convert the vector data to a raster, we want to buffer the roads. We will use a larger buffer radius for the larger roads.
+
+* Using the defined `buffer_per_roadtype` dictionary, create a new Series by replacing the values in the "frc_omschrijving" column with the matching buffer radius.
+* Convert the `roads_subset` GeoDataFrame to CRS `EPSG:31370`, and create buffered lines (polygons) with the calculated buffer radius distances. Call the result `roads_buffer`.
+    
+<details><summary>Hints</summary>
+
+* Use the `replace` method to replace the data using the provided mapping `buffer_per_roadtype`.
+* The conversion to EPSG:31370 is important to be able to work with the meters to define the buffer size.
+* The `buffer` method can take a single value to apply to all values, but also a Series of values, with a buffer size defined for each element.
+
+</details>   
+    
+</div>
+
+```{code-cell} ipython3
+buffer_per_roadtype = {
+    "Motorway, Freeway, or Other Major Road": 750,
+    "a Major Road Less Important than a Motorway": 500,
+    "Other Major Road": 150,
+}
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+buffers = roads_subset["frc_omschrijving"].replace(buffer_per_roadtype)
+buffers
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+roads_buffer = roads_subset.to_crs("EPSG:31370").buffer(buffers)
+roads_buffer.plot()
+```
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+Convert the buffered road segments to a raster:
+    
+* Use `features.features.rasterize()` to convert the `roads_buffer` GeoDataFrame to a raster:
+    * Pass the geometry column as the first argument.
+    * Pass the shape and transform of the `dem_gent` to specify the desired spatial extent and resolution of the output raster.
+* Invert the values of the raster by doing `1 - arr`, and plot the array with `plt.imshow(..)`.
+* Recalculate the `suitable_locations` variable, using 1/ land_use_residential, 2/ dem > 10 and 3/ outside the road buffers.  
+    
+<details><summary>Hints</summary>
+
+* Access the geometry column using the `.geometry` attribute.
+* `shape` is also an attribute.
+* `.rio.transform()` is a method, so it requires the `()`.
+* Previously, suitable locations were `land_use_residential * (dem_gent > 10)`. Combine this with the `(1 - roads_buffer_arr)` output.
+
+</details>   
+    
+</div>
+
+```{code-cell} ipython3
+import rasterio.features
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+roads_buffer_arr = rasterio.features.rasterize(
+    roads_buffer.geometry, 
+    out_shape=dem_gent.shape, 
+    transform=dem_gent.rio.transform())
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+1 - roads_buffer_arr
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+plt.imshow(1 - roads_buffer_arr)
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+suitable_locations = land_use_residential * (dem_gent > 10) * (1 - roads_buffer_arr)
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+suitable_locations.plot.imshow()
+```
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+Make a plot with a background map of the selected locations. 
+    
+* Plot the provided `gent` GeoDataFrame (a single row table with the are of the Ghent municipality). Use a low "alpha" to give it a light color.
+* Add a background map using contextily.
+* Plot the `suitable_locations` raster on top of this figure: first mask the array to select only those values larger than zero (so the other values becomes NaN, and are not plotted). Then plot the result, adding it to the existing figure using the `ax` keyword.
+
+<details><summary>Hints</summary>
+
+* The `fig, ax = plt.subplots(figsize=(15, 15))` is a convenient shortcut to prepare a Matplotlib Figure and Axes. 
+* Make sure to define the `crs="EPSG:31370"` for contextily.
+* `where(...)` is a powerfull way to exclude data as it - by default - adds NaN values for piels where the condition is not True.
+</details>   
+    
+</div>
+
+```{code-cell} ipython3
+import contextily
+```
+
+```{code-cell} ipython3
+gent = geopandas.read_file("data/gent/vector/gent.geojson")
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+fig, ax = plt.subplots(figsize=(15, 15))
+
+gent.to_crs("EPSG:31370").plot(ax=ax, alpha=0.2, color="grey")
+contextily.add_basemap(ax, crs="EPSG:31370")
+
+suitable_locations.where(suitable_locations > 0).plot.imshow(ax=ax, alpha=0.5, add_colorbar=False)
+ax.set_aspect("equal")
+```
+
+## Advanced exercises
+
++++
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+We downloaded the data about urban green areas in Ghent (https://data.stad.gent/explore/dataset/parken-gent).
+
+* Read in the data at `data/gent/vector/parken-gent.geojson` into a variable `green`.
+* Check the content (first rows, quick plot)
+* Convert this vector layer to a raster using the spatial extent and resolution of `dem_gent` as the targer raster.
+* The `rasterio.features.rasterize` results in a numpy array. Convert this to a DataArray using the `xr.DataArray(..)` constructor, specifying the coordinates of `dem_gent` (`dem_gent.coords`) for the coordinates of the new array.
+    
+</div>
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+green = geopandas.read_file("data/gent/vector/parken-gent.geojson")
+green.head()
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+green.plot()
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+import rasterio.features
+
+green_arr = rasterio.features.rasterize(
+    green.to_crs("EPSG:31370").geometry, 
+    out_shape=dem_gent.shape, 
+    transform=dem_gent.rio.transform())
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+green_arr = xr.DataArray(green_arr, coords=dem_gent.coords)
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+green_arr.plot.imshow()
+```
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+For the urban green areas, we want to calculate a statistic for a neighbourhood around each pixel ("focal" statistics). This can be expressed as a convolution with a defined kernel.    
+
+The [xarray-spatial](https://xarray-spatial.org/index.html) package includes functionality for such focal statistics and convolutions.
+
+* Use the `focal.focal_stats()` function from xarray-spatial to calculate the sum of green are in a neighborhood of 500m around each point. Check the help of this function to see which arguments to specify.
+* Make a plot of the resulting `green_area` array.
+    
+</div>
+
+```{code-cell} ipython3
+from xrspatial import focal, convolution
+```
+
+```{code-cell} ipython3
+x, y = convolution.calc_cellsize(green_arr)
+```
+
+```{code-cell} ipython3
+kernel = convolution.circle_kernel(x, y, 500)
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+%%time
+green_area = focal.focal_stats(green_arr, kernel, stats_funcs=["sum"])
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+green_area.sel(stats="sum").plot.imshow()
+```
+
+The `scipy` package also provides optimized convolution algorithms. In case of the "sum" statistic, this is equivalent:
+
+```{code-cell} ipython3
+from scipy import signal
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+%%time
+green_area_arr = signal.convolve(green_arr, kernel, mode='same')
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+xr.DataArray(green_area_arr, coords=dem_gent.coords).plot.imshow(vmin=0)
+```
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+Make a plot with a background map of the selected locations, i.e. land_use_residential, dem > 10, outside road buffers and 'sufficient'as green area. 
+    
+Define sufficient green area as the `green_area` pixels where the sum of the convolution (previous exercise) is larger as 10 (keep those values and convert pixels with values lower than 10 to 0 values). Multiply the different conditions/categories, so the green area score is included in the final result.
+    
+</div>
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+green_area10 = green_area.sel(stats="sum").where(green_area.sel(stats="sum") > 10, 0)
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+suitable_locations = land_use_residential * (dem_gent > 10) * (1 - roads_buffer_arr) * green_area10
+```
+
+```{code-cell} ipython3
+import contextily
+```
+
+```{code-cell} ipython3
+gent = geopandas.read_file("data/gent/vector/gent.geojson")
+```
+
+```{code-cell} ipython3
+:tags: []
+
+fig, ax = plt.subplots(figsize=(10, 10))
+gent.to_crs("EPSG:31370").plot(ax=ax, alpha=0.1)
+ax.set(ylim=(190_000, 200_000), xlim=(100_000, 110_000))
+contextily.add_basemap(ax, crs="EPSG:31370")
+
+suitable_locations.where(suitable_locations>0).plot.imshow(ax=ax, alpha=0.5, add_colorbar=False)
+ax.set_aspect("equal")
+```
+
+# Extracting values from rasters based on vector data
 
 The **rasterstats** package provides methods to calculate summary statistics of geospatial raster datasets based on vector geometries (https://github.com/perrygeo/python-rasterstats)
 
@@ -378,12 +1155,12 @@ The **rasterstats** package provides methods to calculate summary statistics of 
 To illustrate this, we are reading a raster file with elevation data of the full world (the file contains a single band for the elevation, save the file in the `data` subdirectory; [download link](https://www.eea.europa.eu/data-and-maps/data/world-digital-elevation-model-etopo5/zipped-dem-geotiff-raster-geographic-tag-image-file-format-raster-data/zipped-dem-geotiff-raster-geographic-tag-image-file-format-raster-data/at_download/file)):
 
 ```{code-cell} ipython3
-countries = geopandas.read_file("zip://./data/ne_110m_admin_0_countries.zip")
-cities = geopandas.read_file("zip://./data/ne_110m_populated_places.zip")
+countries = geopandas.read_file("./data/ne_110m_admin_0_countries.zip")
+cities = geopandas.read_file("./data/ne_110m_populated_places.zip")
 ```
 
 ```{code-cell} ipython3
-dem_geotiff = "data/raw/DEM_geotiff/alwdgg.tif"
+dem_geotiff = "data/dem_geotiff/DEM_geotiff/alwdgg.tif"
 ```
 
 ```{code-cell} ipython3
@@ -404,7 +1181,8 @@ For extracting the pixel values for polygons, we use the `zonal_stats` function,
 
 ```{code-cell} ipython3
 result = rasterstats.zonal_stats(countries.geometry, dem_geotiff,
-                                 stats=['min', 'mean', 'max'])
+                                 stats=['min', 'mean', 'max'], 
+                                 nodata=-999)
 ```
 
 The results can be assigned to new columns:
@@ -427,7 +1205,8 @@ For points, a similar function called `point_query` can be used (specifying the 
 
 ```{code-cell} ipython3
 cities["elevation"] = rasterstats.point_query(cities.geometry, 
-                                              dem_geotiff, interpolate='bilinear')
+                                              dem_geotiff, interpolate='bilinear',
+                                              nodata=-999)
 ```
 
 ```{code-cell} ipython3
@@ -436,7 +1215,7 @@ cities.sort_values(by="elevation", ascending=False).head()
 
 -----------
 
-## A bit more about WFS
+# A bit more about WFS
 
 > The Web Feature Service (WFS) represents a change in the way geographic information is created, modified and exchanged on the Internet. Rather than sharing geographic information at the file level using File Transfer Protocol (FTP), for example, the WFS offers direct fine-grained...
 
@@ -473,7 +1252,7 @@ gent = geopandas.GeoDataFrame.from_features(json.loads(r.content), crs="epsg:313
 gent.plot()
 ```
 
-## Cloud: only download what you need
+# Cloud: only download what you need
 
 Rasterio/rioxarray only reads the data from disk that is requested to overcome loading entire data sets into memory. The same applies to downloading data, overcoming entire downloads when only a fraction is required (when the online resource supports this). An example is https://zenodo.org/record/2654620, which is available as [Cloud Optimized Geotiff (COG)](https://www.cogeo.org/). Also cloud providers (AWS, google,...) do support COG files, e.g. [Landstat images](https://docs.opendata.aws/landsat-pds/readme.html).
 
