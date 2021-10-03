@@ -581,7 +581,7 @@ The data for the whole of Europe can be downloaded from the website (latest vers
 **EXERCISE**:
 
 * Read the land use data provided as a tif (`data/CLC2018_V2020_20u1_flanders.tif`). 
-* Make a quick plot
+* Make a quick plot. The raster is using a negative value as "nodata", consider setting the minimum value for the color scale to 0.
 * What is the resolution of this raster?
 * What is the CRS?
 
@@ -691,7 +691,7 @@ Let's find the preferential locations to live assuming we want to be future-proo
 
 * Create a new array denoting the residential areas (where `land_use_gent` is equal to 1 or 2). Call this `land_use_residential`, and make a quick plot.
 * Plot those locations that are 10m above sea-level.
-* Combine the residential areas and areas > 10m in a single array, and plot the result.
+* Combine the residential areas and areas > 10m in a single array called `suitable_locations`, and plot the result.
     
 <details><summary>Hints</summary>
 
@@ -736,7 +736,7 @@ suitable_locations.plot.imshow()
 
 **EXERCISE**:
 
-In addition to the previous conditions, we also don't want to live close to major roads.
+In addition to the previous conditions, assume we also don't want to live close to major roads.
 
 We downloaded the road segments open data from Ghent (https://data.stad.gent/explore/dataset/wegsegmenten-gent/) as a GeoJSON file, and provided this in the course materials: `/data/gent/vector/wegsegmenten-gent.geojson.zip`
     
@@ -775,8 +775,8 @@ roads["frc_omschrijving"].value_counts()
 
 We are interested in the big roads: "Motorway or Freeway", "Major Road" and "Other Major Road".
 
-* Read the GeoJSON road segments file into a variable `roads` and check the first few rows.
-* The column "frc_omschrijving" contains a description of the type of road for each segment. Get an overview of the available segments and types by doing a "value counts" of this column.
+* Filter the `roads` table based on the provided list of road types: select those rows where the "frc_omschrijving" column is equal to one of those values, and call this `roads_subset`.
+* Make a quick plot of this subset and use the "frc_omschrijving" colum to color the lines.
 
 <details><summary>Hints</summary>
 
@@ -813,7 +813,7 @@ roads_subset.plot(column="frc_omschrijving", figsize=(10, 10), legend=True)
 Before we convert the vector data to a raster, we want to buffer the roads. We will use a larger buffer radius for the larger roads.
 
 * Using the defined `buffer_per_roadtype` dictionary, create a new Series by replacing the values in the "frc_omschrijving" column with the matching buffer radius.
-* Convert the `roads_subset` GeoDataFrame to CRS EPSG:31370, and calculate the buffer.
+* Convert the `roads_subset` GeoDataFrame to CRS EPSG:31370, and create buffered lines (polygons) with the calculated buffer radius distances. Call the result `roads_buffer`.
     
 <details><summary>Hints</summary>
 
@@ -907,8 +907,9 @@ suitable_locations.plot.imshow()
 
 Make a plot with a background map of the selected locations. 
     
-* 
-* 
+* Plot the provided `gent` GeoDataFrame (a single row table with the are of the Ghent municipality). Use a low "alpha" to give it a light color.
+* Add a background map using contextily.
+* Plot the `suitable_locations` raster on top of this figure: first mask the array to select only those values larger than zero (so the other values becomes NaN, and are not plotted). Then plot the result, adding it to the existing figure using the `ax` keyword.
 
 <details><summary>Hints</summary>
 
@@ -947,8 +948,10 @@ ax.set_aspect("equal")
 
 We downloaded the data about urban green areas in Ghent (https://data.stad.gent/explore/dataset/parken-gent).
 
-* 
-* 
+* Read in the data at `data/gent/vector/parken-gent.geojson` into a variable `green`.
+* Check the content (first rows, quick plot)
+* Convert this vector layer to a raster using the spatial extent and resolution of `dem_gent` as the targer raster.
+* The `rasterio.features.rasterize` results in a numpy array. Convert this to a DataArray using the `xr.DataArray(..)` constructor, specifying the coordinates of `dem_gent` (`dem_gent.coords`) for the coordinates of the new array.
 
 <details><summary>Hints</summary>
 
@@ -1002,8 +1005,8 @@ For the urban green areas, we want to calculate a statistic for a neighbourhood 
 
 The [xarray-spatial](https://xarray-spatial.org/index.html) package includes functionality for such focal statistics and convolutions.
 
-* 
-* 
+* Use the `focal.focal_stats()` function from xarray-spatial to calculate the sum of green are in a neighborhood of 500m around each point. Check the help of this function to see which arguments to specify.
+* Make a plot of the resulting `green_area` array.
 
 <details><summary>Hints</summary>
 
