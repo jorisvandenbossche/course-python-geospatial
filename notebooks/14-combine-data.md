@@ -12,7 +12,7 @@ kernelspec:
   name: python3
 ---
 
-<p><font size="6"><b>Manual stacking of raster data</b></font></p>
+<p><font size="6"><b>Stacking of raster data</b></font></p>
 
 
 > *DS Python for GIS and Geoscience*  
@@ -215,7 +215,7 @@ The structure is `'http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/ncep.rean
 We want to download the surface temperature data from 1990 till 2000 and combine them all in a single xarray DataSet. To do so:
     
 - Prepare all the links by composing the base_url ('http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/ncep.reanalysis/surface/air.sig995') with the required years
-- Use the list of files as the inputfor the `xr.open_mfdataset` to create a single `xarray.DataSet`.
+- Use the list of file links as the inputfor the `xr.open_mfdataset` to create a single `xarray.DataSet`.
 - Whereas this i 600MB of data, the initial loading is not actually reading in the data.
    
 <details>
@@ -223,6 +223,7 @@ We want to download the surface temperature data from 1990 till 2000 and combine
 <summary>Hints</summary>
     
 * Python works with string formatting, e.g. f'{base_url}.{year}.nc' will nicely create the required links.
+* Xarray can both work with file names on a computer as a compatible network link.
 * As the netcdf data provided by NOAA is already well structured and confomr, no further adjustments are required as input to the 
 `open_mfdataset` function, :-)
 
@@ -283,10 +284,6 @@ results.matched()
 
 ```{code-cell} ipython3
 results.get_all_items()[0]
-```
-
-```{code-cell} ipython3
-
 ```
 
 ```{code-cell} ipython3
