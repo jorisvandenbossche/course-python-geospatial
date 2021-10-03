@@ -6,7 +6,7 @@ jupytext:
     format_version: 0.13
     jupytext_version: 1.12.0
 kernelspec:
-  display_name: Python 3
+  display_name: Python 3 (ipykernel)
   language: python
   name: python3
 ---
@@ -15,9 +15,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2020*
+> *October, 2021*
 >
-> *© 2020, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -35,14 +35,14 @@ For this use case, we focus on the [Extended Reconstructed Sea Surface Temperatu
 
 
 
-First we download the dataset. We will use the [NOAA Extended Reconstructed Sea Surface Temperature (ERSST)](https://psl.noaa.gov/thredds/catalog/Datasets/noaa.ersst/catalog.html?dataset=Datasets/noaa.ersst/sst.mnmean.v4.nc) v4 product. Download the data from this link: https://psl.noaa.gov/thredds/fileServer/Datasets/noaa.ersst/sst.mnmean.v4.nc and store it in the same folder as the notebook as `sst.mnmean.v4.nc`.
+First we download the dataset. We will use the [NOAA Extended Reconstructed Sea Surface Temperature (ERSST)](https://psl.noaa.gov/thredds/catalog/Datasets/noaa.ersst/catalog.html?dataset=Datasets/noaa.ersst/sst.mnmean.v4.nc) v4 product. Download the data from this link: https://psl.noaa.gov/thredds/fileServer/Datasets/noaa.ersst/sst.mnmean.v4.nc and store it in a subfolder `data/` from the notebook as `sst.mnmean.v4.nc`.
 
 +++
 
 Reading in the data set, ignoring the `time_bnds` variable:
 
 ```{code-cell} ipython3
-data = './sst.mnmean.v4.nc'
+data = './data/sst.mnmean.v4.nc'
 ds = xr.open_dataset(data, drop_variables=['time_bnds'], engine="h5netcdf")
 ```
 
@@ -170,7 +170,7 @@ xaray uses xarray.plot.pcolormesh() as the default two-dimensional plot method b
 
 **EXERCISE**:
     
-How did the SST evolve in time for a specific location on the earth? Make a line plot of the SST at lon=300, lat=50 as a function of time.
+How did the SST evolve in time for a specific location on the earth? Make a line plot of the SST at `lon=300`, `lat=50` as a function of time.
     
 Do you recognize the seasonality of the data?
    
@@ -392,13 +392,13 @@ fig.legend(loc="upper center", ncol=3)
 ax.set_title("");
 ```
 
-## Make projection aware maps
+### Make projection aware maps
 
 +++
 
-The previous maps were the default outputs of xarray without specification of the spatial context. For reporting these plots are not appropriate. We can use the [cartopy](https://scitools.org.uk/cartopy/docs/latest/) package to adjust our Matplotlib axis to make them spatially aware.
+The previous maps were the default outputs of xarray without specification of the spatial context. For reporting these plots are not appropriate. We can use the [cartopy](https://scitools.org.uk/cartopy/docs/latest/) package to adjust our Matplotlib axis to make them spatially aware. 
 
-To make sure the data of xarray can be integrated in a cartopy plot, the crucial element is to define the `transform` argument to to control which coordinate system that the given data is in. You can add the transform keyword with an appropriate `cartopy.crs.CRS` instance from the `import cartopy.crs` module:
+For more in-depth information on cartopy, see the [visualization-03-cartopy](./visualization-03-cartopy.ipynb) notebook. As a short recap, to make sure the data of xarray can be integrated in a cartopy plot, the crucial element is to define the `transform` argument to to control which coordinate system that the given data is in. You can add the transform keyword with an appropriate `cartopy.crs.CRS` instance from the `import cartopy.crs` module:
 
 ```{code-cell} ipython3
 import cartopy.crs as ccrs
