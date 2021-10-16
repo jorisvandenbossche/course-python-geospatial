@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.13.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -447,7 +447,7 @@ era5_renamed.groupby("time.month")
 Next, we apply an aggregation function _for each of the months_ over the `time` dimension in order to end up with: _for each month of the year, the average (over time) for each of the levels_:
 
 ```{code-cell} ipython3
-era5_renamed.groupby("time.month").mean(dim="time")
+era5_renamed.groupby("time.month").mean()
 ```
 
 The resulting dimension month contains the 12 groups on which the data set was split up.
@@ -632,6 +632,8 @@ Create a line plot showing the yearly average temperature in the y-axis and time
 </div>
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 temp_mean = era5_renamed["temperature_k"].mean(dim=["latitude", "longitude"]).sel(time=slice("1981", "2020"))
 temp_mean.resample(time="Y").mean().plot.line(figsize=(12, 5))
 ```
