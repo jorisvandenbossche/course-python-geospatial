@@ -4,7 +4,7 @@ channels:
 dependencies:
   - python=3.9
   - jupyter
-  - jupyterlab
+  - jupyterlab>3
   - ipython
   - numpy
   - pandas
@@ -23,7 +23,9 @@ dependencies:
   - s3fs
   - dask
   - distributed
+  - dask-labextension
   - bokeh
+  - bokeh_jupyter
   - intake
   - intake-xarray
   - ipympl
@@ -42,3 +44,4 @@ dependencies:
   - pooch
   - rioxarray
   - xarray-spatial
+  - pyepsg
