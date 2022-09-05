@@ -383,7 +383,7 @@ __NOTE:__ You can run a CLI command inside a Jupyter Notebook by prefixing it wi
 
 +++
 
-## Convert vector to raster
+### Convert vector to raster
 
 +++
 
@@ -407,7 +407,7 @@ img
 
 ```{code-cell} ipython3
 fig, (ax0, ax1) = plt.subplots(1, 2)
-ax0.imshow(img*50)
+ax0.imshow(img)
 ax1.imshow(clipped.values - img*20, vmin=0, cmap="terrain") # just as an example
 fig.tight_layout()
 ```
@@ -614,7 +614,7 @@ The data for the whole of Europe can be downloaded from the website (latest vers
 
 **EXERCISE**:
 
-* Read the land use data provided as a tif (`data/CLC2018_V2020_20u1_flanders.tif`). 
+* Read the land use data provided as a tif (`data/CLC2018_V2020_20u1_flanders.tif`). Directly select the single band.
 * Make a quick plot. The raster is using a negative value as "nodata", consider using the `robust=True` option.
 * What is the resolution of this raster?
 * What is the CRS?
