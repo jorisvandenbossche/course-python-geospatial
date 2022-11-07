@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.14.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -223,8 +223,8 @@ print(eiffel_tower)
 
 ```{code-cell} ipython3
 # Accessing the Montparnasse geometry (Polygon)
-district_montparnasse = districts.loc[52, 'geometry']
-bike_station = stations.loc[293, 'geometry']
+district_montparnasse = districts.loc[districts['district_name'] == 'Montparnasse', 'geometry'].item()
+bike_station = stations.loc[stations['name'] == '14033 - DAGUERRE GASSENDI', 'geometry'].item()
 ```
 
 ```{code-cell} ipython3
