@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.13.0
+    jupytext_version: 1.14.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -16,9 +16,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2021*
+> *October, 2022*
 >
-> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -52,8 +52,8 @@ In some of the previous notebooks, we used the band 4 and band 8 Sentinel image 
 One way to handle this is to load each of the data sets into memory and concatenate these afterwards:
 
 ```{code-cell} ipython3
-arr_b4 = xr.open_rasterio("data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff")
-arr_b8 = xr.open_rasterio("data/gent/raster/2020-09-17_Sentinel_2_L1C_B08.tiff")
+arr_b4 = xr.open_dataarray("data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff", engine="rasterio")
+arr_b8 = xr.open_dataarray("data/gent/raster/2020-09-17_Sentinel_2_L1C_B08.tiff", engine="rasterio")
 ```
 
 ```{code-cell} ipython3
@@ -83,7 +83,7 @@ Instead of manually loading the data, we rather automate the data load from thes
 
 ```{code-cell} ipython3
 from pathlib import Path
-moisture_index_files = list(Path("./data/herstappe/raster/sentinel_moisture").rglob("*.tiff"))
+moisture_index_files = list(sorted(Path("./data/herstappe/raster/sentinel_moisture").rglob("*.tiff")))
 ```
 
 2. Extract the time-dimension from each individual file name
@@ -107,16 +107,12 @@ date_var
 4. Load in and concatenate all individual GeoTIFFs
 
 ```{code-cell} ipython3
-moisture_index = xr.concat([xr.open_rasterio(file_name) for file_name in moisture_index_files], dim=date_var)
+moisture_index = xr.concat([xr.open_dataarray(file_name, engine="rasterio") for file_name in moisture_index_files], dim=date_var)
+moisture_index = (moisture_index - moisture_index.min())/(moisture_index.max() - moisture_index.min()) # rescale to 0-1 range for RGB plotting
 ```
 
 ```{code-cell} ipython3
-moisture_index
-```
-
-```{code-cell} ipython3
-moisture_index.sortby("date").sum(dim="band").plot.imshow(
-    col="date", cmap="BrBG", figsize=(15, 4), aspect=1)
+moisture_index.sortby("date").plot.imshow(col="date", figsize=(15, 4), aspect=1)
 ```
 
 ## Lazy load multiple files into a single `xarray.Dataset`
@@ -136,11 +132,12 @@ def add_date_dimension(ds):
     """Add the date dimension derived from the file_name and rename to moisture_index"""
     ds_date = pd.to_datetime(Path(ds.encoding["source"]).stem.split(",")[0])
     ds = ds.assign_coords(date=("date", [ds_date])).rename({"band_data": "moisture_index"})
+    ds = (ds - ds.min())/(ds.max() - ds.min()) # rescale to 0-1 range for RGB plotting
     return ds
 ```
 
 ```{code-cell} ipython3
-moisture_index_lazy = xr.open_mfdataset(Path("./data/herstappe/raster/sentinel_moisture").rglob("*.tiff"), 
+moisture_index_lazy = xr.open_mfdataset(sorted(Path("./data/herstappe/raster/sentinel_moisture").rglob("*.tiff")), 
                                         preprocess=add_date_dimension, engine="rasterio", decode_cf=False) # parallel=True
 moisture_index_lazy["moisture_index"]
 ```
@@ -251,7 +248,7 @@ ds
 
 +++
 
-__Note__ _These dependencies are not included in the environment, to run this section, install the required packages first in your conda environment: `conda install stackstac pystac-client=0.1.1`._
+__Note__ _These dependencies are not included in the environment, to run this section, install the required packages first in your conda environment: `conda install stackstac pystac-client`._
 
 +++
 
@@ -287,7 +284,11 @@ list(results.items())[0]
 ```
 
 ```{code-cell} ipython3
-stacked = stackstac.stack(results.items_as_collection())
+results.item_collection()
+```
+
+```{code-cell} ipython3
+stacked = stackstac.stack(results.item_collection())
 ```
 
 ```{code-cell} ipython3

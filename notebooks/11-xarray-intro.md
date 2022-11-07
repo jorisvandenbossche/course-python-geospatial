@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.13.0
+    jupytext_version: 1.14.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -16,9 +16,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2021*
+> *October, 2022*
 >
-> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -38,7 +38,7 @@ Let's start with reading the Sentinel RGB bands for Herstappe again:
 
 ```{code-cell} ipython3
 herstappe_file = "./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff"
-herstappe = xr.open_rasterio(herstappe_file)
+herstappe = xr.open_dataarray(herstappe_file, engine="rasterio")
 ```
 
 ```{code-cell} ipython3
@@ -102,7 +102,7 @@ The [`xarray` package](xarray.pydata.org/en/stable/) introduces __labels__ in th
 Xarray’s labels make working with multidimensional data much easier:
 
 ```{code-cell} ipython3
-herstappe = xr.open_rasterio(herstappe_file)
+herstappe = xr.open_dataarray(herstappe_file, engine="rasterio")
 herstappe = herstappe.assign_coords(band=("band", ["red", "green", "blue"]))
 ```
 
@@ -149,12 +149,59 @@ One typical use case for raster data is where you want to apply a mask to the da
 ```{code-cell} ipython3
 :tags: []
 
-herstappe.where(herstappe > 0.2).sel(band="red").plot.imshow()
+herstappe.where(herstappe > 0.3).sel(band="red").plot.imshow()
 ```
 
 ### Let's practice!
 
 We'll again look at some Sentinel GeoTiff data, this time from the region of the City of Ghent:
+
++++
+
+<div class="alert alert-success">
+
+**EXERCISE**:
+
+* Read in the file `./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff` with xarray and assign the data to a new variable `tc_data`.  
+* Check the data type of `tc_data` and compare it with the information in the file metadata using `gdalinfo` command (GDAL CLI).
+* Use the `mask_and_scale` parameter in the reader function to make sure the data type of `tc_data` is the same as the raw data.     
+    
+<details><summary>Hints</summary>
+
+* To run a command from the command line, add the `!` in front e.g. `!gdalinfo FILENAME`   
+
+</details>
+    
+</div>
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+tc_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff", engine="rasterio")
+tc_data.dtype
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+!gdalinfo ./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+tc_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff", 
+                            engine="rasterio", mask_and_scale=False)
+tc_data.dtype
+```
+
+<div class="alert alert-info" style="font-size:100%">
+
+**Remember**: <br>
+
+The `mask_and_scale` parameter is [by default `True`](https://docs.xarray.dev/en/stable/generated/xarray.open_dataarray.html) in xarray for the different backend engines. This might lead to unwanted data type conversions when the 'nodata' is not properly included in the raw data file. Make sure to check the data types.
+
+</div>
 
 +++
 
@@ -171,7 +218,7 @@ We'll again look at some Sentinel GeoTiff data, this time from the region of the
 <details><summary>Hints</summary>
 
 * To select a specific subset for a certain dimension of a DataArray, use the `.sel()` method. The argument name to use is the name of the dimension.
-* You can mask an array and set the masked values to another value with the `.where()` method. Check the help of the method for information on the keyword arguments.
+* You can mask an array and set the masked values to another value with the `.where()` method. Check the help of the method for information on the keyword arguments.    
 
 </details>
     
@@ -180,13 +227,8 @@ We'll again look at some Sentinel GeoTiff data, this time from the region of the
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-tc_data = xr.open_rasterio("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff")
-```
-
-```{code-cell} ipython3
-:tags: [nbtutor-solution]
-
-tc_data
+tc_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff", 
+                            engine="rasterio", mask_and_scale=False)
 ```
 
 ```{code-cell} ipython3
@@ -232,7 +274,8 @@ Subsample the ndarray `tc_data` by taking only the one out of each 5 data points
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-tc_data = xr.open_rasterio("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff")
+tc_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff", 
+                            engine="rasterio", mask_and_scale=False)
 ```
 
 ```{code-cell} ipython3
@@ -249,12 +292,12 @@ tc_data[:, ::5, ::5].shape
 Elements with the value `65535` do represent 'Not a Number' (NaN) values. However, Numpy does not support NaN values for integer data, so we'll convert to float first as data type. After reading in the data set `./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff` (assign data to variable `b4_data`):
     
 * Count the number of elements that are equal to `65535`
-* Convert the data type to `float`, assign the result to  a new variable `b4_data_f`
+* Convert the data type to `float`, assign the result to  a new variable `b4_data_f` (Numpy does not support Nan for int).
 * Assign Nan (`np.nan`) value to each of the elements of `b4_data_f` equal to `65535`
 * Count the number of Nan values in the `b4_data_f` data
 * Make a histogram of both the `b4_data` and `b4_data_f` data. Can you spot the difference?
     
-<details><summary>Hints</summary>
+<details><summary>Hints</summary>    
 
 * `np.nan` represents _Not a Number (NaN)_ in Numpy. You can mask an array with np.nan values using the `where()`method
 * `np.sum` will by default sum all of the elements of the input array and can also count boolean values (True = 1 and False = 0), resulting from a conditional expression. 
@@ -269,14 +312,15 @@ Elements with the value `65535` do represent 'Not a Number' (NaN) values. Howeve
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-b4_data = xr.open_rasterio("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff")
+b4_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff", 
+                            engine="rasterio", mask_and_scale=False)
 ```
 
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
 # Count the number of cells with value 65535
-np.sum(b4_data == 65535)
+np.sum(b4_data == 65535).values
 ```
 
 ```{code-cell} ipython3
@@ -291,7 +335,7 @@ b4_data_f = b4_data_f.where(b4_data != 65535)
 :tags: [nbtutor-solution]
 
 # Count the number of cells with value 0
-np.sum(np.isnan(b4_data_f))
+np.sum(np.isnan(b4_data_f)).values
 ```
 
 ```{code-cell} ipython3
@@ -310,7 +354,8 @@ b4_data_f.plot.hist(bins=30, log=True, ax=ax1);
 We already used `.plot.imshow` and `.plot.line` in the previous section and exercise. Similar to Pandas, `xarray` has a `plot` method, which can be used for different plot types.
 
 ```{code-cell} ipython3
-xr_array = xr.open_rasterio("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B0408.tiff")
+xr_array = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B0408.tiff", 
+                             engine="rasterio")
 xr_array = xr_array.assign_coords(band=("band", ["b4", "b8"]))
 ```
 
@@ -370,7 +415,7 @@ ax2.set_title("Histogram of b8");
 ## Reductions, element-wise calculations and broadcasting
 
 ```{code-cell} ipython3
-herstappe = xr.open_rasterio(herstappe_file)
+herstappe = xr.open_dataarray(herstappe_file, engine="rasterio")
 herstappe = herstappe.assign_coords(band=("band", ["red", "green", "blue"]))
 herstappe_red = herstappe.sel(band="red")
 ```
@@ -398,7 +443,7 @@ herstappe_red.mean(axis=1)
 But we have __dimensions with labels__, so rather than performing reductions on axes (as in Numpy), we can perform them on __dimensions__. This turns out to be convenient and declarative:
 
 ```{code-cell} ipython3
-herstappe_red.mean(dim="x").dims
+herstappe_red.mean(dim="x")
 ```
 
 Calculate the mean values for each of the bands separately:
@@ -509,7 +554,8 @@ Make a plot of the end result and compare with a plot of the original data.
 ```{code-cell} ipython3
 :tags: []
 
-herstappe_data = xr.open_rasterio("./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff")
+herstappe_data = xr.open_dataarray("./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff", 
+                                   engine="rasterio")
 ```
 
 ```{code-cell} ipython3
@@ -540,14 +586,14 @@ herstappe_rescaled.plot.imshow(figsize=(9, 5))
 
 The true color data set for Ghent `./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff` contains 3 bands. Plotting with the `imshow` function can plot 3-D (RGB) data sets, but when running `gent.plot.imshow()`, we get an error. This is because matplotlib expects data in the range of [0..1] for floats or [0..255] for integers. 
     
-The data type of this specific array `gent` is 16bit unsigned integer. Detailed info on data types is out of scope of this course, but remember that using 16bit unsigned integer, it can contain `2**16` different (all positive) integer values:
+The data type of this specific array `gent` is 16bit unsigned integer. Detailed info on data types is out of scope of this course, but remember that using 16bit unsigned integer, it can contain `2**16` different (all positive) integer values to represent the data range (in this case 0 to 1):
 
 ```
 >>> 2**16
 65536
 ```
 
-In this excercise, we will convert the data to floats so we can plot it as RGB values.
+In this excercise, we will convert the data to floats within the data range 0 -> 1 so we can plot it as RGB values.
 
 - Read the data file and assign to a variable `gent`.
 - Try to plot it with the `imshow()` method.
@@ -558,7 +604,7 @@ In this excercise, we will convert the data to floats so we can plot it as RGB v
 
 <details><summary>Hints</summary>
 
-* To convert the data type of an array, you can use the `astype()` method.
+* To convert the data type of an array, you can use the `astype()` method. In this case you might as well opt to have the `mask_and_scale=true` as this will doe the float conversion already.
 * Masking out part of the data based on a condition can be done with the `where()` method.
 
 </details>    
@@ -568,7 +614,8 @@ In this excercise, we will convert the data to floats so we can plot it as RGB v
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-gent = xr.open_rasterio("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff")
+gent = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff", 
+                         engine="rasterio", mask_and_scale=False)
 gent
 ```
 
@@ -660,8 +707,10 @@ Using these default plot settings, the NDVI visualisation is not very informativ
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-b4_data = xr.open_rasterio("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff").sel(band=1)
-b8_data = xr.open_rasterio("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B08.tiff").sel(band=1)
+b4_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff", 
+                            engine="rasterio", mask_and_scale=False).sel(band=1)
+b8_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B08.tiff", 
+                            engine="rasterio", mask_and_scale=False).sel(band=1)
 ```
 
 ```{code-cell} ipython3
@@ -750,7 +799,8 @@ To reclassify the values, we can use the `np.digitize` function. This function r
 ```{code-cell} ipython3
 :clear_cell: false
 
-b4_data = xr.open_rasterio("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff")
+b4_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff", 
+                            engine="rasterio", mask_and_scale=False)
 ```
 
 ```{code-cell} ipython3
@@ -783,4 +833,10 @@ img = b4_data_classified.plot.imshow(ax=ax, add_colorbar=False, interpolation="a
 fig.colorbar(img, values=[0, 1, 2], ticks=[0, 1, 2])
 ```
 
-__Note:__ When only interested in a discrete colormap for plotting, xarray provides the `levels` parameter whe plotting, see http://xarray.pydata.org/en/stable/user-guide/plotting.html#discrete-colormaps.
+<div class="alert alert-info">
+    
+__Note:__
+    
+When only interested in a discrete colormap for plotting instead of the data manipulation, xarray provides the `levels` parameter whe plotting, see http://xarray.pydata.org/en/stable/user-guide/plotting.html#discrete-colormaps.    
+    
+</div>

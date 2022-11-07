@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.14.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -16,9 +16,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2021*
+> *November, 2022*
 >
-> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -75,7 +75,7 @@ file_herstappe = "./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.t
 ```
 
 ```{code-cell} ipython3
-herstappe = xr.open_rasterio(file_herstappe)
+herstappe = xr.open_dataarray(file_herstappe, engine="rasterio")
 herstappe
 ```
 
@@ -90,7 +90,7 @@ A raster is an __image__ in local pixel coordinates until we specify what part o
 
 As an quick introduction (we will learn the specific syntax later).
 
-> _A plot of the Red band only, using a Red color scale_
+> Plot of the Red band only, using a Red color scale_
 
 ```{code-cell} ipython3
 ax = herstappe.sel(band=1).plot.imshow(cmap="Reds", figsize=(12, 5))  #, robust=True)
@@ -121,7 +121,7 @@ The output of xarray is a bit different to what we've previous seen. Let's go th
     - `y`: the y coordinates of the data set
     - `x`: the x coordinates of the data set
 - Each of these dimensions are defined by a __coordinate__ (1D) array
-- It contains 304407 (227*447*3) data values (stored as float32)
+- It contains 304407 (227\*447\*3) data values (stored as float32)
 - Other metadata, such as the spatial information) provided by the `tiff` are stored in the __`Attributes`__
 
 Looking to the data itself (click on the icons on the right), we can see these are Numpy arrays...
@@ -144,7 +144,7 @@ Numpy is on of the most fundamental parts of the scientific python 'ecosystem'. 
 
 +++
 
-When you read raster data using `xarray.open_rasterio` you are actually creating a set of Numpy arrays combined in a `xarray.DataArray` object. A Numpy array is an efficient data type to calculate with arrays in general. Let's extract the data of herstappe as an Numpy `ndarray`:
+When you read raster data using `xarray.open_dataarray` you are actually creating a set of Numpy arrays combined in a `xarray.DataArray` object. A Numpy array is an efficient data type to calculate with arrays in general. Let's extract the data of herstappe as an Numpy `ndarray`:
 
 ```{code-cell} ipython3
 herstappe_array = herstappe.values
@@ -217,17 +217,21 @@ Important information we get from the `gdalinfo` command are
 
 +++
 
-Let's see how `xarray.open_rasterio` interprets this information:
+Let's see how `xarray.open_dataarray` interprets this information:
 
 ```{code-cell} ipython3
-herstappe = xr.open_rasterio(file_herstappe)
+herstappe = xr.open_dataarray(file_herstappe, engine="rasterio")
 herstappe
 ```
 
-- Coordinate reference system (CRS) stored as attribute to the `xr.DataArray`:
+- Coordinate reference system (CRS) stored as attribute to the `xr.DataArray` `rio` accessor:
 
 ```{code-cell} ipython3
-herstappe.attrs["crs"]
+herstappe.rio.crs
+```
+
+```{code-cell} ipython3
+type(herstappe.rio.crs) # herstappe.rio.crs.to_string(), # herstappe.rio.crs.to_wkt()
 ```
 
 - Number of bands in the data set. Each band in the original data set is represented in the `band` dimension:
@@ -236,30 +240,28 @@ herstappe.attrs["crs"]
 herstappe.band
 ```
 
-- Spatial resolution: This resolution represents the area on the ground that each pixel covers. In xarray stored as attribute, but also translated to the coordinates dimensions x and y as the distance between two elements:
+- Spatial resolution: This resolution represents the area on the ground that each pixel covers. It is available with the `rio`  accessor, but also translated to the coordinates dimensions x and y as the distance between two elements:
 
 ```{code-cell} ipython3
-herstappe.attrs["res"]
+herstappe.rio.resolution()
 ```
 
 ```{code-cell} ipython3
 herstappe.x[1] - herstappe.x[0], herstappe.y[1] - herstappe.y[0]
 ```
 
-- Spatial extent (bounding box) of the data. [Xarray translates](http://xarray.pydata.org/en/stable/generated/xarray.open_rasterio.html#xarray-open-rasterio) the the coordinates info and spatial extent:
+- Spatial extent (bounding box) of the data. [Xarray translates](https://corteva.github.io/rioxarray/stable/getting_started/getting_started.html) the the coordinates info and spatial extent:
 
     >  The x and y coordinates are generated automatically from the file’s geoinformation, shifted to the center of each pixel.
     
 Hence, the minimal and maximum values of the coordinates are still the same as the boundaries defined by the metadata:
 
 ```{code-cell} ipython3
-herstappe.x.min(), herstappe.x.max(), herstappe.y.min(), herstappe.y.max()
+herstappe.rio.bounds()
 ```
 
-The information is still indirectly available in the `transform` attribute of the data, containing the upper left x and y coordinates. Together with the resolution and number of pixels in each dimension, the other points can be derived as well:
-
 ```{code-cell} ipython3
-herstappe.attrs["transform"]
+herstappe.x.min(), herstappe.x.max(), herstappe.y.min(), herstappe.y.max()
 ```
 
 <div class="alert alert-info" style="font-size:120%">
@@ -272,3 +274,7 @@ open source Swiss Army knife for raster and vector geospatial data handling. GDA
 You can run a CLI command inside a Jupyter Notebook by prefixing it with the `!` character.
 
 </div>
+
+```{code-cell} ipython3
+
+```

@@ -1,10 +1,11 @@
 ---
 jupytext:
+  cell_metadata_filter: -run_control,-deletable,-editable,-jupyter,-slideshow
   text_representation:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.13.0
+    jupytext_version: 1.14.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -15,9 +16,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2021*
+> *October, 2022*
 >
-> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -40,7 +41,7 @@ import matplotlib.pyplot as plt
 
 +++
 
-In the previous notebooks, we already used `rasterio` (https://rasterio.readthedocs.io/en/latest/) to read raster files such as GeoTIFFs (through the `xarray.open_rasterio()` function). Rasterio provides support for reading and writing geospatial raster data as numpy N-D arrays, mainly through bindings to the GDAL library. 
+In the previous notebooks, we already used `rasterio` (https://rasterio.readthedocs.io/en/latest/) to read raster files such as GeoTIFFs (through the `xarray.open_dataarray(...,engine="rasterio")` function). Rasterio provides support for reading and writing geospatial raster data as numpy N-D arrays, mainly through bindings to the GDAL library. 
 
 In addition, rasterio provides a Python API to perform some GIS raster operations (clip, mask, warp, merge, transformation,...) and can be used to only load a subset of a large dataset into memory. However, the main complexity in using `rasterio`, is that the spatial information is decoupled from the data itself (i.e. the numpy array). This means that you need to keep track and organize the extent and metadata throughout the operations (e.g. the "transform") and you need to keep track of what each dimension represents (y-first, as arrays are organized along rows first). Notebook [91_package_rasterio](./91_package_rasterio.ipynb) goes into more depth on the rasterio package itself. 
 
@@ -59,7 +60,7 @@ data = rioxarray.open_rasterio(data_file)
 data
 ```
 
-The `rioxarray.open_rasterio` function is similar to `xarray.open_rasterio`, but in addition adds a `spatial_ref` coordinate to keep track of the spatial reference information.
+The `rioxarray.open_rasterio` function is similar to `xarray.open_dataarray`/
 
 Once `rioxarray` is imported, it provides a `.rio` accessor on the xarray.DataArray object, which gives access to some properties of the raster data:
 
@@ -149,7 +150,7 @@ clipped = data.rio.clip(herstappe_vect.geometry)
 ```
 
 ```{code-cell} ipython3
-fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(10,4))
+fig, (ax0, ax1) = plt.subplots(ncols=2, figsize=(12,4))
 data.plot.imshow(ax=ax0)
 herstappe_vect.plot(ax=ax0, facecolor="none", edgecolor="red")
 
@@ -208,7 +209,7 @@ dem_zwalm_file = "data/DHMVIIDSMRAS5m_k30/GeoTIFF/DHMVIIDSMRAS5m_k30.tif"
 _Make sure you have downloaded the data set ([download link](https://downloadagiv.blob.core.windows.net/dhm-vlaanderen-ii-dsm-raster-5m/DHMVIIDSMRAS5m_k30.zip)), saved it in the `./data` subfolder and unzipped the folder_
 
 ```{code-cell} ipython3
-dem_zwalm = xr.open_rasterio(dem_zwalm_file).sel(band=1)
+dem_zwalm = xr.open_dataarray(dem_zwalm_file, engine="rasterio").sel(band=1)
 ```
 
 ```{code-cell} ipython3
@@ -296,7 +297,7 @@ geopandas.read_file("./data/zwalmbekken.geojson").plot()
 As shown above, we can use rioxarray to clip the raster file:
 
 ```{code-cell} ipython3
-dem_zwalm = xr.open_rasterio(dem_zwalm_file).sel(band=1)
+dem_zwalm = xr.open_dataarray(dem_zwalm_file, engine="rasterio").sel(band=1)
 dem_zwalm
 ```
 
@@ -310,22 +311,22 @@ Using rioxarray's `to_raster()` method, we can also save the result to a new Geo
 clipped.rio.to_raster("./dem_masked_rio.tiff")
 ```
 
-This DEM raster file used -9999 as the NODATA value, and this is therefore also used for the clipped result:
+This DEM raster file used -9999 as the NODATA value, which are read as Nan values:
 
 ```{code-cell} ipython3
-clipped.rio.nodata
+dem_zwalm.rio.nodata, clipped.rio.nodata
 ```
 
 ```{code-cell} ipython3
-img = clipped.where(clipped != -9999).plot.imshow(
+img = clipped.plot.imshow(
     cmap='terrain', figsize=(10, 6), interpolation='antialiased')
 img.axes.set_aspect("equal")
 ```
 
-With rioxarray, we can also convert nodata values to NaNs (and thus using float dtype) when loading the raster data:
+Remmeber, with (rio)xarray, the conversion of nodata values to NaNs (and thus using float dtype) is done by default (`mask_and_scale`), but can be excluded using `mask_and_scale=False`:
 
 ```{code-cell} ipython3
-dem_zwalm2 = rioxarray.open_rasterio(dem_zwalm_file, masked=True).sel(band=1)
+dem_zwalm2 = xr.open_dataarray(dem_zwalm_file, mask_and_scale=False).sel(band=1)
 ```
 
 ```{code-cell} ipython3
@@ -346,7 +347,7 @@ dem_zwalm2.rio.clip(catchment.to_crs('epsg:31370').geometry, from_disk=True)
 
 +++
 
-If we have the raster and vector files on disk, [`gdal CLI`](https://gdal.org/programs/index.html) will be very fast to work with (note that GDAL automatically handles the CRS difference of the raster and vector).
+If we have the raster and vector files on disk, the [`gdal CLI`](https://gdal.org/programs/index.html) will be very fast to work with (note that GDAL automatically handles the CRS difference of the raster and vector).
 
 ```{code-cell} ipython3
 rm ./dem_masked_gdal.tiff
@@ -359,7 +360,7 @@ rm ./dem_masked_gdal.tiff
 ```{code-cell} ipython3
 :tags: []
 
-clipped_gdal = rioxarray.open_rasterio("./dem_masked_gdal.tiff", masked=True).sel(band=1)
+clipped_gdal = xr.open_dataarray("./dem_masked_gdal.tiff", mask_and_scale=True).sel(band=1)
 img = clipped_gdal.plot.imshow(
     cmap="terrain", figsize=(10, 6), interpolation='antialiased')
 img.axes.set_aspect("equal")
@@ -424,7 +425,7 @@ We start with the Digital Elevation Model (DEM) for Flanders. The data is availa
 
 **EXERCISE**:
 
-* Read the DEM using `rioxarray`. The zip file is available at `data/gent/DHMVIIDTMRAS25m.zip"`. You can either unzip the file, and use the path to the unzipped file, or prepend `zip://` to the path. 
+* Read the DEM using `xarray`. The zip file is available at `data/gent/DHMVIIDTMRAS25m.zip`. You can either unzip the file, and use the path to the unzipped file, or prepend `zip://` to the path. 
 * What is the CRS of this dataset?
 * The dataset has a third dimension with a single band. This doesn't work for plotting, so create a new `DataArray` by selecting the single band. Assign the result to a variable `dem`.
 * Make a quick plot of the dataset.
@@ -444,7 +445,7 @@ We start with the Digital Elevation Model (DEM) for Flanders. The data is availa
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-dem = rioxarray.open_rasterio("zip://./data/gent/DHMVIIDTMRAS25m.zip")
+dem = xr.open_dataarray("zip://./data/gent/DHMVIIDTMRAS25m.zip", engine="rasterio")
 dem
 ```
 
@@ -457,7 +458,7 @@ dem.rio.crs
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-dem = rioxarray.open_rasterio("zip://./data/gent/DHMVIIDTMRAS25m.zip").sel(band=1)
+dem = xr.open_dataarray("zip://./data/gent/DHMVIIDTMRAS25m.zip", engine="rasterio").sel(band=1)
 dem
 ```
 
@@ -471,9 +472,10 @@ dem.plot.imshow(robust=True, cmap="terrain")
 
 **EXERCISE**:
 
-The dataset uses a large negative value to denote the "nodata" value (in this case meaning "outside of Flanders").
+The dataset uses a large negative value to denote the "nodata" value (in this case meaning "outside of Flanders"). The nodata value is - by default - read by xarray as `np.nan`, but this behaviour can be excluded:
     
-* Check the value that is used as "nodata" value.
+* Read the `zip://./data/gent/DHMVIIDTMRAS25m.zip"` file (band=1) without converting the nodata value to `np.nan` (keep -9999.).
+* Check the value -9999. is used as "nodata" value.
 * Repeat the plot from the previous exercise, but now set a fixed minimum value of 0 for the colorbar, to ignore the negative "nodata" in the color scheme.
 * Replace the "nodata" value with `np.nan` using the `where()` method. 
     
@@ -490,6 +492,7 @@ The dataset uses a large negative value to denote the "nodata" value (in this ca
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
+dem = xr.open_dataarray("zip://./data/gent/DHMVIIDTMRAS25m.zip", engine="rasterio", mask_and_scale=False).sel(band=1)
 dem.rio.nodata
 ```
 
@@ -511,10 +514,10 @@ dem_masked = dem.where(dem != dem.rio.nodata)
 dem_masked.plot.imshow(robust=True, cmap="terrain")
 ```
 
-Alternatively to masking the nodata value yourself, you can do this directly when loading the data as well, using the `masked=True` keyword of `open_rasterio()`:
+Alternatively to masking the nodata value manually, you can do this explicitly when loading the data, using the `mask_and_scale=True` keyword:
 
 ```{code-cell} ipython3
-dem_masked = rioxarray.open_rasterio("zip://./data/gent/DHMVIIDTMRAS25m.zip", masked=True).sel(band=1)
+dem_masked = xr.open_dataarray("zip://./data/gent/DHMVIIDTMRAS25m.zip", engine="rasterio", mask_and_scale=True).sel(band=1)
 ```
 
 ```{code-cell} ipython3
@@ -631,7 +634,7 @@ The data for the whole of Europe can be downloaded from the website (latest vers
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-land_use = rioxarray.open_rasterio("data/CLC2018_V2020_20u1_flanders.tif").sel(band=1)
+land_use = xr.open_dataarray("data/CLC2018_V2020_20u1_flanders.tif").sel(band=1)
 land_use
 ```
 
@@ -994,7 +997,7 @@ suitable_locations.where(suitable_locations > 0).plot.imshow(ax=ax, alpha=0.5, a
 ax.set_aspect("equal")
 ```
 
-## Advanced exercises
+## Advanced (optional) exercises:
 
 +++
 
@@ -1006,6 +1009,7 @@ We downloaded the data about urban green areas in Ghent (https://data.stad.gent/
 
 * Read in the data at `data/gent/vector/parken-gent.geojson` into a variable `green`.
 * Check the content (first rows, quick plot)
+* Remove the rows with an empty geometry (`None`)    
 * Convert this vector layer to a raster using the spatial extent and resolution of `dem_gent` as the targer raster.
 * The `rasterio.features.rasterize` results in a numpy array. Convert this to a DataArray using the `xr.DataArray(..)` constructor, specifying the coordinates of `dem_gent` (`dem_gent.coords`) for the coordinates of the new array.
     
@@ -1022,6 +1026,10 @@ green.head()
 :tags: [nbtutor-solution]
 
 green.plot()
+```
+
+```{code-cell} ipython3
+green = green.dropna(subset="geometry")
 ```
 
 ```{code-cell} ipython3
@@ -1044,7 +1052,7 @@ green_arr = xr.DataArray(green_arr, coords=dem_gent.coords)
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-green_arr.plot.imshow()
+green_arr.plot.imshow(figsize=(8, 8))
 ```
 
 <div class="alert alert-success">
@@ -1164,7 +1172,7 @@ dem_geotiff = "data/dem_geotiff/DEM_geotiff/alwdgg.tif"
 ```
 
 ```{code-cell} ipython3
-img = xr.open_rasterio(dem_geotiff).sel(band=1).plot.imshow(cmap="terrain", figsize=(10, 4), )
+img = xr.open_dataarray(dem_geotiff).sel(band=1).plot.imshow(cmap="terrain", figsize=(10, 4), )
 img.axes.set_aspect("equal")
 ```
 
@@ -1267,21 +1275,21 @@ averbode_cog_rgb = 'http://s3-eu-west-1.amazonaws.com/lw-remote-sensing/cogeo/20
 Check the metadata, without downloading the data itself:
 
 ```{code-cell} ipython3
-averbode_data = rioxarray.open_rasterio(averbode_cog_rgb)
+averbode_data = rioxarray.open_rasterio(averbode_cog_rgb) # usage of rioxarray.open_rasterio
 ```
 
 ```{code-cell} ipython3
 averbode_data
 ```
 
-Downloading the entire data set would be 37645*35405\*4 pixels of 1 byte, so more or less 5.3 GByte
+Downloading the entire data set would be 37645*35405\*4 pixels of 4 byte, so more or less 5.3 GByte
 
 ```{code-cell} ipython3
 37645*35405*4 / 1e9  # Gb
 ```
 
 ```{code-cell} ipython3
-averbode_data.size / 1e9  # Gb
+averbode_data.size  / 1e9  # Gb
 ```
 
 Assume that we have a study area which is much smaller than the total extent of the available image:
@@ -1308,6 +1316,14 @@ with rasterio.open(averbode_cog_rgb) as src:
 ```{code-cell} ipython3
 averbode_64 = rioxarray.open_rasterio(averbode_cog_rgb, overview_level=5)
 ```
+
+<div class="alert alert-info">
+
+**REMEMBER**:
+
+`rioxarray.open_rasterio` is used here instead of `xr.open_dataarray(..., engine="rasterio")` as the latter does not support the `overview_level` argument. In general, both should be comparable in behaviour.
+    
+</div>
 
 ```{code-cell} ipython3
 averbode_64.size / 1e6  # Mb
