@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.14.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -604,6 +604,7 @@ We will now combine both datasets in an overlay operation. Create a new `GeoData
 * The intersection of two GeoDataFrames can be calculated with the `geopandas.overlay()` function.
 * The `overlay()` functions takes first the two GeoDataFrames to combine, and a third `how` keyword indicating how to combine the two layers.
 * For making an overlay based on the intersection, you can pass `how='intersection'`.
+* The default `overlay()` call will generate a warning because some of the intersections result in a point or linestring, and thus not in a new polygon. For this exercise, we are only interested in the resulting polygons, and therefore we set `keep_geom_type=True` to suppress the warning and say to `overlay()` we only need the resulting geometries of the same type as the original geometries (thus, only polygons).
 
 </details>
 
@@ -618,7 +619,7 @@ districts = geopandas.read_file("data/paris_districts.geojson").to_crs(land_use.
 :tags: [nbtutor-solution]
 
 # Overlay both datasets based on the intersection
-combined = geopandas.overlay(land_use, districts, how='intersection')
+combined = geopandas.overlay(land_use, districts, how='intersection', keep_geom_type=True)
 ```
 
 ```{code-cell} ipython3
@@ -733,10 +734,6 @@ An alternative to calculate the area per land use class in each district:
 
 ```{code-cell} ipython3
 combined.groupby(["district_name", "class"])["area"].sum().reset_index()
-```
-
-```{code-cell} ipython3
-
 ```
 
 ```{code-cell} ipython3
