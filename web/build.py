@@ -21,21 +21,23 @@ def _load_config(file_path):
 def create_web(config_file, templates, static, output_path):
     """Build html slide deck with the course specific configuration
 
-    Parameters
-    -----------
-    config : pathlib.Path
-        course configuration, shoudl contain following elements:
-            - 'title', e.g.
-            - 'dates', e.g. June 8, 9 and 10, 2022
-            - 'repository', e.g. ICES-python-data
-            - 'hackmd', e.g. https://hackmd.io/zuHWx-doS9ORQGV_1JcXDw?both
-            - 'googleform', e.g. https://forms.gle/UfDRr3hkFtt2JcwGA
-    templates : pathlib.Path (folder)
-        path to the Jinja2 compatible templates folder
-    static : pathlib.Path (folder)
-        path to static entities, copied to the output folder
-    output_path : pathlib.Path (folder)
-        path
+    \b
+    CONFIG_FILE Toml file with the course configuration parameters.
+    TEMPLATES Folder Path to the Jinja2 compatible templates folder.
+    STATIC Folder Path to static entities, copied to the output folder.
+    OUTPUT_PATH Folder Path to write the output.
+
+    \f
+    Notes
+    -----
+    Course configuration should contain following elements:
+
+        * 'title', e.g.
+        * 'dates', e.g. June 8, 9 and 10, 2022
+        * 'repository', e.g. ICES-python-data
+        * 'hackmd', e.g. https://hackmd.io/zuHWx-doS9ORQGV_1JcXDw?both
+        * 'googleform', e.g. https://forms.gle/UfDRr3hkFtt2JcwGA
+
     """
     # check existence of required configuration settings for the web elements
     config = _load_config(config_file)
