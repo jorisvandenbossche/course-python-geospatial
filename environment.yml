@@ -25,7 +25,7 @@ dependencies:
   - distributed
   - dask-labextension
   - bokeh
-  - bokeh_jupyter
+  - jupyter_bokeh
   - intake
   - intake-xarray
   - ipympl
