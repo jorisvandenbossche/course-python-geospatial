@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.13.0
+    jupytext_version: 1.14.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -15,9 +15,9 @@ kernelspec:
 <p><font size="6"><b>Visualization - Matplotlib</b></font></p>
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2021*
+> *October, 2022*
 >
-> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -364,64 +364,6 @@ ax1.legend()
 * The preformatting of Pandas provides mostly enough flexibility for quick analysis and draft reporting. It is not for paper-proof figures or customization
 
 If you take the time to make your perfect/spot-on/greatest-ever matplotlib-figure: Make it a <b>reusable function</b>!
-
-</div>
-
-+++
-
-An example of such a reusable function to plot data:
-
-```{code-cell} ipython3
-%%file plotter.py  
-#this writes a file in your directory, check it(!)
-
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-
-from matplotlib import cm
-from matplotlib.ticker import MaxNLocator
-
-def vmm_station_plotter(flowdata, label="flow (m$^3$s$^{-1}$)"):
-    colors = [cm.viridis(x) for x in np.linspace(0.0, 1.0, len(flowdata.columns))] # list comprehension to set up the color sequence
-
-    fig, axs = plt.subplots(3, 1, figsize=(16, 8))
-
-    for ax, col, station in zip(axs, colors, flowdata.columns):
-        ax.plot(flowdata.index, flowdata[station], label=station, color=col) # this plots the data itself
-        
-        ax.legend(fontsize=15)
-        ax.set_ylabel(label, size=15)
-        ax.yaxis.set_major_locator(MaxNLocator(4)) # smaller set of y-ticks for clarity
-        
-        if not ax.get_subplotspec().is_last_row():  # hide the xticklabels from the none-lower row x-axis
-            ax.xaxis.set_ticklabels([])
-            ax.xaxis.set_major_locator(mdates.YearLocator())
-        else:                     # yearly xticklabels from the lower x-axis in the subplots
-            ax.xaxis.set_major_locator(mdates.YearLocator())
-            ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
-        ax.tick_params(axis='both', labelsize=15, pad=8) # enlarge the ticklabels and increase distance to axis (otherwise overlap)
-    return fig, axs
-```
-
-```{code-cell} ipython3
-from plotter import vmm_station_plotter
-# fig, axs = vmm_station_plotter(flowdata)
-```
-
-```{code-cell} ipython3
-fig, axs = vmm_station_plotter(flowdata, 
-                               label="NO$_3$ (mg/l)")
-fig.suptitle('Ammonium concentrations in the Maarkebeek', 
-             fontsize='17')
-fig.savefig('ammonium_concentration.png', dpi=150)
-```
-
-<div class="alert alert-warning">
-
-**NOTE**
-
-- Let your hard work pay off, write your own custom functions!
 
 </div>
 
