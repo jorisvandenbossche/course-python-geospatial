@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="static/slides.css">
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# {{ title }}
+
+{{ organisation }}<br>
+{{ dates }}
+
+Joris Van den Bossche, Stijn Van Hoey
+
+https://github.com/jorisvandenbossche/{{ repository }}
+
+---
+class: center, middle
+
+# Who are you?
+
+Go to {{ hackmd }}
+
+<iframe src="{{ hackmd }}" height="400px" width="800px"></iframe>
+
+---
+
+### Joris Van den Bossche
+
+<a href="https://twitter.com/jorisvdbossche"><img src="./static/img/icon_twitter.svg" alt="Twitter logo" class="icon"> jorisvdbossche</a>
+<a href="https://github.com/jorisvandenbossche"><img src="./static/img/icon_github.svg" alt="Github logo"  class="icon"> jorisvandenbossche</a>
+
+* Open source software developer and teacher
+* Pandas, GeoPandas, scikit-learn, Apache Arrow
+
+.center[
+![:scale 90%](./static/img/work_joris_1.png)]
+
+---
+
+### Stijn Van Hoey
+
+<a href="https://twitter.com/svanhoey"><img src="./static/img/icon_twitter.svg" alt="Twitter logo"> SVanHoey</a>
+<a href="https://github.com/stijnvanhoey"><img src="./static/img/icon_github.svg" alt="Github logo"> stijnvanhoey</a>
+
+* Freelance developer and teacher
+* Research software engineer at [Fluves](https://www.fluves.com/)
+
+.center[
+![:scale 90%](./static/img/work_stijn_1.png)]
+
+---
+class: middle, section_background
+
+# Setting up a working environment
+
+---
+
+## Setting up a working environment
+
+For the setup instructions, see the [setup page](https://jorisvandenbossche.github.io/{{ repository }}/setup.html).
+
+---
+class: left, middle
+
+0. Everyone has conda installed and the environment setup? If not, see [1-install-python-and-the-required-python-packages](https://jorisvandenbossche.github.io/{{ repository }}/setup.html#1-before-the-course-install-python-and-the-required-python-packages)
+1. Make sure to (re)download ALL the course material, see [2-getting-the-course-materials](https://jorisvandenbossche.github.io/{{ repository }}/setup.html#2-first-day-of-the-course-getting-the-course-materials) also if you already did this before.
+2. Next, also do section 3 and 4 of the [setup](https://jorisvandenbossche.github.io/{{ repository }}/setup.html#3-first-day-of-the-course-test-your-configuration)
+
+> If you succesfully done 1, 2 and 3, put up your `green sticky note` on your laptop screen..
+
+Next:
+
+- Surf to and fill in [the questionnaire]({{ hackmd }})
+- In Jupyter Lab, start with the 'notebooks/00-jupyter_introduction.ipynb'.
+
+> Installation or setup issues? Put up your `red sticky note` on your laptop screen.
+
+---
+class: center, middle
+
+When you see something like this...
+
+
+![:scale 100%](./static/img/startup.png)
+
+...relax, you're ready to start!
+
+---
+class: center, middle
+
+![:scale 100%](https://i.ytimg.com/vi/PlaYMh-u-2w/maxresdefault.jpg)
+
+---
+class: middle, left
+
+### Time is divided between
+
+- group sessions: we explain new concepts (aka 'theory')
+- practise sessions: you work on exercises or case studies
+
+In case of questions, remarks, suggestions, you can always interrupt us and just ask.
+
+During practise sessions, use the `red sticky note` on top of your laptop screen to let us know you have a question.
+
+### Status check
+
+We will regularly ask for a check (ready with exercise, installation succesfull...). Use the `green sticky note` on top of your laptop screen to say 👍.
+
+### Feel lost?
+
+Just ask either one of us, we are here to help you.
+
+---
+class: middle, center
+
+![:scale 80%](./static/img/issuetracker.png)
+
+Report bugs, typo's, suggestions... as issues ([New issue](https://github.com/jorisvandenbossche/course-python-geospatial/issues/new))
+
+or see the [contributing guidelines](https://github.com/jorisvandenbossche/course-python-geospatial/blob/main/CONTRIBUTING.md)
+
+---
+class: middle, section_background
+
+# Working with Python
+
+---
+
+# Conda
+
+### Why using conda?
+
+- Consistent package manager across Windows, Mac and Linux
+- Many precompiled packages available
+- Less problems with installation
+
+--
+
+### Why different environments?
+
+- Manage the dependencies of a specific project/paper/group/...
+- You can install different version of Python and other packages alongside on your computer
+- Easily share environments with other
+
+---
+## Small overview of conda commands
+
+Creating a new environment:
+
+```
+conda create -n my_env python=3.10 pandas
+
+# or from environment file
+conda env create -f environment.yml
+```
+
+Activating an environment:
+
+```
+conda activate my_env
+```
+
+Install a new package:
+
+```
+conda install matplotlib     # if not working, try: pip install ...
+```
+
+List all installed packages: `conda list`
+
+List all your environments: `conda info -e`
+
+See the docs: https://docs.conda.io/projects/conda/en/latest/user-guide/index.html
+
+---
+class: center, middle
+
+### Keep track of your python ecosystem <br>with an `environment.yml`
+<br><br>
+
+```
+conda env export > environment.yml
+```
+
+---
+
+# Writing Python code
+
+## IPython console
+
+<br>
+.center[![:scale 75%](./static/img/ipython.png)]
+
+---
+
+## Interactive Development Environment (IDE)
+
+* [**Spyder**](https://pythonhosted.org/spyder/) is shipped with Anaconda. The familiar environment for Matlab/Rstudio-users.
+* [**VS Code**](https://code.visualstudio.com/) is also shipped with Anaconda. General purpose editor with powerful plugin ecosystem.
+* [**PyCharm**](https://www.jetbrains.com/pycharm/): Popular for web-development and Django applications, powerful when doing 'real' development (packages, libraries, software)
+* [Eclipse + **pyDev plugin**](http://www.pydev.org/): If you already work in Eclipse, add the python environment
+* ...
+
+---
+
+## Jupyter Lab/Notebook
+<small>(*previously called IPython notebook*)</small>
+
+**Jupyter notebook** provides an **interactive** scripting environment,<br> ideal for exploration, prototyping,...
+
+.center[![:scale 70%](./static/img/notebook.png)]
+
+--
+
+ ...the stuff we're dealing with in this course!
+
+---
+class: center, middle
+
+# How are you feeling?
+
+![:scale 100%](http://esq.h-cdn.co/assets/15/51/980x490/landscape-1450137389-john-cleese.JPG)
+
+### {{ googleform }}
+
+Please fill in the questionnaire.
+
+---
+class: center, middle
+
+# Closing notes
+
+---
+class: center, middle
+
+# Python's scientific/GIS ecosystem
+
+#### ## Inspired by figure by Jake VanderPlas
+
+---
+class: center, middle, bgheader
+background-image: url(./static/img/ecosystem-gis-overview_6.svg)
+background-size: cover
+
+---
+class: center, middle, bgheader
+background-image: url(./static/img/ecosystem-gis-overview_5.svg)
+background-size: cover
+
+---
+class: center, middle, bgheader
+background-image: url(./static/img/ecosystem-gis-overview_3.svg)
+background-size: cover
+
+---
+class: center, middle, bgheader
+background-image: url(./static/img/ecosystem-gis-overview_2.svg)
+background-size: cover
+
+---
+class: center, middle, bgheader
+background-image: url(./static/img/ecosystem-gis-overview_1.svg)
+background-size: cover
+
+---
+class: center, middle, bgheader
+background-image: url(./static/img/ecosystem-gis-overview.svg)
+background-size: cover
+
+---
+
+# A rich ecosystem of packages
+
+<br>
+
+![:scale 60%](https://pysal.org/pysal1.png)
+
+Python Spatial Analysis Library (https://pysal.org). Collection of packages for:
+
+* detection of spatial clusters, hot-spots, and outliers
+* construction of graphs from spatial data
+* spatial regression and statistical modeling on geographically embedded networks
+* spatial econometrics
+* exploratory spatio-temporal data analysis
+* ...
+
+
+---
+
+# A rich ecosystem of packages
+
+<br>
+
+Building up on / integrating with GeoPandas:
+
+**MovingPandas** (https://anitagraser.github.io/movingpandas/): working with movement data
+
+**Momepy** (http://docs.momepy.org/en/latest/): quantitative analysis of urban morphology
+
+**geoplot** (https://residentmario.github.io/geoplot/):  high-level Python geospatial plotting library (combining GeoPandas, matplotlib and cartopy)
+
+**...**
+
+Check out the [GeoPandas ecosystem](https://geopandas.org/en/stable/community/ecosystem.html#geopandas-ecosystem).
+
+---
+
+# A rich ecosystem of packages
+
+<br>
+
+Building up on / integrating with xarray:
+
+**Satpy** (https://satpy.readthedocs.io/en/stable/): package for earth-observing satellite data processing
+
+**xesmf** (https://xesmf.readthedocs.io/): Universal Regridder for Geospatial Data
+
+**verde** (https://www.fatiando.org/verde/): interpolating spatial data on regular grids
+
+**rioxarray** (https://github.com/corteva/rioxarray): linking rasterio functionality with xarray
+
+**...**
+
+Check out the [Xarray ecosystem](https://docs.xarray.dev/en/stable/ecosystem.html).
+
+---
+
+# A rich ecosystem of packages
+
+<br>
+
+Several more domain/application specific packages:
+
+**MetPy** (https://unidata.github.io/MetPy): working with weather data
+
+**xgcm** (https://xgcm.readthedocs.io/en/latest/index.html): working with output from General Circulation Models
+
+**osmnx** (https://github.com/gboeing/osmnx): street networks
+
+**...**
+
+
+---
+
+# A rich ecosystem of packages
+
+<br>
+
+**Machine learning**: scikit-learn, tensorflow, pytorch, keras, chainer, ...
+
+**Performance**: Numba, Cython, Numexpr, Pythran, C/Fortran wrappers, ...
+
+**Visualisation**: Bokeh, Seaborn, Plotnine, Altair, Plotly, Mayavi, HoloViews, datashader, vaex ...
+
+**Data structures and parallel/distributed computation**: Xarray, Dask, Distributed, Cupy, ...
+
+Specialized packages in many **scientific fields**: astronomy, natural language processing, image processing, geospatial, ...
+
+**Packaging and distribution**: pip/wheels, conda, Anaconda, Canopy, ...
+
+
+---
+class: center, middle
+
+### Reading advice
+
+[Good Enough Practices in Scientific Computing](https://arxiv.org/pdf/1609.00037v1.pdf)
+
+> "*However, while most scientists are careful to validate their laboratory and field equipment, most do not know how reliable their software is*"
+
+---
+class: center, middle
+
+# Thanks
+
+### Joris Van den Bossche
+
+<a href="https://twitter.com/jorisvdbossche"><img src="./static/img/icon_twitter.svg" alt="Twitter logo"> jorisvdbossche</a>
+<a href="https://github.com/jorisvandenbossche"><img src="./static/img/icon_github.svg" alt="Github logo"> jorisvandenbossche</a>
+
+### Stijn Van Hoey
+
+<a href="https://twitter.com/svanhoey"><img src="./static/img/icon_twitter.svg" alt="Twitter logo"> SVanHoey</a>
+<a href="https://github.com/stijnvanhoey"><img src="./static/img/icon_github.svg" alt="Github logo"> stijnvanhoey</a>
+
+</textarea>
+    <script src="./static/remark-latest.min.js"></script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+    <script>
+        remark.macros.scale = function (percentage) {
+          var url = this;
+          return '<img src="' + url + '" style="width: ' + percentage + '" />';
+      };
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
