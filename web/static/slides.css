@@ -1,15 +1,12 @@
-@import url(webfont-ubuntu-400-300-100.css);
-@import url(webfont-ubuntu-mono-400-700-400italic.css);
-
 body {
-  font-family: 'Ubuntu';
+  font-family: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
   font-weight: normal;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Ubuntu';
   font-weight: 300;
-  margin-top: 0;
+  margin-top: 5px;
+  margin-bottom: 10px;
 }
 h1 {
   margin-top: 0.5em;
@@ -26,26 +23,16 @@ h2, h3, h4, h5, h6 {
   font-weight: normal;
 }
 
-
 li {
   font-size: 120%;
-  line-height: 160%;
+  line-height: 130%;
 }
 
 p {
-font-size: 120%;
-  line-height: 140%;
+  font-size: 100%;
+  line-height: 120%;
 }
 
-.singleimg .middlebelowheader {
-  text-align: center;
-}
-
-.singleimg img {
-  max-width: 90%;
-  max-height: 600px;
-  /*border: 2px solid #ddd;*/
-}
 table {
   margin: 0 auto 0.8em;
   border-collapse: collapse;
@@ -62,6 +49,13 @@ td, th {
   color: white;
   border-radius: .5em;
 }
+
+.section_background {
+  background-color:#c2c444;
+  color: #fff;
+  font-weight: normal;
+}
+
 .middlebelowheader {
   /* This fixed size height was found to work well with the slide
      scaling mechanism of remark.js:
@@ -70,28 +64,6 @@ td, th {
   display: table-cell;
   vertical-align: middle;
 }
-.widespace h2 {
-  line-height: 200%;
-}
-.big .remark-code  {
-  font-size: 200%;
-}
-.remark-code, .remark-inline-code {
-   font-family: 'Ubuntu Mono';
-}
-
-.medium .remark-code  {
-  font-size: 120%;
-}
-
-.mmedium .remark-code  {
-  font-size: 99%;
-}
-
-.affiliations img {
-  height: 100px;
-  margin: 2em;
-}
 
 .hidden {
   visibility: hidden;
@@ -99,21 +71,6 @@ td, th {
 
 .small {
   font-size: 90%;
-}
-
-.credits {
-  font-style: italic;
-  font-size: 70%;
-}
-
-.bunchoflogos img {
-  max-height: 100px;
-  padding: 1em;
-}
-
-.bunchoflogos p {
-  text-align: center;
-  width: 750px;
 }
 
 a:visited {
@@ -128,16 +85,16 @@ a:link {
   color: #808080;
   background-color: rgba(256, 256, 256, 0.9);
   font-size: 60%;
-  position: absolute; 
-  bottom: 30px; 
+  position: absolute;
+  bottom: 30px;
   left: 20px;
   text-align: left;
   line-height: 100%;
   padding: 5px;
 }
 
-.remark-slide-content { 
-  background-size: contain; 
+.remark-slide-content {
+  background-size: contain;
 }
 
 .emphasize  {
@@ -153,4 +110,35 @@ a:link {
 
 .fadetext {
   opacity: 0.3;
-]
+}
+
+blockquote {
+	padding: 0px 20px;
+  font-weight: lighter;
+	border-left: 5px solid #eee;
+}
+
+code {
+  font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
+  background-color: #f5f5f5;
+	border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.95;
+}
+
+.remark-code {
+  font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
+	display: block;
+	padding: 9.5px;
+	margin: 0 0 10px;
+	font-size: 13px;
+	line-height: 1.42857143;
+	color: #333;
+	word-break: break-all;
+	word-wrap: break-word;
+	background-color: #f5f5f5;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+
