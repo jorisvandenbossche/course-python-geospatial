@@ -450,7 +450,7 @@ In this case, we want to join the `cities` dataframe with the information of the
 We use the [`geopandas.sjoin`](http://geopandas.readthedocs.io/en/latest/reference/geopandas.sjoin.html) function:
 
 ```{code-cell} ipython3
-joined = geopandas.sjoin(cities, countries, op='within', how='left')
+joined = geopandas.sjoin(cities, countries, predicate='within', how='left')
 ```
 
 ```{code-cell} ipython3
@@ -491,7 +491,7 @@ stations = geopandas.read_file("data/paris_bike_stations.geojson").to_crs(epsg=2
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-joined = geopandas.sjoin(stations, districts[['district_name', 'geometry']], op='within')
+joined = geopandas.sjoin(stations, districts[['district_name', 'geometry']], predicate='within')
 ```
 
 ```{code-cell} ipython3
@@ -540,7 +540,7 @@ trees.head()
 :tags: [nbtutor-solution]
 
 # Spatial join of the trees and districts datasets
-joined = geopandas.sjoin(trees, districts, op='within')
+joined = geopandas.sjoin(trees, districts, predicate='within')
 joined.head()
 ```
 
@@ -611,7 +611,7 @@ Since not all districts have the same size, we should compare the tree density f
 :tags: [nbtutor-solution]
 
 # Merge the 'districts' and 'trees_by_district' dataframes
-districts_trees = pd.merge(districts, trees_by_district, on='district_name')
+districts_trees = pd.merge(districts, trees_by_district, predicate='district_name')
 districts_trees.head()
 ```
 
