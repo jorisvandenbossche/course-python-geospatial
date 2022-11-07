@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.14.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -557,10 +557,10 @@ The **`plot`** method can be used to quickly visualize the data in different way
 countries['pop_est'].plot();
 ```
 
-The default is a *line* plot. However, for this dataset, that's a not very useful plot type. With the `kind` keyword, you can specify other plot types:
+The default is a *line* plot. However, for this dataset, that's a not very useful plot type. With the `.plot.<kind>` accessor (or the `kind` keyword), you can specify other plot types:
 
 ```{code-cell} ipython3
-countries['pop_est'].plot(kind='hist')
+countries['pop_est'].plot.hist()  # or: .plot(kind='hist')
 ```
 
 This is still not the best plot. This is due to a few countries with a very large population.
@@ -588,7 +588,7 @@ import matplotlib.pyplot as plt
 The object returned by the pandas `plot()` method is called an **Axes**
 
 ```{code-cell} ipython3
-ax = countries['pop_est'].plot(kind='hist')
+ax = countries['pop_est'].plot.hist()
 ```
 
 ```{code-cell} ipython3
@@ -607,14 +607,14 @@ and then specify the Axes to plot on with pandas:
 
 ```{code-cell} ipython3
 fig, axs = plt.subplots()
-countries['pop_est'].plot(kind="hist", ax=axs)
+countries['pop_est'].plot.hist(ax=axs)
 ```
 
 The Axes object can then be used for further customization:
 
 ```{code-cell} ipython3
 fig, axs = plt.subplots()
-countries['pop_est'].plot(kind="hist", ax=axs, bins=50)
+countries['pop_est'].plot.hist(ax=axs, bins=50)
 axs.set_title("Countries of the world")
 axs.set_xlabel("Population")
 axs.set_xlim(0, 5e8)
@@ -682,7 +682,7 @@ Calculating a given statistic (e.g. sum of the population) for each category in 
 The apply and combine steps are typically done together in pandas.
 
 ```{code-cell} ipython3
-countries.groupby('continent')['pop_est'].sum().plot(kind="barh")
+countries.groupby('continent')['pop_est'].sum().plot.barh()  # or plot(kind="barh")
 ```
 
 ## Let's practice! (part II)
@@ -710,7 +710,7 @@ stations.head()
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-districts['population'].hist()  # or .plot(kind="hist")
+districts['population'].plot.hist()  # or .plot(kind="hist")
 ```
 
 <div class="alert alert-success">
@@ -739,9 +739,10 @@ districts.groupby('arrondissement')['population'].sum()
 :tags: [nbtutor-solution]
 
 fig, ax = plt.subplots()
-stations["bike_stands"].hist(ax=ax, alpha=.5, label="Total bike stands")
-stations["available_bikes"].hist(ax=ax, alpha=.5, label="Available bikes")
+stations["bike_stands"].plot.hist(ax=ax, alpha=.5, label="Total bike stands")
+stations["available_bikes"].plot.hist(ax=ax, alpha=.5, label="Available bikes")
 ax.legend()
+ax.grid()
 ```
 
 <div class="alert alert-success">
@@ -827,7 +828,7 @@ cities.head()
 Which allows us to, for example, plot the locations manually:
 
 ```{code-cell} ipython3
-cities.plot(x="longitude", y="latitude", kind="scatter")
+cities.plot.scatter(x="longitude", y="latitude")
 ```
 
 However, this doesn't enable to *easily* work with those locations and do spatial analyses on them. For that, we are going to introduce a new package: **`geopandas`**.
