@@ -52,11 +52,15 @@ countries.head()
 countries.plot()
 ```
 
+```{code-cell} ipython3
+countries.explore()
+```
+
 What do we observe:
 
 - Using `.head()` we can see the first rows of the dataset, just like we can do with Pandas.
 - There is a `geometry` column and the different countries are represented as polygons
-- We can use the `.plot()` method to quickly get a *basic* visualization of the data
+- We can use the `.plot()` (matplotlib) or `explore()` (Folium / Leaflet.js) method to quickly get a *basic* visualization of the data
 
 +++
 
@@ -299,10 +303,10 @@ stations.shape
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-stations.plot(figsize=(12,6))
+stations.plot(figsize=(12,6))  # or .explore()
 ```
 
-A plot with just some points can be hard to interpret without any spatial context. Therefore, in the next exercise we will learn how to add a background map.
+A plot with just some points can be hard to interpret without any spatial context. We have seen that we can use the `explore()` method to easily get an interactive figure that by default includes a background map. But also for the static matplotlib-based plot, it can be useful to add such a base map, and that's what we will learn in the next excercise.
 
 We are going to make use of the [contextily](https://github.com/darribas/contextily) package. The `add_basemap()` function of this package makes it easy to add a background web map to our plot. We begin by plotting our data first, and then pass the matplotlib axes object (returned by dataframe's `plot()` method) to the `add_basemap()` function. `contextily` will then download the web tiles needed for the geographical extent of your plot.
 

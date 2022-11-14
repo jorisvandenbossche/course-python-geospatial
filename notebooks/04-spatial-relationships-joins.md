@@ -331,15 +331,21 @@ stations_eiffel = stations[dist_eiffel < 1000]
 ```
 
 ```{code-cell} ipython3
-# Make a plot of the close-by bike stations
+# Make a plot of the close-by bike stations using matplotlib and contextily
 import matplotlib.pyplot as plt
 import contextily
 
 fig, ax = plt.subplots(figsize=(8, 8))
-stations_eiffel.to_crs(epsg=3857).plot(ax=ax)
-geopandas.GeoSeries([eiffel_tower], crs='EPSG:2154').to_crs(epsg=3857).plot(ax=ax, color='red')
-contextily.add_basemap(ax)
+stations_eiffel.plot(ax=ax)
+geopandas.GeoSeries([eiffel_tower], crs='EPSG:2154').plot(ax=ax, color='red')
+contextily.add_basemap(ax, crs=stations_eiffel.crs)
 ax.set_axis_off()
+```
+
+```{code-cell} ipython3
+# Make a plot of the close-by bike stations using matplotlib and contextily
+m = stations_eiffel.explore(marker_kwds=dict(radius=5))
+geopandas.GeoSeries([eiffel_tower], crs='EPSG:2154').explore(m=m, color='red', marker_kwds=dict(radius=5))
 ```
 
 ---
