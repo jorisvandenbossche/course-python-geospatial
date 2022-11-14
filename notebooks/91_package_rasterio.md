@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.14.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -15,9 +15,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2021*
+> *October, 2022*
 >
-> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -25,7 +25,7 @@ kernelspec:
 
 > __In this notebook, the tupical workflow when doing operations with Rasterio to handle spatial data is explained .__
 
-Both when working with Numpy as in xarray, [Rasterio](https://rasterio.readthedocs.io/en/latest/) is the interface to read the data from disk. 
+Both when working with Numpy as in xarray, [Rasterio](https://rasterio.readthedocs.io/en/latest/) provides an interface to read the data from disk. 
 
 Whereas Numpy is a powerful package for calculation, it does not provide any spatial information so lacking support for reprojection, warping,... Apart from reading in a broad set of GIS raster formats, Rasterio also provides some of these GIS raster operations.
 
@@ -45,6 +45,8 @@ Let's recap with what we did so far with Rasterio:
 data_file = "./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff"
 ```
 
+xarray provides the `open_dataset` and `open_dataarray` functions to read data. When reading with `engine="rasterio"`, the underlying rasterio method is used under the hood. It is also possible to use the Rasterio read data methods as well:
+
 ```{code-cell} ipython3
 with rasterio.open(data_file) as src:    
     herstappe_data = src.read([1, 2, 3], out_dtype=float, masked=False) # Note the float as output
@@ -60,7 +62,7 @@ herstappe_data.shape, herstappe_data.dtype
 
 +++
 
-Rasterio provides dedicated plot functions `show` and `show_hist` for quick ddata exploration:
+Rasterio also provides dedicated plot functions `show` and `show_hist` for quick data exploration:
 
 ```{code-cell} ipython3
 with rasterio.open(data_file) as src:
