@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.14.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -15,9 +15,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2021*
+> *October, 2022*
 >
-> *© 2021, Joris Van den Bossche and Stijn Van Hoey  (<mailto:jorisvandenbossche@gmail.com>, <mailto:stijnvanhoey@gmail.com>). Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2022, Joris Van den Bossche and Stijn Van Hoey  (<mailto:jorisvandenbossche@gmail.com>, <mailto:stijnvanhoey@gmail.com>). Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -215,8 +215,8 @@ Single geometries are represented by `shapely` objects:
 ## Plotting our different layers together
 
 ```{code-cell} ipython3
-# fig, ax = plt.subplots(figsize=(15, 10))
-ax = countries.plot(edgecolor='k', facecolor='none', figsize=(15, 10))
+# fig, ax = plt.subplots(figsize=(10, 8))
+ax = countries.plot(edgecolor='k', facecolor='none', figsize=(10, 8))
 rivers.plot(ax=ax)
 cities.plot(ax=ax, color='red')
 ax.set(xlim=(-20, 60), ylim=(-40, 40))
@@ -350,7 +350,7 @@ contextily.add_basemap(ax)
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-stations['bike_stands'].hist()
+stations['bike_stands'].plot.hist()
 ```
 
 <div class="alert alert-success">
@@ -530,4 +530,4 @@ gdf = geopandas.GeoDataFrame(
 gdf
 ```
 
-See http://geopandas.readthedocs.io/en/latest/gallery/create_geopandas_from_pandas.html for full example
+See https://geopandas.org/en/latest/gallery/create_geopandas_from_pandas.html for full example

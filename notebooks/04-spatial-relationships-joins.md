@@ -15,9 +15,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2021*
+> *October, 2022*
 >
-> *© 2021, Joris Van den Bossche and Stijn Van Hoey  (<mailto:jorisvandenbossche@gmail.com>, <mailto:stijnvanhoey@gmail.com>). Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2022, Joris Van den Bossche and Stijn Van Hoey  (<mailto:jorisvandenbossche@gmail.com>, <mailto:stijnvanhoey@gmail.com>). Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -435,7 +435,7 @@ Different parts of this operations:
 
 * The GeoDataFrame to which we want add information
 * The GeoDataFrame that contains the information we want to add
-* The spatial relationship we want to use to match both datasets ('intersects', 'contains', 'within')
+* The spatial relationship ("predicate") we want to use to match both datasets ('intersects', 'contains', 'within')
 * The type of join: left or inner join
 
 
@@ -611,7 +611,7 @@ Since not all districts have the same size, we should compare the tree density f
 :tags: [nbtutor-solution]
 
 # Merge the 'districts' and 'trees_by_district' dataframes
-districts_trees = pd.merge(districts, trees_by_district, predicate='district_name')
+districts_trees = pd.merge(districts, trees_by_district, on='district_name')
 districts_trees.head()
 ```
 
@@ -628,10 +628,6 @@ districts_trees['n_trees_per_area'] = districts_trees['n_trees'] / districts_tre
 # Make of map of the districts colored by 'n_trees_per_area'
 ax = districts_trees.plot(column='n_trees_per_area', figsize=(12, 6))
 ax.set_axis_off()
-```
-
-```{code-cell} ipython3
-
 ```
 
 ```{code-cell} ipython3

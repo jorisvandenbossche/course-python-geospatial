@@ -16,9 +16,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2021*
+> *November, 2022*
 >
-> *© 2021, Joris Van den Bossche and Stijn Van Hoey  (<mailto:jorisvandenbossche@gmail.com>, <mailto:stijnvanhoey@gmail.com>). Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2022, Joris Van den Bossche and Stijn Van Hoey  (<mailto:jorisvandenbossche@gmail.com>, <mailto:stijnvanhoey@gmail.com>). Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -79,7 +79,7 @@ type(s)
 
 ### Pandas objects have attributes and methods
 
-Pandas provides a lot of functionalities for the DataFrame and Series. The `.dtypes` shown above is an *attribute* of the DataFrame. In addition, there are also functions that can be called on a DataFrame or Series, i.e. *methods*. As methods are functions, do not forget to use parentheses `()`.
+Pandas provides a lot of functionalities for the DataFrame and Series. The `.dtypes` shown above is an *attribute* of the DataFrame. In addition, there are also functions that can be called on a DataFrame or Series, i.e. *methods*. As methods are functions, do not forget to use parentheses `()` to call them.
 
 A few examples that can help exploring the data:
 
@@ -157,7 +157,7 @@ countries['gdp_md_est'].max()
 For dataframes, only the numeric columns are included in the result:
 
 ```{code-cell} ipython3
-countries.median()
+countries.median(numeric_only=True)
 ```
 
 ### Adding new columns
@@ -309,10 +309,6 @@ Here, we start with the following datasets:
 </details>
     
 </div>
-
-+++
-
-test
 
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
@@ -643,7 +639,7 @@ This is only an ultra short intro to matplotlib. In the course materials, you ca
 
 Galleries are great to get inspiration, see the plot you want, and check the code how it is created:
     
-* [matplotlib gallery](http://matplotlib.org/gallery.html) is an important resource to start from
+* [matplotlib gallery](https://matplotlib.org/stable/gallery/) is an important resource to start from
 * [seaborn gallery](https://seaborn.pydata.org/examples/index.html)
 * The Python Graph Gallery (https://python-graph-gallery.com/)
 
@@ -731,7 +727,14 @@ districts.groupby('arrondissement')['population'].sum()
 
 <b>EXERCISE</b>:
 
-* Using the bike stations dataset (`stations`), make a figure with a histogram of the total bike stands and available bikes.
+* Using the bike stations dataset (`stations`), make a figure with a histogram of both the total bike stands and available bikes.
+
+<details>
+<summary>Hints</summary>
+
+* You can plot both histograms on top of each other using transparancy (`alpha` keyword) to see both.
+* Use the `plt.subplots()` function to create a figure and axes object. You can then use this axes object to pass to `.plot.hist(..)` to plot two histograms on the same axes.
+</details>
 
 </div>
 
@@ -817,7 +820,7 @@ pd.merge(cities, countries, on="iso_a3")
 
 ## Towards geospatial data
 
-The datasets used in this notebook are containing spatial information: data about areas (countries, districts) or point locations (cities, bike stations). But the data itself didn't always explicitly include the the spatial component. For example, we don't know the exact extent of the countries with the dataset used here. 
+The datasets used in this notebook contain spatial information: data about areas (countries, districts) or point locations (cities, bike stations). But the data itself didn't always explicitly include the the spatial component. For example, we don't know the exact extent of the countries with the dataset used here.
 
 With point locations, such as the cities DataFrame, the location is included as two columns:
 
