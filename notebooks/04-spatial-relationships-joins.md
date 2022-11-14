@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.14.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -223,8 +223,8 @@ print(eiffel_tower)
 
 ```{code-cell} ipython3
 # Accessing the Montparnasse geometry (Polygon)
-district_montparnasse = districts.loc[52, 'geometry']
-bike_station = stations.loc[293, 'geometry']
+district_montparnasse = districts.loc[districts['district_name'] == 'Montparnasse', 'geometry'].item()
+bike_station = stations.loc[stations['name'] == '14033 - DAGUERRE GASSENDI', 'geometry'].item()
 ```
 
 ```{code-cell} ipython3
@@ -450,7 +450,7 @@ In this case, we want to join the `cities` dataframe with the information of the
 We use the [`geopandas.sjoin`](http://geopandas.readthedocs.io/en/latest/reference/geopandas.sjoin.html) function:
 
 ```{code-cell} ipython3
-joined = geopandas.sjoin(cities, countries, op='within', how='left')
+joined = geopandas.sjoin(cities, countries, predicate='within', how='left')
 ```
 
 ```{code-cell} ipython3
@@ -491,7 +491,7 @@ stations = geopandas.read_file("data/paris_bike_stations.geojson").to_crs(epsg=2
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-joined = geopandas.sjoin(stations, districts[['district_name', 'geometry']], op='within')
+joined = geopandas.sjoin(stations, districts[['district_name', 'geometry']], predicate='within')
 ```
 
 ```{code-cell} ipython3
@@ -540,7 +540,7 @@ trees.head()
 :tags: [nbtutor-solution]
 
 # Spatial join of the trees and districts datasets
-joined = geopandas.sjoin(trees, districts, op='within')
+joined = geopandas.sjoin(trees, districts, predicate='within')
 joined.head()
 ```
 
@@ -611,7 +611,7 @@ Since not all districts have the same size, we should compare the tree density f
 :tags: [nbtutor-solution]
 
 # Merge the 'districts' and 'trees_by_district' dataframes
-districts_trees = pd.merge(districts, trees_by_district, on='district_name')
+districts_trees = pd.merge(districts, trees_by_district, predicate='district_name')
 districts_trees.head()
 ```
 
