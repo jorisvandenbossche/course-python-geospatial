@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.14.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -15,9 +15,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2021*
+> *October, 2022*
 >
-> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -60,7 +60,8 @@ from pyproj import CRS
 crs = CRS.from_epsg(4326)
 
 fig, ax = plt.subplots(figsize=(6, 6))
-argo.plot.scatter(x='lon', y='lat', ax=ax, color='red', s=2)
+scat = argo.plot.scatter(x='lon', y='lat', ax=ax, c='date', s=2, 
+                         add_colorbar=True, add_legend=False, edgecolor=None)
 
 # Custom adjustments of the limits, as we are in the middle of the ocean
 xmin, xmax = ax.get_xlim()
@@ -69,6 +70,14 @@ ax.set_xlim(xmin*1.5, xmax*0.5)
 ax.set_ylim(ymin*0.5, ymax*1.5)
 
 cx.add_basemap(ax, crs=crs.to_string())
+
+# small 'hack' to overcome the overload of ticklabels on the colorbar
+current_ticks = ax.collections[0].colorbar.get_ticks()
+d_dates = np.datetime_as_string(argo.date.data, unit='D')
+ax.collections[0].colorbar.set_ticks(
+    ticks=[current_ticks[0], current_ticks[-1]], 
+    labels=[d_dates[0], d_dates[-1]]
+)
 ```
 
 <div class="alert alert-success">
@@ -104,6 +113,9 @@ The water level classes define different water depth (level). The pressure is a 
 <details><summary>Hints</summary>
 
 * If you get the error `ValueError: Dataset.plot cannot be called directly. Use an explicit plot method, e.g. ds.plot.scatter(...)`. When encountering an Error, always check the output message at the end of the error statement.
+* The default `plot` function of xarray currently adds the `date` dimension with a color scale (and colorbar with a lot of labels). There is no direct way to overcome this with the plot function itself, see discussion at https://github.com/pydata/xarray/discussions/7268. 
+* In order to overcome this, stacking the dimensions into a single dimension before ploting `argo.stack(stacked_dim=["date", "level"]).plot...` overcomes the auto-color mapping of date dimension. 
+* Note that the direct usage of Matplotlib scatter function does not work out of the box when combining the `level` coordinate (78 values) data with the pressure measured data (78 by 75 values, i.e. 78 values for each of the 75 dates). Something like `plt.scatter(argo.pressure, np.broadcast_to(argo.level, argo.pressure.T.shape).T)` would work (repeating data of level to make both of matching shape).
 
 </details>    
     
@@ -112,7 +124,13 @@ The water level classes define different water depth (level). The pressure is a 
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-argo.plot.scatter(x="pressure", y="level")
+argo.plot.scatter(x="pressure", y="level") # adds date as additional hue-mapping.  
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+argo.stack(stacked_dim=["date", "level"]).plot.scatter(x="pressure", y="level")  # see https://github.com/pydata/xarray/discussions/7268#discussioncomment-4090308
 ```
 
 <div class="alert alert-success">
@@ -231,9 +249,10 @@ You wonder how the temperature evolves with increasing latitude and what the eff
    
 <details><summary>Hints</summary>
 
-* In a scatter plot, the color or hue can be linked to a variable.
+* In a scatter plot, the color or `hue` can be linked to a variable (instead of the deafult `date`).
 * From the argo data set, use the `sel` method to select the levels 1, 10, 25, and 50.
 * For the second scatter plot, but make sure the `col` changes for each `level` and define which variables need to go to which axis.
+* Hide the colorbar (has no usage, but is shown) with the `add_colorbar=False` parameter OR add the mapping of temperature as well.
 
 </details>    
     
@@ -242,13 +261,15 @@ You wonder how the temperature evolves with increasing latitude and what the eff
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-argo.plot.scatter(x="temperature", y="level", hue="lat", s=2)
+argo.plot.scatter(x="temperature", y="level", s=3,
+                  hue="lat", edgecolor=None)
 ```
 
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-argo.sel(level=[1, 5, 25, 50]).plot.scatter(x="lat", y="temperature", col="level")
+argo.sel(level=[1, 5, 25, 50]).plot.scatter(x="lat", y="temperature", 
+                                            col="level", hue="temperature")
 ```
 
 <div class="alert alert-success">
@@ -321,7 +342,7 @@ salinity_20121031.rolling(level=10, center=True).median().plot.line(y="level", y
 
 An improved version of the salinity profile of the previous exercise uses the `pressure` data instead of the levels, plotting the pressure-salinity relationship. In the current data representation the pressure is a data variable. However, it can also be interpreted as a coordinate, i.e. the depth of the measurement (see exercise on the relation between pressure and level. 
     
-To create a salinity and temperature profile for each of the measurements in December 2012, convert the `pressure` variable to a coordinate instead of a data variable first. Prepare two subplots with Matplotlib to plot respectively the salinity and the temperature profile for each of the measurments in December 2012.  Use the pressure in the y-axis and make sure pressure increases from top to bottom of the graph.   
+To create a salinity and temperature profile for each of the measurements in December 2012, convert the `pressure` variable to a coordinate instead of a data variable first. Prepare two subplots with Matplotlib to plot respectively the salinity and the temperature profile for each of the measurements in December 2012.  Use the pressure in the y-axis and make sure pressure increases from top to bottom of the graph.   
     
     
 <details><summary>Hints</summary>
@@ -375,4 +396,8 @@ fig, (ax0, ax1) = plt.subplots(1, 2)
 subset_mean["salinity"].plot.line(y="level", yincrease=False, ax=ax0)
 subset_mean["temperature"].plot.line(y="level", yincrease=False, ax=ax1)
 plt.tight_layout()
+```
+
+```{code-cell} ipython3
+
 ```
