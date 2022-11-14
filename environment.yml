@@ -14,7 +14,8 @@ dependencies:
   - rasterio
   - owslib
   - rasterstats
-  - matplotlib
+  # pinning to avoid compat issue with cartopy (https://github.com/jorisvandenbossche/course-python-geospatial/issues/21)
+  - matplotlib=3.5
   - mapclassify
   - cartopy
   - contextily
