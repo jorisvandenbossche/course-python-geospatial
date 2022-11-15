@@ -388,19 +388,20 @@ Cartopy transforms can be passed to xarray! This creates a very quick path for c
 
 ```{code-cell} ipython3
 import xarray as xr
-url = 'http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/noaa.ersst.v5/sst.mnmean.nc'
-ds = xr.open_dataset(url, drop_variables=['time_bnds'])
-ds
+url = 'https://opendap.jpl.nasa.gov/opendap/OceanTemperature/ghrsst/data/GDS2/L4/GLOB/REMSS/mw_OI/v5.1/2022/001/20220101120000-REMSS-L4_GHRSST-SSTfnd-MW_OI-GLOB-v02.0-fv05.1.nc'
+ds = xr.open_dataset(url)
+#ds
 ```
 
 ```{code-cell} ipython3
-sst = ds.sst.sel(time='2000-01-01', method='nearest')
+sst = ds["analysed_sst"]
+
 fig = plt.figure(figsize=(9,6))
 ax = plt.axes(projection=ccrs.Robinson())
 ax.coastlines()
 ax.gridlines()
-sst.plot(ax=ax, transform=ccrs.PlateCarree(),
-         vmin=2, vmax=30, cbar_kwargs={'shrink': 0.4})
+sst.plot(ax=ax, transform=ccrs.PlateCarree(), 
+         cbar_kwargs={'shrink': 0.4}, cmap="RdBu_r")
 ```
 
 ## Add OGC WMS and WMTS services to cartopy
@@ -469,7 +470,3 @@ gent.plot(ax=ax, facecolor="none", edgecolor="#433d78", linewidth=2)
 ## Doing More
 
 Browse the [Cartopy Gallery](https://scitools.org.uk/cartopy/docs/latest/gallery/index.html) to learn about all the different types of data and plotting methods available!
-
-```{code-cell} ipython3
-
-```
