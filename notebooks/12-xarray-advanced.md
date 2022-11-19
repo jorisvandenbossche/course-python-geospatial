@@ -51,7 +51,7 @@ ds
 
 **REMEMBER**: <br>
 
-xarray provides reading function for different formats with the `open_dataset` and `open_dataarray` functions. For GIS formats such as geotiff and other GDAL readable raster data, the rasterio engine (`engine="rasterio"`) is available after the installation of [rioxarray](https://corteva.github.io/rioxarray/stable/). NetCDF-alike data formats can also be loaded using the by `open_dataset` function using a NetCDF-compatible engine, e.g. `netcdf` or `h5netcdf`. The netcdf-engine will be _guessed_ by default.
+xarray provides reading function for different formats with the `open_dataset` and `open_dataarray` functions. For GIS formats such as geotiff and other GDAL readable raster data, the rasterio engine (`engine="rasterio"`) is available after the installation of [rioxarray](https://corteva.github.io/rioxarray/stable/). NetCDF-alike data formats can also be loaded using the `open_dataset()` function using a NetCDF-compatible engine, e.g. `netcdf` or `h5netcdf`. The netcdf-engine will be _guessed_ by default.
 
 </div>
 
@@ -113,7 +113,7 @@ ds
 
 +++
 
-Each of the data variables can be accessed as a single `xarray.DataArray` similar to selecting dictionaries or DataFrames:
+Each of the data variables can be accessed as a single `xarray.DataArray` similar to selecting from dictionaries or columns from DataFrames:
 
 ```{code-cell} ipython3
 type(ds["precipitation"]), type(ds["temperature"])
@@ -160,13 +160,13 @@ ds.drop_sel(year=[2016])
 Plotting for data set level is rather limited. A typical use case that is supported to compare two data variables are scatter plots:
 
 ```{code-cell} ipython3
-ds.plot.scatter(x="temperature", y="precipitation")
+ds.plot.scatter(x="temperature", y="precipitation", s=1, alpha=0.1)
 ```
 
 `facetting` is also supported here, by linking the `col` or `row` parameter to a data variable.
 
 ```{code-cell} ipython3
-ds.plot.scatter(x="temperature", y="precipitation", col="year")  # try also hue="year" instead of col; requires hue_style="discrete"
+ds.plot.scatter(x="temperature", y="precipitation", s=1, alpha=0.1, col="year")  # try also hue="year" instead of col; requires hue_style="discrete"
 ```
 
 ### DataSet reductions
@@ -360,9 +360,7 @@ era5_renamed["speed_of_sound_m_s"] = 331.5 + (0.6*era5_renamed["temperature_c"])
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-era5_renamed.plot.scatter(x="temperature_c", y="speed_of_sound_m_s", 
-                          hue="speed_of_sound_m_s", edgecolors=None,
-                          add_legend=False)
+era5_renamed.plot.scatter(x="temperature_c", y="speed_of_sound_m_s")
 ```
 
 ## Working with time series

@@ -60,7 +60,7 @@ data = rioxarray.open_rasterio(data_file)
 data
 ```
 
-The `rioxarray.open_rasterio` function is similar to `xarray.open_dataarray`/
+The `rioxarray.open_rasterio` function is similar to `xarray.open_dataarray`.
 
 Once `rioxarray` is imported, it provides a `.rio` accessor on the xarray.DataArray object, which gives access to some properties of the raster data:
 
@@ -311,7 +311,7 @@ Using rioxarray's `to_raster()` method, we can also save the result to a new Geo
 clipped.rio.to_raster("./dem_masked_rio.tiff")
 ```
 
-This DEM raster file used -9999 as the NODATA value, which are read as Nan values:
+This DEM raster file used -9999 as the NODATA value, which are read as NaN values:
 
 ```{code-cell} ipython3
 dem_zwalm.rio.nodata, clipped.rio.nodata
@@ -1029,6 +1029,8 @@ green.plot()
 ```
 
 ```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
 green = green.dropna(subset="geometry")
 ```
 
@@ -1168,7 +1170,7 @@ cities = geopandas.read_file("./data/ne_110m_populated_places.zip")
 ```
 
 ```{code-cell} ipython3
-dem_geotiff = "data/dem_geotiff/DEM_geotiff/alwdgg.tif"
+dem_geotiff = "data/DEM_geotiff/alwdgg.tif"
 ```
 
 ```{code-cell} ipython3

@@ -162,7 +162,7 @@ type(herstappe_array), herstappe_array.dtype
 type(herstappe.x.values), type(herstappe.y.values)
 ```
 
-Numpy supports different dtypes (float, int,...), but __all elements of an array do have the same dtype__. Note that NumPy auto-detects the data-type from the input. The data type of this specific array `herstappe_array` is float32. More information on the data types Numpy supports is available in the [documentation](https://numpy.org/devdocs/user/basics.types.html#array-types-and-conversions-between-types).
+NumPy supports different dtypes (float, int,...), but __all elements of an array do have the same dtype__. Note that NumPy auto-detects the data-type from the input. The data type of this specific array `herstappe_array` is float32. More information on the data types NumPy supports is available in the [documentation](https://numpy.org/devdocs/user/basics.types.html#array-types-and-conversions-between-types).
 
 +++
 
@@ -274,7 +274,3 @@ open source Swiss Army knife for raster and vector geospatial data handling. GDA
 You can run a CLI command inside a Jupyter Notebook by prefixing it with the `!` character.
 
 </div>
-
-```{code-cell} ipython3
-
-```

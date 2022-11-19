@@ -50,7 +50,7 @@ ax = herstappe.plot.imshow(figsize=(12, 5))
 ax.axes.set_aspect('equal')
 ```
 
-We can further make the dimension information more useful by renaming the labels of the 'band' dimension:
+We can make the dimension information more useful by renaming the labels of the 'band' dimension:
 
 ```{code-cell} ipython3
 herstappe = herstappe.assign_coords(band=("band", ["red", "green", "blue"]))
@@ -69,7 +69,7 @@ These __dimension coordinate names__ can be used to extract (slice) data making 
 herstappe.sel(band='red')
 ```
 
-The data type of this `xarray.DataArray` `herstappe` is 'float32'. Xarray uses the data types provided by Numpy. More information on the data types Numpy supports is available in the [documentation](https://numpy.org/devdocs/user/basics.types.html#array-types-and-conversions-between-types).
+The data type of this `xarray.DataArray` `herstappe` is 'float32'. Xarray uses the data types provided by NuPpy. More information on the data types NumPy supports is available in the [documentation](https://numpy.org/devdocs/user/basics.types.html#array-types-and-conversions-between-types).
 
 Converting to another data type is supported by `astype()` method:
 
@@ -79,7 +79,7 @@ herstappe.astype('float64')   # .nbytes
 
 Using xarray:
 
-- Data stored as a Numpy arrays.
+- Data stored as a NumPy arrays.
 - Dimensions do have a name.
 - The coordinates of each of the dimensions can represent geographical coordinates, categories, dates, ... instead of just an index.
 
@@ -139,7 +139,7 @@ herstappe[0, 100:200:10, 100:200:10]
 Use a __condition__ to select data, also called fancy indexing or boolean indexing:
 
 ```{code-cell} ipython3
-herstappe > 0.2
+herstappe > 0.3
 ```
 
 However, with xarray we cannot use a mask like this to directly filter the array or assign new values. 
@@ -199,7 +199,7 @@ tc_data.dtype
 
 **Remember**: <br>
 
-The `mask_and_scale` parameter is [by default `True`](https://docs.xarray.dev/en/stable/generated/xarray.open_dataarray.html) in xarray for the different backend engines. This might lead to unwanted data type conversions when the 'nodata' is not properly included in the raw data file. Make sure to check the data types.
+The `mask_and_scale` parameter is [by default `True`](https://docs.xarray.dev/en/stable/generated/xarray.open_dataarray.html) in xarray for the different engines. This might lead to unwanted data type conversions when the 'nodata' is not properly included in the raw data file. Make sure to check the data types.
 
 </div>
 
@@ -289,19 +289,19 @@ tc_data[:, ::5, ::5].shape
 
 **EXERCISE**:
 
-Elements with the value `65535` do represent 'Not a Number' (NaN) values. However, Numpy does not support NaN values for integer data, so we'll convert to float first as data type. After reading in the data set `./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff` (assign data to variable `b4_data`):
+Elements with the value `65535` do represent 'Not a Number' (NaN) values. However, NumPy does not support NaN values for integer data, so we'll convert to float first as data type. After reading in the data set `./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff` (assign data to variable `b4_data`):
     
 * Count the number of elements that are equal to `65535`
-* Convert the data type to `float`, assign the result to  a new variable `b4_data_f` (Numpy does not support Nan for int).
-* Assign Nan (`np.nan`) value to each of the elements of `b4_data_f` equal to `65535`
-* Count the number of Nan values in the `b4_data_f` data
+* Convert the data type to `float`, assign the result to  a new variable `b4_data_f` (numpy does not support NaN for integers).
+* Assign NaN (`np.nan`) value to each of the elements of `b4_data_f` equal to `65535`
+* Count the number of NaN values in the `b4_data_f` data
 * Make a histogram of both the `b4_data` and `b4_data_f` data. Can you spot the difference?
     
 <details><summary>Hints</summary>    
 
 * `np.nan` represents _Not a Number (NaN)_ in Numpy. You can mask an array with np.nan values using the `where()`method
 * `np.sum` will by default sum all of the elements of the input array and can also count boolean values (True = 1 and False = 0), resulting from a conditional expression. 
-* To test if a value is a nan, Numpy provides `np.isnan(...)` which results in an element-wise check returning boolean values.
+* To test if a value is a NaN, numpy provides `np.isnan(...)` which results in an element-wise check returning boolean values.
 * Check the help of the `plt.hist` command to find out more about the `bins` and the `log` arguments.
 
 </details>
@@ -369,7 +369,7 @@ xr_array.sel(band="b4").plot();  # add .line() -> ValueError: For 2D inputs, ple
 xr_array.sel(x=420000, method="nearest").plot.line(hue="band");
 ```
 
-`facetting` splits the data in subplots according to a dimension, e.g. `band`
+"facetting" splits the data in subplots according to a dimension, e.g. `band`
 
 ```{code-cell} ipython3
 xr_array.plot.imshow(col="band", cmap="Reds");
@@ -434,13 +434,13 @@ By default, the array is reduced over all dimensions, returning a single value a
 herstappe_red.mean()
 ```
 
-In Numpy, the dimensions are called the __axis__:
+In NumPy, the dimensions are called the __axis__:
 
 ```{code-cell} ipython3
 herstappe_red.mean(axis=1)
 ```
 
-But we have __dimensions with labels__, so rather than performing reductions on axes (as in Numpy), we can perform them on __dimensions__. This turns out to be convenient and declarative:
+But we have __dimensions with labels__, so rather than performing reductions on axes (as in NumPy), we can perform them on __dimensions__. This turns out to be convenient and declarative:
 
 ```{code-cell} ipython3
 herstappe_red.mean(dim="x")
@@ -604,7 +604,7 @@ In this excercise, we will convert the data to floats within the data range 0 ->
 
 <details><summary>Hints</summary>
 
-* To convert the data type of an array, you can use the `astype()` method. In this case you might as well opt to have the `mask_and_scale=true` as this will doe the float conversion already.
+* To convert the data type of an array, you can use the `astype()` method. In this case you might as well opt to have the `mask_and_scale=true` as this will do the float conversion already.
 * Masking out part of the data based on a condition can be done with the `where()` method.
 
 </details>    
