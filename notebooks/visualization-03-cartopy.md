@@ -1,5 +1,6 @@
 ---
 jupytext:
+  cell_metadata_filter: -run_control,-deletable,-editable,-jupyter,-slideshow
   text_representation:
     extension: .md
     format_name: myst
@@ -423,7 +424,7 @@ With the following layers available (see website Stuyts or GetCapabilities overv
 - orthoimage_coverage_2016: Orthoimage coverage - 2016
 - orthoimage_coverage_2018: Orthoimage coverage - 2018
 
-Let's use the `orthoimage_coverage` incombination with our city of Ghent contours data set:
+Let's use the `orthoimage_coverage` in combination with our city of Ghent contours data set (__Note__ the WMS service might sometimes return server errors so retry if required):
 
 ```{code-cell} ipython3
 base_uri = 'https://wms.ngi.be/inspire/ortho/service'
