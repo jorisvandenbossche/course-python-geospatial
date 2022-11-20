@@ -514,7 +514,7 @@ dem_masked = dem.where(dem != dem.rio.nodata)
 dem_masked.plot.imshow(robust=True, cmap="terrain")
 ```
 
-Alternatively to masking the nodata value manually, you can do this explicitly when loading the data, using the `mask_and_scale=True` keyword:
+__Remember__ Alternatively to masking the nodata value manually, you can do this explicitly when loading the data, using the `mask_and_scale=True` keyword (see also notebook [11-xarray-intro.ipynb](11-xarray-intro.ipynb)):
 
 ```{code-cell} ipython3
 dem_masked = xr.open_dataarray("zip://./data/gent/DHMVIIDTMRAS25m.zip", engine="rasterio", mask_and_scale=True).sel(band=1)
@@ -1085,7 +1085,6 @@ kernel = convolution.circle_kernel(x, y, 500)
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-%%time
 green_area = focal.focal_stats(green_arr, kernel, stats_funcs=["sum"])
 ```
 
@@ -1104,7 +1103,6 @@ from scipy import signal
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-%%time
 green_area_arr = signal.convolve(green_arr, kernel, mode='same')
 ```
 
