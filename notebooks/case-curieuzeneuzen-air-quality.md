@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.14.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -133,7 +133,7 @@ A histogram:
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-df['no2'].hist()  # plot.hist()
+df['no2'].plot.hist()
 ```
 
 A more expanded histogram (not asked in the exercise, but uncomment to check the code!)
@@ -143,7 +143,7 @@ A more expanded histogram (not asked in the exercise, but uncomment to check the
 
 fig, ax = plt.subplots()
 # using predefined bins
-df['no2'].hist(ax=ax, bins=np.arange(0, 80, 5))
+df['no2'].plot.hist(ax=ax, bins=np.arange(0, 80, 5))
 # adding x/y axis labels, and setting the range for the x axis
 ax.set(xlabel="NO2 concentration (µg/m³)",
        ylabel="Number of measurements", xlim=(0,80))
@@ -151,6 +151,7 @@ ax.set(xlabel="NO2 concentration (µg/m³)",
 ax.axvline(x=df['no2'].mean(), color='C2', linewidth=3)
 # adding a line with the EU yearly limit value of 40 µg/m³
 ax.axvline(x=40, color='C3', linewidth=3)
+ax.grid()
 ```
 
 <div class="alert alert-success">
@@ -527,6 +528,12 @@ The air quality is indirectly linked to land use, as the presence of pollution s
 
 * Open the land cover raster file (`data/CLC2018_V2020_20u1_flanders.tif`) with xarray, inspect the metadata, and do a quick visualization.
 
+<details><summary>Hints</summary>
+
+* The tif file represents a single layer (with one band), so you can use `xarray.open_dataarray()` to read it into an xarray.DataArray.
+
+</details>
+
 </div>
 
 ```{code-cell} ipython3
@@ -534,7 +541,7 @@ The air quality is indirectly linked to land use, as the presence of pollution s
 
 import xarray
 
-raster = xarray.open_rasterio("data/CLC2018_V2020_20u1_flanders.tif")
+raster = xarray.open_dataarray("data/CLC2018_V2020_20u1_flanders.tif", engine="rasterio", mask_and_scale=False)
 raster
 ```
 
@@ -560,6 +567,12 @@ The goal is now to query from the raster file the value of the land cover class 
 </details>
 
 </div>
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
+
+raster.rio.crs
+```
 
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
@@ -678,7 +691,7 @@ counts = gdf['land_use_class'].value_counts()
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-frequent_categories = counts[counts > 50].index
+frequent_categories = counts.index[counts > 50]
 ```
 
 ```{code-cell} ipython3
@@ -733,7 +746,7 @@ counts = gdf['land_use_class'].value_counts()
 frequent_categories = counts[counts > 50].index
 classes = [value for value in classes if value in frequent_categories]
 
-fig, ax = plt.subplots(figsize=(10, 8))
+fig, ax = plt.subplots(figsize=(8, 6))
 seaborn.boxplot(y="land_use_class", x="no2", data=subset, ax=ax, color="C0", order=classes)
 ax.set(xlabel="NO$_2$ concentration (µg/m³)", ylabel="CORINE Land Cover classes");
 ```
@@ -793,7 +806,7 @@ gent_region
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-gdf_gent = gdf_lambert[gdf_lambert.within(gent_region)]
+gdf_gent = gdf_lambert[gdf_lambert.within(gent_region)].copy()
 ```
 
 ```{code-cell} ipython3
@@ -805,7 +818,7 @@ len(gdf_gent)
 Alternatively, we can also use the `geopandas.clip()` function. For points there is not much difference with the method above, but for lines or polygons, it will actually "clip" the geometries, i.e. removing the parts that fall outside of the specified region (in addition, this method also uses a spatial index under the hood and will typically be faster for large datasets):
 
 ```{code-cell} ipython3
-gdf_gent = geopandas.clip(gdf_lambert, gent_region)
+gdf_gent = geopandas.clip(gdf_lambert, gent_region).copy()
 len(gdf_gent)
 ```
 
