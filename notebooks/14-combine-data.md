@@ -107,8 +107,10 @@ date_var
 4. Load in and concatenate all individual GeoTIFFs
 
 ```{code-cell} ipython3
-moisture_index = xr.concat([xr.open_dataarray(file_name, engine="rasterio") for file_name in moisture_index_files], dim=date_var)
-moisture_index = (moisture_index - moisture_index.min())/(moisture_index.max() - moisture_index.min()) # rescale to 0-1 range for RGB plotting
+moisture_index = xr.concat(
+    [xr.open_dataarray(file_name, engine="rasterio", mask_and_scale=False) for file_name in moisture_index_files],
+    dim=date_var
+)
 ```
 
 ```{code-cell} ipython3
@@ -132,7 +134,6 @@ def add_date_dimension(ds):
     """Add the date dimension derived from the file_name and rename to moisture_index"""
     ds_date = pd.to_datetime(Path(ds.encoding["source"]).stem.split(",")[0])
     ds = ds.assign_coords(date=("date", [ds_date])).rename({"band_data": "moisture_index"})
-    ds = (ds - ds.min())/(ds.max() - ds.min()) # rescale to 0-1 range for RGB plotting
     return ds
 ```
 
@@ -167,7 +168,7 @@ moisture_index.to_netcdf("moisture_index_stacked.nc")
 Hence, the next the data set can be loaded directly from disk:
 
 ```{code-cell} ipython3
-xr.open_dataarray("moisture_index_stacked.nc", engine="netcdf4")    
+xr.open_dataset("moisture_index_stacked.nc", engine="netcdf4")
 ```
 
 Storing to zarr files works on the `xarray.DataSet` level:
