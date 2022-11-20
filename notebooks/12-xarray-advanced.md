@@ -1,10 +1,11 @@
 ---
 jupytext:
+  cell_metadata_filter: -run_control,-deletable,-editable,-jupyter,-slideshow
   text_representation:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.13.0
+    jupytext_version: 1.14.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -15,20 +16,22 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2021*
+> *October, 2022*
 >
-> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
 +++
 
-https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land-monthly-means?tab=overview
+Acknowledgments to the data service: https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land-monthly-means?tab=overview
 
 ```{code-cell} ipython3
 import xarray as xr
 import numpy as np
 import matplotlib.pyplot as plt
+
+import cmocean
 ```
 
 ## `xarray.Dataset` for multiple variables
@@ -40,7 +43,7 @@ We already know `xarray.DataArray`, it is a single multi-dimensional array and e
 Let's read an xarray data set (global rain/temperature coverage stored in the file `2016-2017_global_rain-temperature.nc`), using the function `open_dataset`:
 
 ```{code-cell} ipython3
-ds = xr.open_dataset("./data/2016-2017_global_rain-temperature.nc")
+ds = xr.open_dataset("./data/2016-2017_global_rain-temperature.nc", engine="netcdf4")
 ds
 ```
 
@@ -48,8 +51,7 @@ ds
 
 **REMEMBER**: <br>
 
-xarray provides reading function for different formats. For GIS formats such as geotiff and other GDAL readable raster data, 
-the `open_rasterio` function is available. NetCDF-alike data formats can be loaded using the by `open_dataset` function.
+xarray provides reading function for different formats with the `open_dataset` and `open_dataarray` functions. For GIS formats such as geotiff and other GDAL readable raster data, the rasterio engine (`engine="rasterio"`) is available after the installation of [rioxarray](https://corteva.github.io/rioxarray/stable/). NetCDF-alike data formats can also be loaded using the `open_dataset()` function using a NetCDF-compatible engine, e.g. `netcdf` or `h5netcdf`. The netcdf-engine will be _guessed_ by default.
 
 </div>
 
@@ -111,7 +113,7 @@ ds
 
 +++
 
-Each of the data variables can be accessed as a single `xarray.DataArray` similar to selecting dictionaries or DataFrames:
+Each of the data variables can be accessed as a single `xarray.DataArray` similar to selecting from dictionaries or columns from DataFrames:
 
 ```{code-cell} ipython3
 type(ds["precipitation"]), type(ds["temperature"])
@@ -158,13 +160,13 @@ ds.drop_sel(year=[2016])
 Plotting for data set level is rather limited. A typical use case that is supported to compare two data variables are scatter plots:
 
 ```{code-cell} ipython3
-ds.plot.scatter("temperature", "precipitation", s=1, alpha=0.1)
+ds.plot.scatter(x="temperature", y="precipitation", s=1, alpha=0.1)
 ```
 
 `facetting` is also supported here, by linking the `col` or `row` parameter to a data variable.
 
 ```{code-cell} ipython3
-ds.plot.scatter("temperature", "precipitation", s=1, alpha=0.1, col="year")  # try also hue instead of col; requires hue_style="discrete"
+ds.plot.scatter(x="temperature", y="precipitation", s=1, alpha=0.1, col="year")  # try also hue="year" instead of col; requires hue_style="discrete"
 ```
 
 ### DataSet reductions
@@ -206,7 +208,7 @@ For these exercises, a subset of the data set focusing on Belgium has been prepa
 The dimensions are the `longitude`, `latitude` and `time`, which are each represented by a corresponding coordinate.
 
 ```{code-cell} ipython3
-era5 = xr.open_dataset("./data/era5-land-monthly-means_example.nc")
+era5 = xr.open_dataset("./data/era5-land-monthly-means_example.nc") # engine="netcdf4" is here optional
 era5
 ```
 
@@ -358,7 +360,7 @@ era5_renamed["speed_of_sound_m_s"] = 331.5 + (0.6*era5_renamed["temperature_c"])
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-era5_renamed.plot.scatter("temperature_c", "speed_of_sound_m_s", s=1, alpha=0.1)
+era5_renamed.plot.scatter(x="temperature_c", y="speed_of_sound_m_s")
 ```
 
 ## Working with time series
@@ -695,7 +697,7 @@ Consider the sentinel images of Gent used in a previous notebook:
 
 ```{code-cell} ipython3
 gent_file = "./data/gent/raster/2020-09-17_Sentinel_2_L1C_B0408.tiff"
-gent_array = xr.open_rasterio(gent_file)
+gent_array = xr.open_dataarray(gent_file, engine="rasterio")
 gent_array.plot.imshow(col="band")
 ```
 

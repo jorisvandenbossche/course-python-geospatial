@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.14.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -15,9 +15,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2021*
+> *October, 2022*
 >
-> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -231,7 +231,7 @@ You wonder how the temperature evolves with increasing latitude and what the eff
    
 <details><summary>Hints</summary>
 
-* In a scatter plot, the color or hue can be linked to a variable.
+* In a scatter plot, the color or `hue` can be linked to a variable (instead of the deafult `date`).
 * From the argo data set, use the `sel` method to select the levels 1, 10, 25, and 50.
 * For the second scatter plot, but make sure the `col` changes for each `level` and define which variables need to go to which axis.
 
@@ -242,7 +242,7 @@ You wonder how the temperature evolves with increasing latitude and what the eff
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-argo.plot.scatter(x="temperature", y="level", hue="lat", s=2)
+argo.plot.scatter(x="temperature", y="level", s=3, hue="lat")
 ```
 
 ```{code-cell} ipython3
@@ -321,7 +321,7 @@ salinity_20121031.rolling(level=10, center=True).median().plot.line(y="level", y
 
 An improved version of the salinity profile of the previous exercise uses the `pressure` data instead of the levels, plotting the pressure-salinity relationship. In the current data representation the pressure is a data variable. However, it can also be interpreted as a coordinate, i.e. the depth of the measurement (see exercise on the relation between pressure and level. 
     
-To create a salinity and temperature profile for each of the measurements in December 2012, convert the `pressure` variable to a coordinate instead of a data variable first. Prepare two subplots with Matplotlib to plot respectively the salinity and the temperature profile for each of the measurments in December 2012.  Use the pressure in the y-axis and make sure pressure increases from top to bottom of the graph.   
+To create a salinity and temperature profile for each of the measurements in December 2012, convert the `pressure` variable to a coordinate instead of a data variable first. Prepare two subplots with Matplotlib to plot respectively the salinity and the temperature profile for each of the measurements in December 2012.  Use the pressure in the y-axis and make sure pressure increases from top to bottom of the graph.   
     
     
 <details><summary>Hints</summary>

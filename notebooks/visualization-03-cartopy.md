@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.13.0
+    jupytext_version: 1.14.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -15,9 +15,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2021*
+> *October, 2022*
 >
-> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY-SA 4.0 Creative Commons](https://creativecommons.org/licenses/by-sa/4.0/)* Adapted from material from Phil Elson and Ryan Abernathey (see below).
+> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY-SA 4.0 Creative Commons](https://creativecommons.org/licenses/by-sa/4.0/)* Adapted from material from Phil Elson and Ryan Abernathey (see below).
 
 ---
 
@@ -68,7 +68,9 @@ A map projection (or more commonly refered to as just "projection") is:
 There are many different ways to make a projection, and we will not attempt to explain all of the choices and tradeoffs here. Instead, you can read Phil's [original tutorial](https://github.com/SciTools/cartopy-tutorial/blob/master/tutorial/projections_crs_and_terms.ipynb) for a great overview of this topic.
 Instead, we will dive into the more practical sides of Caropy usage.
 
-+++
+```{code-cell} ipython3
+import xarray as xr
+```
 
 ## Introducing Cartopy
 
@@ -352,32 +354,25 @@ ax.contourf(lon, lat, data, transform=ccrs.PlateCarree())
 
 ### Showing Images
 
-We can plot a satellite image easily on a map if we know its extent
+We can plot a satellite image on a map if we know its extent
 
 ```{code-cell} ipython3
-! wget https://github.com/mapbox/rasterio/raw/master/tests/data/RGB.byte.tif
+! wget https://github.com/rasterio/rasterio/raw/main/tests/data/RGB.byte.tif
 ```
 
 ```{code-cell} ipython3
-import rasterio
-import rasterio.plot
-```
+# Read a tif file as an image without spatial context:
+da = xr.open_dataarray('RGB.byte.tif', engine="rasterio", mask_and_scale=False)
+# DataArray as a 3-D array/image as used for viz-libraries (channel dim at the end)
+img = np.transpose(da.data, [1, 2, 0])
 
-```{code-cell} ipython3
-with rasterio.open('RGB.byte.tif') as src:
-    img_extent = rasterio.plot.plotting_extent(src)
-    img = src.read()
-    print(src.meta)
-
-img = rasterio.plot.reshape_as_image(img)
+# extract the extent from the bounds
+(left, bottom, right, top) = da.rio.bounds()
+img_extent = (left, right, bottom, top)
 ```
 
 ```{code-cell} ipython3
 proj = ccrs.UTM(zone=18, southern_hemisphere=False)
-```
-
-```{code-cell} ipython3
-proj
 ```
 
 ```{code-cell} ipython3
@@ -393,19 +388,20 @@ Cartopy transforms can be passed to xarray! This creates a very quick path for c
 
 ```{code-cell} ipython3
 import xarray as xr
-url = 'http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/noaa.ersst.v5/sst.mnmean.nc'
-ds = xr.open_dataset(url, drop_variables=['time_bnds'])
-ds
+url = 'https://opendap.jpl.nasa.gov/opendap/OceanTemperature/ghrsst/data/GDS2/L4/GLOB/REMSS/mw_OI/v5.1/2022/001/20220101120000-REMSS-L4_GHRSST-SSTfnd-MW_OI-GLOB-v02.0-fv05.1.nc'
+ds = xr.open_dataset(url)
+#ds
 ```
 
 ```{code-cell} ipython3
-sst = ds.sst.sel(time='2000-01-01', method='nearest')
+sst = ds["analysed_sst"]
+
 fig = plt.figure(figsize=(9,6))
 ax = plt.axes(projection=ccrs.Robinson())
 ax.coastlines()
 ax.gridlines()
-sst.plot(ax=ax, transform=ccrs.PlateCarree(),
-         vmin=2, vmax=30, cbar_kwargs={'shrink': 0.4})
+sst.plot(ax=ax, transform=ccrs.PlateCarree(), 
+         cbar_kwargs={'shrink': 0.4}, cmap="RdBu_r")
 ```
 
 ## Add OGC WMS and WMTS services to cartopy
@@ -461,8 +457,8 @@ layer_name = 'orthoimage_coverage'
 ax.add_wms(base_uri, layers=layer_name)
 
 # Add WMTS of sensitive areas for inundation.
-base_uri = 'https://inspirepub.waterinfo.be/arcgis/rest/services/archief/Overstromingsgevoelige_gebieden_2006/MapServer/WMTS'
-layer_name = 'archief_Overstromingsgevoelige_gebieden_2006'
+base_uri = 'https://inspirepub.waterinfo.be/arcgis/rest/services/Overstromingsgevoelige_gebieden_2017/MapServer/WMTS'
+layer_name = 'Overstromingsgevoelige_gebieden_2017'
 ax.add_wmts(base_uri, layer_name=layer_name, alpha=0.8)
 
 # Add city of Ghent boundary from file
@@ -474,7 +470,3 @@ gent.plot(ax=ax, facecolor="none", edgecolor="#433d78", linewidth=2)
 ## Doing More
 
 Browse the [Cartopy Gallery](https://scitools.org.uk/cartopy/docs/latest/gallery/index.html) to learn about all the different types of data and plotting methods available!
-
-```{code-cell} ipython3
-
-```

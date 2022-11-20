@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.14.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -15,9 +15,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2021*
+> *October, 2022*
 >
-> *© 2021, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -26,6 +26,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 from matplotlib.lines import Line2D
 
+import xarray as xr
 import rasterio
 from rasterio.plot import plotting_extent, show
 ```
@@ -42,19 +43,25 @@ On of the most fundamental parts of the scientific python 'ecosystem' is [numpy]
 import numpy as np
 ```
 
-Let's start again from reading in a GeoTiff data set from file, thiss time a Sentinal Band 4 of the City of Ghent:
+Let's start from reading in a GeoTiff data set from file, this time a Sentinal Band 4 of the City of Ghent:
 
 ```{code-cell} ipython3
-with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff") as src:
-    b4_data = src.read()
-    b4_data_meta = src.meta
-    show(src)
+xr_b4_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff", 
+                               engine="rasterio", mask_and_scale=False)
+ax = xr_b4_data.plot(robust=True, figsize=(10, 4))
+ax.axes.set_aspect('equal')
 ```
 
-When reading in data, Rasterio returns a Numpy `ndarray`:
+When reading in data, xarray contains a Numpy `ndarray` inside the xarray DataArray:
 
 ```{code-cell} ipython3
-type(b4_data)
+type(xr_b4_data), type(xr_b4_data.data)
+```
+
+We'll continu with the Numpy ndarray (ignore the additional coordinate and metadata information from xarray):
+
+```{code-cell} ipython3
+b4_data = xr_b4_data.data
 ```
 
 ```{code-cell} ipython3
@@ -67,7 +74,7 @@ Numpy supports different `dtype`s (`float`, `int`,...), but all elements of an a
 b4_data.dtype
 ```
 
-The data type of this specific array `b4_data` is 16bit unsigned integer. More information on the data types Numpy supports is available in the [documentation](https://numpy.org/devdocs/user/basics.types.html#array-types-and-conversions-between-types). Detailed info on data types is out of scope of this course, but remember that using 16bit unsigned integer, it can contain `2**16` different (all positive) integer values:
+The data type of this specific array `b4_data.data` is 16bit unsigned integer. More information on the data types Numpy supports is available in the [documentation](https://numpy.org/devdocs/user/basics.types.html#array-types-and-conversions-between-types). Detailed info on data types is out of scope of this course, but remember that using 16bit unsigned integer, it can contain `2**16` different (all positive) integer values:
 
 ```{code-cell} ipython3
 2**16
@@ -116,22 +123,17 @@ __Note:__ Numpy function `squeeze` used to get rid of the single-value dimension
 
 +++
 
-As the Numpy array does not contain any spatial information, the x and y axis labels are defined by the indices of the array. Remark that the Rasterio plot returned this plot with the coordinate information in the axis labels. 
+As the Numpy array does not contain any spatial information, the x and y axis labels are defined by the indices of the array. Remark that the xarray plot returned this plot with the coordinate information in the axis labels. 
 
 With a small trick, the same result can be achieved with Matplotlib:
 
-1. When reading in a data set using Rasterio, use the `plotting_extent` function from rasterio to get the spatial extent:
+1. When reading in a data set using xarray, get the spatial extent from the geographical boundaries stored in the xarray `rio` accessor and convert them to an extent:
 
 ```{code-cell} ipython3
-from rasterio.plot import plotting_extent
+xr_b4_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff", engine="rasterio", mask_and_scale=False)
 
-with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff") as src:
-    b4_data = src.read()
-    b4_data_meta = src.meta
-    b4_data_extent = plotting_extent(src)  # NEW
-```
-
-```{code-cell} ipython3
+(left, bottom, right, top) = xr_b4_data.rio.bounds()  # get boundary information
+b4_data_extent = (left, right, bottom, top)   # convert boundaries to extent info
 b4_data_extent
 ```
 
@@ -270,7 +272,7 @@ np.where(b4 < 5000, 10, b4)
 
 **EXERCISE**:
 
-* Read in the file `./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff` with rasterio and assign the data to a new variable `tc_data`.  
+* Read in the file `./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff` with xarray, extract the data as a Numpy ndarray and assign the data to a new variable `tc_data`.  
 * Select only the *second* layer of `tc_data` and assign the output to a new variable `tc_g`.
 * Assign to each of the elements in the `tc_g` array with a value above 15000 the new value 65535.
     
@@ -286,8 +288,9 @@ np.where(b4 < 5000, 10, b4)
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff") as src:
-    tc_data = src.read()
+xr_tc_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff", 
+                            engine="rasterio", mask_and_scale=False)
+tc_data = xr_tc_data.data
 ```
 
 ```{code-cell} ipython3
@@ -322,8 +325,9 @@ Subsample the ndarray `tc_data` by taking only the one out of each 5 data points
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff") as src:
-    tc_data = src.read()
+xr_tc_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff", 
+                               engine="rasterio", mask_and_scale=False)
+tc_data = xr_tc_data.data    
 ```
 
 ```{code-cell} ipython3
@@ -361,8 +365,9 @@ Elements with the value `65535` do represent 'Not a Number' (NaN) values. Howeve
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff") as src:
-    b4_data = src.read()
+xr_b4_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff", 
+                               engine="rasterio", mask_and_scale=False)
+b4_data = xr_b4_data.data    
 ```
 
 ```{code-cell} ipython3
@@ -503,8 +508,10 @@ __Back to our function__
 By combining these three elements, we know enough to translate our conversion into Numpy code on the example data set:
 
 ```{code-cell} ipython3
-with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff") as src:
-    b4_data = src.read()
+xr_b4_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff", 
+                               engine="rasterio", mask_and_scale=False)
+b4_data = xr_b4_data.data
+
 b4_data = b4_data.squeeze().astype(float)    # squeeze and convert to float
 b4_data[b4_data == 0.0] = 0.00001  # to overcome zero-division error
 ```
@@ -615,9 +622,12 @@ Next, plot a greyscale version of the data as well. Instead of using a custom fu
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-with rasterio.open("./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff") as src:
-    herstappe_data = src.read()
-    herstappe_extent = plotting_extent(src)
+xr_herstappe_data = xr.open_dataarray("./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff", 
+                                      engine="rasterio", mask_and_scale=False)
+herstappe_data = xr_herstappe_data.data
+
+(left, bottom, right, top) = xr_herstappe_data.rio.bounds()
+herstappe_extent = (left, right, bottom, top)
 ```
 
 ```{code-cell} ipython3
@@ -625,7 +635,7 @@ with rasterio.open("./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color
 
 # Make a RGB plot
 fig, ax = plt.subplots(figsize=(12, 5))
-plt.imshow(herstappe_data.transpose(1, 2, 0), extent=herstappe_extent);
+ax.imshow(herstappe_data.transpose(1, 2, 0), extent=herstappe_extent);
 ```
 
 ```{code-cell} ipython3
@@ -634,7 +644,7 @@ plt.imshow(herstappe_data.transpose(1, 2, 0), extent=herstappe_extent);
 # Make a Grey scale plot
 greyscale_data = herstappe_data.sum(axis=0)
 fig, ax = plt.subplots(figsize=(12, 5))
-plt.imshow(greyscale_data, extent=herstappe_extent, cmap="Greys");
+ax.imshow(greyscale_data, extent=herstappe_extent, cmap="Greys");
 ```
 
 <div class="alert alert-success">
@@ -660,9 +670,13 @@ Make a plot of the end result and compare with the plots of the previous exercis
 ```{code-cell} ipython3
 :clear_cell: false
 
-with rasterio.open("./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff") as src:
-    herstappe_data = src.read()
-    herstappe_extent = plotting_extent(src)
+xr_herstappe_data = xr.open_dataarray("./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff", 
+                                      engine="rasterio", mask_and_scale=False)
+herstappe_data = xr_herstappe_data.data
+
+# Get extent
+(left, bottom, right, top) = xr_herstappe_data.rio.bounds()
+herstappe_extent = (left, right, bottom, top)
 ```
 
 ```{code-cell} ipython3
@@ -685,7 +699,7 @@ herstappe_rescaled = ((herstappe_data - h_min)/(h_max - h_min))
 
 # Make a plot
 fig, ax = plt.subplots(figsize=(12, 5))
-plt.imshow(herstappe_rescaled.transpose(1, 2, 0), extent=herstappe_extent);
+ax.imshow(herstappe_rescaled.transpose(1, 2, 0), extent=herstappe_extent);
 ```
 
 <div class="alert alert-success">
@@ -698,7 +712,7 @@ You want to reclassify the values of the 4th band data to a fixed set of classes
 * 0.05 < x < 0.1 need to be 20
 * x > 0.1 need to be 30
        
-Use the data set `./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04_(Raw).tiff` (assign data to variable `b4_data`):
+Use the data set `./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff` (assign data to variable `b4_data`):
     
 * Read the data set and exclude the single-value dimension to end up with a 2D array. 
 * Convert to float data type. and normalize the values to the range [0., 1.].
@@ -711,9 +725,13 @@ Use the data set `./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04_(Raw).tiff` (
 ```{code-cell} ipython3
 :clear_cell: false
 
-with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff") as src:
-    b4_data = src.read()
-    b4_data_extent = plotting_extent(src)
+xr_b4_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff", 
+                               engine="rasterio", mask_and_scale=False)
+b4_data = xr_b4_data.data
+
+# Get extent
+(left, bottom, right, top) = xr_b4_data.rio.bounds()
+b4_data_extent = (left, right, bottom, top)
 ```
 
 ```{code-cell} ipython3
@@ -750,9 +768,10 @@ b4_data_classified[0.1 <= b4_data] = 30
 :tags: [nbtutor-solution]
 
 # Create an image plot
-fig, ax = plt.subplots(figsize=(12, 5))
+fig, ax = plt.subplots(figsize=(10, 4))
 img = ax.imshow(b4_data_classified, extent=b4_data_extent)
 fig.colorbar(img, values=[10, 20, 30], ticks=[10, 20, 30])
+ax.set_aspect("equal")
 ```
 
 <div class="alert alert-success">
@@ -783,11 +802,16 @@ Process the images and create a plot of the NDVI:
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff") as src:
-    b4_data = src.read()
-    b4_extent = plotting_extent(src)
-with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B08.tiff") as src:
-    b8_data = src.read() 
+xr_b4_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff", 
+                               engine="rasterio", mask_and_scale=False)
+b4_data = xr_b4_data.data
+xr_b8_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B08.tiff", 
+                               engine="rasterio", mask_and_scale=False)
+b8_data = xr_b8_data.data
+
+# Get extent
+(left, bottom, right, top) = xr_b4_data.rio.bounds()
+b4_data_extent = (left, right, bottom, top)
 ```
 
 ```{code-cell} ipython3
@@ -834,8 +858,8 @@ Using a Matplotlib norm to adjust colormap influence on image https://matplotlib
 # A Sequential colormap `YlGn` with a normalization on the color limits
 import matplotlib.colors as mcolors
 div_norm = mcolors.Normalize(0.1, 0.8)
-fig, ax = plt.subplots(figsize=(14, 5))
-ll = ax.imshow(ndvi, cmap="YlGn", extent=b4_extent, norm=div_norm)
+fig, ax = plt.subplots(figsize=(10, 4))
+ll = ax.imshow(ndvi, cmap="YlGn", extent=b4_data_extent, norm=div_norm)
 fig.colorbar(ll);
 ```
 
@@ -844,8 +868,8 @@ fig.colorbar(ll);
 
 # A Diverging colormap `RdYlGn` with a normalization on the color limits in two directions of the central point:
 div_norm = mcolors.TwoSlopeNorm(vmin=-0.1, vcenter=0.4, vmax=0.8)
-fig, ax = plt.subplots(figsize=(14, 5))
-ll = ax.imshow(ndvi, cmap="RdYlGn", extent=b4_extent, norm=div_norm)
+fig, ax = plt.subplots(figsize=(10, 4))
+ll = ax.imshow(ndvi, cmap="RdYlGn", extent=b4_data_extent, norm=div_norm)
 fig.colorbar(ll);
 plt.axis('off');
 ```
@@ -965,9 +989,14 @@ from scipy import signal
 ```
 
 ```{code-cell} ipython3
-with rasterio.open("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff") as src:
-    b4_data = src.read()
-    b4_data_extent
+xr_b4_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff", 
+                               engine="rasterio", mask_and_scale=False)
+b4_data = xr_b4_data.data
+
+# Get extent
+(left, bottom, right, top) = xr_b4_data.rio.bounds()
+b4_data_extent = (left, right, bottom, top)
+
 b4_data = b4_data.squeeze().astype(float)
 ```
 
