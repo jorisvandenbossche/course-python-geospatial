@@ -15,7 +15,7 @@ kernelspec:
 <p><font size="6"><b>Visualization - Matplotlib</b></font></p>
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2022*
+> *November, 2022*
 >
 > *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 

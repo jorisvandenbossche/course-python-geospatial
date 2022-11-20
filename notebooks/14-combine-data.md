@@ -16,7 +16,7 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2022*
+> *November, 2022*
 >
 > *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
@@ -214,7 +214,7 @@ We want to download the surface temperature data from 1990 till 2000 and combine
     
 - Prepare all the links by composing the base_url ('http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/ncep.reanalysis/surface/air.sig995') with the required years
 - Use the list of file links as the inputfor the `xr.open_mfdataset` to create a single `xarray.DataSet`.
-- Whereas this i 600MB of data, the initial loading is not actually reading in the data.
+- Whereas this is 600MB of data, the initial loading is not actually reading in the data.
    
 <details>
     

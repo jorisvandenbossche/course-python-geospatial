@@ -15,7 +15,7 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2022*
+> *November, 2022*
 >
 > *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
@@ -136,7 +136,7 @@ A histogram:
 df['no2'].plot.hist()
 ```
 
-A more expanded histogram (not asked in the exercise, but uncomment to check the code!)
+A more expanded histogram (not asked in the exercise, but uncomment to check the code)
 
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
@@ -531,6 +531,7 @@ The air quality is indirectly linked to land use, as the presence of pollution s
 <details><summary>Hints</summary>
 
 * The tif file represents a single layer (with one band), so you can use `xarray.open_dataarray()` to read it into an xarray.DataArray.
+* With `mask_and_scale=False` the `int8` data type will be kept when reading in the data.
 
 </details>
 

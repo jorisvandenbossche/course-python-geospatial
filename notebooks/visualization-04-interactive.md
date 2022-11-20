@@ -1,5 +1,6 @@
 ---
 jupytext:
+  cell_metadata_filter: -run_control,-deletable,-editable,-jupyter,-slideshow
   text_representation:
     extension: .md
     format_name: myst
@@ -15,7 +16,7 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2022*
+> *November, 2022*
 >
 > *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](https://creativecommons.org/licenses/by/4.0/)*
 
@@ -110,42 +111,72 @@ folium.Choropleth(geo_data=countries, data=countries, columns=['iso_a3', 'gdp_pe
 m
 ```
 
-## Using holoviews for raster data with xarray
+## Using Holoviews for raster data with xarray
 
 +++
 
-The Holoviews project (http://holoviews.org/) is a set of packages built on top of Bokeh, and which integrate with many of the other packages (pandas, GeoPandas, xarray) through the `hvplot` package (https://hvplot.holoviz.org/).
+The Holoviews project (http://holoviews.org/) is a set of packages built on top of Bokeh, and which integrate with many of the other packages (pandas, GeoPandas, xarray) through the `hvplot` package (https://hvplot.holoviz.org/) and [GeoViews](https://geoviews.org/).
 
-Using the DEM data from the 20-raster-vector-tools.ipynb to showcase hvplot integration with xarray:
+Using the Gent example Sentinel data to showcase hvplot integration with xarray:
 
 ```{code-cell} ipython3
 import xarray as xr
-```
 
-```{code-cell} ipython3
-dem = xr.open_rasterio("data/DHMVIIDSMRAS5m_k30/GeoTIFF/DHMVIIDSMRAS5m_k30.tif").sel(band=1)
-```
-
-```{code-cell} ipython3
-dem
-```
-
-Plotting with matplotlib:
-
-```{code-cell} ipython3
-dem.plot.imshow(cmap="terrain")
-```
-
-Plotting with hvplot creates an interactive map:
-
-```{code-cell} ipython3
 import hvplot.xarray
+import cartopy.crs as ccrs
 ```
 
 ```{code-cell} ipython3
-dem.hvplot.image()
+gent = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B0408.tiff", engine="rasterio", mask_and_scale=False)
+gent = xr_array.assign_coords(band=("band", ["b4", "b8"]))
 ```
+
+Using the default xarray Matplotlib integration with the `.plot.imshow` method:
 
 ```{code-cell} ipython3
-
+gent.sel(band="b4").plot.imshow(robust=True, cmap="summer")
 ```
+
+The equivalent method in hvplot is `.hvplot.image` (and linking the coordinate names):
+
+```{code-cell} ipython3
+gent.sel(band="b4").hvplot.image(x="x", y="y", cmap="summer", 
+                                 clim=(0.05, 0.2))  # 'robust' option is not available
+```
+
+hvplot/geoviews translates multiple dimensions (in this case the bands) automatically in a drop-down menu:
+
+```{code-cell} ipython3
+gent.hvplot.image(x="x", y="y", cmap="summer", # groupby="band" # adding groupby makes this explicit instead of 'automagically'
+                  clim=(0.05, 0.2))  # 'robust' option is not available
+```
+
+Similar to matplotlib plots using cartopy (see notebook `visualization-03-cartopy.ipynb`), the CRS information can be used.
+
+From https://hvplot.holoviz.org/user_guide/Geographic_Data.html#declaring-an-output-projection:
+
+> The `crs=` argument specifies the input projection, i.e. it declares how to interpret the incoming data values. You can independently choose any output projection, i.e. how you want to map the data points onto the screen for display, using the `projection=` argument.
+
+```{code-cell} ipython3
+gent.hvplot.image(x="x", y="y", cmap="summer", 
+                  frame_height=400, 
+                  crs=ccrs.epsg(3857), 
+                  projection=ccrs.UTM(zone=31), 
+                  project=True, geo=True,
+                  clim=(0.05, 0.2))
+```
+
+From https://hvplot.holoviz.org/user_guide/Geographic_Data.html#declaring-an-output-projection:
+
+> Note that when displaying raster data in a projection other than the one in which the data is stored, it is more accurate to render it as a quadmesh rather than an image. As you can see above, a QuadMesh will project each original bin or pixel into the correct non-rectangular shape determined by the projection, accurately showing the geographic extent covered by each sample. An Image, on the other hand, will always be rectangularly aligned in the 2D plane, which requires warping and resampling the data in a way that allows efficient display but loses accuracy at the pixel level. Unfortunately, rendering a large QuadMesh using Bokeh can be very slow
+
+```{code-cell} ipython3
+gent.hvplot.quadmesh(x="x", y="y", cmap="summer", 
+                     frame_height=400, 
+                     crs=ccrs.epsg(3857), 
+                     projection=ccrs.UTM(zone=31), 
+                     project=True, geo=True,
+                     clim=(0.05, 0.2))
+```
+
+See https://hvplot.holoviz.org/user_guide/Geographic_Data.html#declaring-an-output-projection for more options.
