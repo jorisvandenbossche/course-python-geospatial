@@ -15,9 +15,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2021*
+> *October, 2022*
 >
-> *© 2021, Joris Van den Bossche and Stijn Van Hoey  (<mailto:jorisvandenbossche@gmail.com>, <mailto:stijnvanhoey@gmail.com>). Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2022, Joris Van den Bossche and Stijn Van Hoey  (<mailto:jorisvandenbossche@gmail.com>, <mailto:stijnvanhoey@gmail.com>). Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -32,9 +32,9 @@ import matplotlib.pyplot as plt
 ```
 
 ```{code-cell} ipython3
-countries = geopandas.read_file("zip://./data/ne_110m_admin_0_countries.zip")
-cities = geopandas.read_file("zip://./data/ne_110m_populated_places.zip")
-rivers = geopandas.read_file("zip://./data/ne_50m_rivers_lake_centerlines.zip")
+countries = geopandas.read_file("data/ne_110m_admin_0_countries.zip")
+cities = geopandas.read_file("data/ne_110m_populated_places.zip")
+rivers = geopandas.read_file("data/ne_50m_rivers_lake_centerlines.zip")
 ```
 
 ```{code-cell} ipython3
@@ -133,7 +133,7 @@ africa_intersection = africa_intersection[~africa_intersection.is_empty]
 africa_intersection.plot()
 ```
 
-# Unary union and dissolve
+## Unary union and dissolve
 
 Another useful method is the `unary_union` attribute, which converts the set of geometry objects in a GeoDataFrame into a single geometry object by taking the union of all those geometries.
 
@@ -171,7 +171,7 @@ continents
 
 GeoPandas (and Shapely for the individual objects) provide a whole lot of basic methods to analyze the geospatial data (distance, length, centroid, boundary, convex_hull, simplify, transform, ....), much more than what we can touch in this tutorial.
 
-An overview of all methods provided by GeoPandas can be found here: https://geopandas.readthedocs.io/en/latest/docs/reference.html
+An overview of all methods provided by GeoPandas can be found here: https://geopandas.org/en/latest/docs/reference.html
 
 
 </div>
