@@ -16,7 +16,7 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2022*
+> *November, 2022*
 >
 > *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY-SA 4.0 Creative Commons](https://creativecommons.org/licenses/by-sa/4.0/)* Adapted from material from Phil Elson and Ryan Abernathey (see below).
 

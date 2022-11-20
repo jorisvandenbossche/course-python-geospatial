@@ -16,7 +16,7 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2022*
+> *November, 2022*
 >
 > *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](https://creativecommons.org/licenses/by/4.0/)*
 
@@ -155,7 +155,7 @@ Similar to matplotlib plots using cartopy (see notebook `visualization-03-cartop
 
 From https://hvplot.holoviz.org/user_guide/Geographic_Data.html#declaring-an-output-projection:
 
-> The `crs=` argument specifies the input projection, i.e. it declares how to interpret the incoming data values. You can independently choose any output projection, i.e. how you want to map the data points onto the screen for display, using the `projection=` argument. 
+> The `crs=` argument specifies the input projection, i.e. it declares how to interpret the incoming data values. You can independently choose any output projection, i.e. how you want to map the data points onto the screen for display, using the `projection=` argument.
 
 ```{code-cell} ipython3
 gent.hvplot.image(x="x", y="y", cmap="summer", 
