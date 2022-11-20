@@ -136,7 +136,7 @@ A histogram:
 df['no2'].plot.hist()
 ```
 
-A more expanded histogram (not asked in the exercise, but uncomment to check the code!)
+A more expanded histogram (not asked in the exercise, but uncomment to check the code)
 
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
