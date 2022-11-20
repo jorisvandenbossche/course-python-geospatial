@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.12.0
+    jupytext_version: 1.14.0
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -16,9 +16,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *October, 2021*
+> *November, 2022*
 >
-> *© 2021, Joris Van den Bossche and Stijn Van Hoey  (<mailto:jorisvandenbossche@gmail.com>, <mailto:stijnvanhoey@gmail.com>). Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2022, Joris Van den Bossche and Stijn Van Hoey  (<mailto:jorisvandenbossche@gmail.com>, <mailto:stijnvanhoey@gmail.com>). Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -153,15 +153,7 @@ os.mkdir
 ```
 
 ```{code-cell} ipython3
-os.mkdir
-```
-
-```{code-cell} ipython3
 my_very_long_variable_name = 3
-```
-
-```{code-cell} ipython3
-my_very_long_variable_name
 ```
 
 ```{raw-cell}
@@ -247,18 +239,6 @@ Just do it!
 
 +++
 
-## Overload?!?
-
-+++
-
-<img src="../img/notebook/toomuch.jpg" alt="Key A" style="width:500px">
-<br><br>
-<center>No stress, just go to </center>
-<br>
-<center><p style="font-size: 200%;text-align: center;margin:500">`Help` > `Keyboard shortcuts`</p></center>
-
-+++
-
 * **Stackoverflow** is really, really, really nice!
 
   http://stackoverflow.com/questions/tagged/python
@@ -270,7 +250,8 @@ Just do it!
 +++
 
 <big><center>**REMEMBER**: To run a cell: <strike>push the start triangle in the menu or</strike> type **SHIFT + ENTER**
-![](../../img/shiftenter.jpg)
+    
+![](../img/notebook/shiftenter.jpg)
 
 +++
 
@@ -304,16 +285,16 @@ import numpy as np
 np.arange(1000)**2
 ```
 
-## `%lsmagic`
-
-```{code-cell} ipython3
-%lsmagic
-```
-
 ## `%whos`
 
 ```{code-cell} ipython3
 %whos
+```
+
+## `%lsmagic`
+
+```{code-cell} ipython3
+%lsmagic
 ```
 
 # Let's get started!
@@ -324,4 +305,8 @@ from IPython.display import FileLink, FileLinks
 
 ```{code-cell} ipython3
 FileLinks('.', recursive=False)
+```
+
+```{code-cell} ipython3
+
 ```
