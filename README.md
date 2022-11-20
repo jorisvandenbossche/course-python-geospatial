@@ -42,19 +42,20 @@ conda install jupytext jlab-enhanced-cell-toolbar nbdime
 Creating the student version materials from this repo:
 
 ```
-git clone https://github.com/jorisvandenbossche/DS-python-geospatial.git DS-python-geospatial-2012
+export COURSE_DIR="DS-python-geospatial-2022"
+
+git clone https://github.com/jorisvandenbossche/DS-python-geospatial.git $COURSE_DIR
 git clone https://github.com/jorisvandenbossche/course-python-geospatial.git course-python-geospatial-clean
 
-cp course-python-geospatial-clean/notebooks/*.ipynb DS-python-geospatial-2021/_solved/
-cp course-python-geospatial-clean/notebooks/data/ DS-python-geospatial-2021/notebooks/ -r
-cp course-python-geospatial-clean/img/ DS-python-geospatial-2021/ -r
-cp course-python-geospatial-clean/environment.yml DS-python-geospatial-2021/
-cp course-python-geospatial-clean/check_environment.py DS-python-geospatial-2021/
-
-cd DS-python-geospatial-2021/
+cp course-python-geospatial-clean/notebooks/*.ipynb $COURSE_DIR/_solved/
+cp course-python-geospatial-clean/notebooks/data/ $COURSE_DIR/notebooks/ -r
+cp course-python-geospatial-clean/img/ $COURSE_DIR/ -r
+cp course-python-geospatial-clean/environment.yml $COURSE_DIR/
+cp course-python-geospatial-clean/check_environment.py $COURSE_DIR/
+cd $COURSE_DIR/
 ./convert_notebooks.sh
+jupyter nbconvert --clear-output _solved/*.ipynb
 ```
-
 
 
 ## Meta
