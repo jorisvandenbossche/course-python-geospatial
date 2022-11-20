@@ -293,13 +293,14 @@ Plot a salinity profile, i.e. how the salinity evolves with the depth/level, for
 - The salinity data of 2012-10-31 with the salinity in the x-axis and the level in the y-axis.
 - The salinity data of 2012-10-31 with the level in the y-axis, but using a rolling median value for the level coordinate using 10 levels (with `center=True` to make the two plots comparable) to smooth the data. 
     
-Feel free to adjust the settings of both lines (color, width,...
+Feel free to adjust the settings of both lines (color, width,...)
     
 <details><summary>Hints</summary>
     
 * Use `fig, ax = plt.subplots()` to prepare a Figure/axes fo both lines.
 * The `rolling` method need to be applied to the `level` coordinate.
 * You can pass configuration options such as `linewidth`, `color`,... to the line plot method.
+* By adding `label` to the plots and remove the addition of a legend for each of the plots (`add_legend=False`), calling the `ax.legend()` method at the end will collect these labels into a single legend. 
 
 </details>    
     
@@ -311,8 +312,9 @@ Feel free to adjust the settings of both lines (color, width,...
 salinity_20121031 = argo["salinity"].sel(date='2012-10-31')
 
 fig, ax = plt.subplots(figsize=(6, 6))
-salinity_20121031.plot.line(y="level", yincrease=False, color="grey");
-salinity_20121031.rolling(level=10, center=True).median().plot.line(y="level", yincrease=False, linewidth=3, color="orange");
+salinity_20121031.plot.line(y="level", yincrease=False, color="grey", add_legend=False, label="raw");
+salinity_20121031.rolling(level=10, center=True).median().plot.line(y="level", yincrease=False, linewidth=3, color="orange", add_legend=False, label="smooth");
+ax.legend()
 ```
 
 <div class="alert alert-success">
