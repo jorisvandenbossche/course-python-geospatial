@@ -8,7 +8,8 @@ dependencies:
   - jupyterlab>3
   - numpy
   - pandas
-  - xarray
+  # pinning to avoid scatter regression (https://github.com/pydata/xarray/discussions/7268)
+  - xarray=2022.09
   - geopandas
   - pygeos
   - rasterio
