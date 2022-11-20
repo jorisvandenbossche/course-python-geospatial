@@ -151,7 +151,7 @@ gent.hvplot.image(x="x", y="y", cmap="summer", # groupby="band" # adding groupby
                   clim=(0.05, 0.2))  # 'robust' option is not available
 ```
 
-Similar to matplotlib plots using cartopy (see notebook `visualization-03-cartopy.ipynb`), the CRS informaiton can be used.
+Similar to matplotlib plots using cartopy (see notebook `visualization-03-cartopy.ipynb`), the CRS information can be used.
 
 From https://hvplot.holoviz.org/user_guide/Geographic_Data.html#declaring-an-output-projection:
 
