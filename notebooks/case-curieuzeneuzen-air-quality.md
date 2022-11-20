@@ -531,7 +531,7 @@ The air quality is indirectly linked to land use, as the presence of pollution s
 <details><summary>Hints</summary>
 
 * The tif file represents a single layer (with one band), so you can use `xarray.open_dataarray()` to read it into an xarray.DataArray.
-* With `mask_and_scale=False)` the `int8` data type will be kept wehn reading in the data.
+* With `mask_and_scale=False` the `int8` data type will be kept wehn reading in the data.
 
 </details>
 
