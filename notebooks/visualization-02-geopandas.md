@@ -31,10 +31,10 @@ import matplotlib.pyplot as plt
 ```
 
 ```{code-cell} ipython3
-countries = geopandas.read_file("zip://./data/ne_110m_admin_0_countries.zip")
+countries = geopandas.read_file("data/ne_110m_admin_0_countries.zip")
 countries = countries[countries['continent'] != "Antarctica"]
-cities = geopandas.read_file("zip://./data/ne_110m_populated_places.zip")
-rivers = geopandas.read_file("zip://./data/ne_50m_rivers_lake_centerlines.zip")
+cities = geopandas.read_file("data/ne_110m_populated_places.zip")
+rivers = geopandas.read_file("data/ne_50m_rivers_lake_centerlines.zip")
 ```
 
 ## GeoPandas visualization functionality
@@ -279,14 +279,12 @@ folium.Choropleth(geo_data=countries, data=countries, columns=['iso_a3', 'gdp_pe
 m
 ```
 
-### In the upcoming GeoPandas release: a default interactive `explore()` method (based on Folium)
+<div class="alert alert-info" style="font-size:120%">
 
-Currently this lives at https://github.com/martinfleis/geopandas-view/, but it will be integrated in the next release of GeoPandas:
+**NOTE**: <br>
 
-```{code-cell} ipython3
-from geopandas_view import view as explore
-```
+Making a quick plot using Folium is now also available as the `.explore()` method on a GeoDataFrame or GeoSeries.
+ 
+See https://geopandas.org/en/stable/docs/user_guide/interactive_mapping.html for more examples.
 
-```{code-cell} ipython3
-explore(countries)
-```
+</div>
