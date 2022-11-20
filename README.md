@@ -24,7 +24,7 @@ The course uses Python 3, data analysis packages such as Pandas, Numpy and Matpl
 
 For detailed instructions to get started on your local machine , see the [setup instructions](./setup.md).
 
-In case you do not want to install everything and just want to try out the course material, use the environment setup by Binder [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jorisvandenbossche/DS-python-geospatial/master?urlpath=lab/tree/notebooks) and open de notebooks rightaway.
+In case you do not want to install everything and just want to try out the course material, use the environment setup by Binder [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jorisvandenbossche/course-python-geospatial/HEAD?urlpath=lab/tree/notebooks ) and open de notebooks rightaway.
 
 
 ## Contributing
