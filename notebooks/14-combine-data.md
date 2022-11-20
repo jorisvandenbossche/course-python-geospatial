@@ -214,7 +214,7 @@ We want to download the surface temperature data from 1990 till 2000 and combine
     
 - Prepare all the links by composing the base_url ('http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/ncep.reanalysis/surface/air.sig995') with the required years
 - Use the list of file links as the inputfor the `xr.open_mfdataset` to create a single `xarray.DataSet`.
-- Whereas this i 600MB of data, the initial loading is not actually reading in the data.
+- Whereas this is 600MB of data, the initial loading is not actually reading in the data.
    
 <details>
     
