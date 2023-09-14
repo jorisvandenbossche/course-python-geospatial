@@ -2,21 +2,19 @@ name: DS-geospatial
 channels:
   - conda-forge
 dependencies:
-  - python=3.10
+  - python=3.11
   - ipython
   - jupyter
   - jupyterlab>3
   - numpy
   - pandas
-  # pinning to avoid scatter regression (https://github.com/pydata/xarray/discussions/7268)
-  - xarray=2022.09
+  - xarray
   - geopandas
   - pygeos
   - rasterio
   - owslib
   - rasterstats
-  # pinning to avoid compat issue with cartopy (https://github.com/jorisvandenbossche/course-python-geospatial/issues/21)
-  - matplotlib=3.5
+  - matplotlib
   - mapclassify
   - cartopy
   - contextily
