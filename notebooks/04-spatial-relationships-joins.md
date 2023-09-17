@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.0
+    jupytext_version: 1.15.2
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -410,7 +410,7 @@ In this case, we know that each of the cities is located *within* one of the cou
 We can test such relationships using the methods we have seen in the previous notebook:
 
 ```{code-cell} ipython3
-france = countries.loc[countries['name'] == 'France', 'geometry'].squeeze()
+france = countries.loc[countries['name'] == 'France', 'geometry'].item()
 ```
 
 ```{code-cell} ipython3
