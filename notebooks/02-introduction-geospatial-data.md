@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.0
+    jupytext_version: 1.15.2
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -178,7 +178,7 @@ type(countries.geometry[0])
 To construct one ourselves:
 
 ```{code-cell} ipython3
-from shapely.geometry import Point, Polygon, LineString
+from shapely import Point, Polygon, LineString
 ```
 
 ```{code-cell} ipython3
