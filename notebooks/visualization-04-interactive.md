@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.0
+    jupytext_version: 1.15.2
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -16,9 +16,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *November, 2022*
+> *November, 2023*
 >
-> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](https://creativecommons.org/licenses/by/4.0/)*
+> *© 2023, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](https://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -128,7 +128,7 @@ import cartopy.crs as ccrs
 
 ```{code-cell} ipython3
 gent = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B0408.tiff", engine="rasterio", mask_and_scale=False)
-gent = xr_array.assign_coords(band=("band", ["b4", "b8"]))
+gent = gent.assign_coords(band=("band", ["b4", "b8"]))
 ```
 
 Using the default xarray Matplotlib integration with the `.plot.imshow` method:
@@ -160,7 +160,7 @@ From https://hvplot.holoviz.org/user_guide/Geographic_Data.html#declaring-an-out
 ```{code-cell} ipython3
 gent.hvplot.image(x="x", y="y", cmap="summer", 
                   frame_height=400, 
-                  crs=ccrs.epsg(3857), 
+                  crs=ccrs.epsg(3857),
                   projection=ccrs.UTM(zone=31), 
                   project=True, geo=True,
                   clim=(0.05, 0.2))
@@ -180,3 +180,7 @@ gent.hvplot.quadmesh(x="x", y="y", cmap="summer",
 ```
 
 See https://hvplot.holoviz.org/user_guide/Geographic_Data.html#declaring-an-output-projection for more options.
+
+```{code-cell} ipython3
+
+```
