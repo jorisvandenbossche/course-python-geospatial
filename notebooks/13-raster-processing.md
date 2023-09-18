@@ -544,6 +544,7 @@ We want to limit our search for locations to the surroundings of the centre of G
 <details><summary>Hints</summary>
 
 * Remember the introduction on geospatial data and the shapely objects, e.g. `shapely.geometry.Point`?
+* The Latitude/Longitude order is a typical gotcha. The `Point` expects `x` (longitude) as  first argument and `y` (latitude) as second argument.
 * Use `geopandas.GeoSeries` to create a new GeoSeries and add the `crs` parameter. The lat/lon of the Kornmarkt are provided as EPSG:4326. 
 * In EPSG:31370, the unit is meter, so make sure to use meter to define the buffer size.
 * `.total_bounds` is a class attribute.
