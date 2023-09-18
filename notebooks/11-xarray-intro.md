@@ -540,7 +540,7 @@ The combination of element-wise calculations, efficient reductions and broadcast
 
 The data set `./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff` (assign to variable `herstappe_data`) has values ranging in between 0.11325, 0.8575. To improve the quality of the visualization, stretch __each of the layers individually__ to the values to the range 0. to 1. with a linear transformation: 
     
-$$z_i=\frac{x_i-\min(x)}{\max(x)-\min(x)}$$
+$$z_{i,scaled}=\frac{z_i-\min(z)}{\max(z)-\min(z)}$$
 
 Make a plot of the end result and compare with a plot of the original data. 
 
