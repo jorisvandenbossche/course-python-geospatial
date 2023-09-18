@@ -1,10 +1,11 @@
 ---
 jupytext:
+  cell_metadata_filter: -run_control,-deletable,-editable,-jupyter,-slideshow
   text_representation:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.0
+    jupytext_version: 1.15.2
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -15,9 +16,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *November, 2022*
+> *November, 2023*
 >
-> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2023, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -112,7 +113,7 @@ The water level classes define different water depth (level). The pressure is a 
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-argo.plot.scatter(x="pressure", y="level")
+argo.plot.scatter(x="pressure", y="level", edgecolor="None", s=10)
 ```
 
 <div class="alert alert-success">
@@ -242,13 +243,13 @@ You wonder how the temperature evolves with increasing latitude and what the eff
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-argo.plot.scatter(x="temperature", y="level", s=3, hue="lat")
+argo.plot.scatter(x="temperature", y="level", s=5, hue="lat", edgecolor="None")
 ```
 
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-argo.sel(level=[1, 5, 25, 50]).plot.scatter(x="lat", y="temperature", col="level")
+argo.sel(level=[1, 5, 25, 50]).plot.scatter(x="lat", y="temperature", col="level", edgecolor="None")
 ```
 
 <div class="alert alert-success">
