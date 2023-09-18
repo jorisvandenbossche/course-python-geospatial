@@ -258,8 +258,6 @@ Save the result of the mapping as the variable `era5_renamed`.
 </div>
 
 ```{code-cell} ipython3
-:tags: [nbtutor-solution]
-
 mapping = {
     "sf": "snowfall_m",
     "sp": "pressure_pa",
@@ -267,6 +265,10 @@ mapping = {
     "tp": "precipitation_m",
     "u10": "wind_ms"
 }
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
 
 era5_renamed = era5.rename(mapping)
 era5_renamed
