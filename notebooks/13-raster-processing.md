@@ -239,7 +239,7 @@ params = dict(service='WFS', version='1.1.0', request='GetFeature',
 r = requests.get(wfs_rivers, params=params)
 ```
 
-__Note__: A WFS is a standardized way to share vector GIS data sets on the internet, typically also used by web application, see ['A bit more about WFS'](#a_bit_more_about_WFS) section for more info.
+__Note__: A WFS is a standardized way to share vector GIS data sets on the internet, typically also used by web application, see ['A bit more about WFS'](#A-bit-more-about-WFS) section for more info.
 
 +++
 
@@ -349,7 +349,9 @@ If we want to avoid loading the full original raster data, the `from_disk` keywo
 dem_zwalm2.rio.clip(catchment.to_crs('epsg:31370').geometry, from_disk=True)
 ```
 
-#### 2. Using GDAL CLI
++++ {"jp-MarkdownHeadingCollapsed": true}
+
+#### 2. (optional) Using GDAL CLI
 
 +++
 
