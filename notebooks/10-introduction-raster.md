@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.0
+    jupytext_version: 1.15.2
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -16,9 +16,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *November, 2022*
+> *November, 2023*
 >
-> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2023, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -54,7 +54,7 @@ Whereas we could actually store raster data as a tabular data set using an x, y 
 
 Similar to the GeoPandas library for feature based data, meet [xarray](http://xarray.pydata.org/en/stable/) for raster based data.
 
-+++ {"tags": []}
++++
 
 ## Importing raster data
 
@@ -122,7 +122,7 @@ The output of xarray is a bit different to what we've previous seen. Let's go th
     - `x`: the x coordinates of the data set
 - Each of these dimensions are defined by a __coordinate__ (1D) array
 - It contains 304407 (227\*447\*3) data values (stored as float32)
-- Other metadata, such as the spatial information) provided by the `tiff` are stored in the __`Attributes`__
+- Other metadata, such as some of the metadata provided by the `tiff` file are stored in the __`Attributes`__. The attributes is a dictionary.
 
 Looking to the data itself (click on the icons on the right), we can see these are Numpy arrays...
 
@@ -188,7 +188,7 @@ If we use `xarray.DataArray` to wrap this NumPy array, we can keep the data and 
 
 </div>
 
-+++ {"tags": []}
++++
 
 ## Raster data attributes - spatial context
 
@@ -274,3 +274,7 @@ open source Swiss Army knife for raster and vector geospatial data handling. GDA
 You can run a CLI command inside a Jupyter Notebook by prefixing it with the `!` character.
 
 </div>
+
+```{code-cell} ipython3
+
+```
