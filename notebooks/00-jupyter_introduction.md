@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.0
+    jupytext_version: 1.15.2
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -140,6 +140,14 @@ Cfr. any text editor
 
 +++
 
+## Execution: SHIFT + ENTER
+
+**REMEMBER**: To run a cell: <strike>push the start triangle in the menu or</strike> type **SHIFT + ENTER**
+    
+![](../img/notebook/shiftenter.jpg)
+
++++
+
 ## Completion: TAB
 ![](../../img/notebook/tabbutton.jpg)
 
@@ -189,10 +197,10 @@ import glob
 glob.glob??
 ```
 
-## *edit* mode to *command* mode
+## *edit* mode vs *command* mode
 
-* *edit* mode means you're editing a cell, i.e. with your cursor inside a cell to type content --> <font color="green">green colored side</font>
-* *command* mode means you're NOT editing(!), i.e. NOT with your cursor inside a cell to type content --> <font color="blue">blue colored side</font>
+* *edit* mode means you're editing a cell, i.e. with your cursor inside a cell to type content -->  <font color="blue">blue colored border</font>
+* *command* mode means you're NOT editing(!), i.e. NOT with your cursor inside a cell to type content --> selected cell has a grey border
 
 To start editing, click inside a cell or 
 <img src="../img/notebook/enterbutton.png" alt="Key enter" style="width:150px">
@@ -216,7 +224,7 @@ Create a new cell below with the key B... when in *command* mode
 
 +++
 
-## CTRL + SHIFT + P
+## CTRL + SHIFT + C
 
 +++
 
