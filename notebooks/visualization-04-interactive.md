@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.0
+    jupytext_version: 1.15.2
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -128,7 +128,7 @@ import cartopy.crs as ccrs
 
 ```{code-cell} ipython3
 gent = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B0408.tiff", engine="rasterio", mask_and_scale=False)
-gent = xr_array.assign_coords(band=("band", ["b4", "b8"]))
+gent = gent.assign_coords(band=("band", ["b4", "b8"]))
 ```
 
 Using the default xarray Matplotlib integration with the `.plot.imshow` method:
@@ -158,6 +158,7 @@ From https://hvplot.holoviz.org/user_guide/Geographic_Data.html#declaring-an-out
 > The `crs=` argument specifies the input projection, i.e. it declares how to interpret the incoming data values. You can independently choose any output projection, i.e. how you want to map the data points onto the screen for display, using the `projection=` argument.
 
 ```{code-cell} ipython3
+gent.rio._crs = False  # small bug in hvplot's handling of rioxarray crs
 gent.hvplot.image(x="x", y="y", cmap="summer", 
                   frame_height=400, 
                   crs=ccrs.epsg(3857), 
