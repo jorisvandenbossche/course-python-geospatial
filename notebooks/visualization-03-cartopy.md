@@ -5,7 +5,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.0
+    jupytext_version: 1.15.2
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -16,9 +16,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *November, 2022*
+> *November, 2023*
 >
-> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY-SA 4.0 Creative Commons](https://creativecommons.org/licenses/by-sa/4.0/)* Adapted from material from Phil Elson and Ryan Abernathey (see below).
+> *© 2023, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY-SA 4.0 Creative Commons](https://creativecommons.org/licenses/by-sa/4.0/)* Adapted from material from Phil Elson and Ryan Abernathey (see below).
 
 ---
 
@@ -95,7 +95,7 @@ import cartopy.crs as ccrs
 import cartopy
 ```
 
-Cartopy's projection list tells us that the Plate Carree projection is available with the ``ccrs.PlateCarree`` class: https://scitools.org.uk/cartopy/docs/latest/crs/projections.html
+Cartopy's projection list tells us that the Plate Carree projection is available with the ``ccrs.PlateCarree`` class: https://scitools.org.uk/cartopy/docs/latest/reference/projections.html#cartopy-projections 
 
 **Note:** we need to *instantiate* the class in order to do anything projection-y with it!
 
@@ -216,8 +216,8 @@ extent = [-120, -70, 24, 50.5]
 central_lon = np.mean(extent[:2])
 central_lat = np.mean(extent[2:])
 
-plt.figure(figsize=(12, 6))
-ax = plt.axes(projection=ccrs.AlbersEqualArea(central_lon, central_lat))
+fig, ax = plt.subplots(subplot_kw={'projection': ccrs.AlbersEqualArea(central_lon, central_lat)}, 
+                       figsize=(12, 6))
 ax.set_extent(extent)
 
 ax.add_feature(cartopy.feature.OCEAN)
@@ -280,7 +280,7 @@ ax.set_global()
 ax.gridlines()
 ```
 
-Because our map is a matplotlib axis, we can use all the familiar maptplotlib commands to make plots.
+Because our map is a matplotlib axis, we can use all the familiar matplotlib commands to make plots.
 By default, the map extent will be adjusted to match the data. We can override this with the `.set_global` or `.set_extent` commands.
 
 Another example to show the difference of adding a transform or not:
@@ -353,52 +353,25 @@ ax.coastlines()
 ax.contourf(lon, lat, data, transform=ccrs.PlateCarree())
 ```
 
-### Showing Images
-
-We can plot a satellite image on a map if we know its extent
-
-```{code-cell} ipython3
-! wget https://github.com/rasterio/rasterio/raw/main/tests/data/RGB.byte.tif
-```
-
-```{code-cell} ipython3
-# Read a tif file as an image without spatial context:
-da = xr.open_dataarray('RGB.byte.tif', engine="rasterio", mask_and_scale=False)
-# DataArray as a 3-D array/image as used for viz-libraries (channel dim at the end)
-img = np.transpose(da.data, [1, 2, 0])
-
-# extract the extent from the bounds
-(left, bottom, right, top) = da.rio.bounds()
-img_extent = (left, right, bottom, top)
-```
-
-```{code-cell} ipython3
-proj = ccrs.UTM(zone=18, southern_hemisphere=False)
-```
-
-```{code-cell} ipython3
-fig, ax = plt.subplots(figsize=(8, 12), subplot_kw={'projection': proj})
-
-ax.imshow(img, extent=img_extent, transform=proj)
-ax.coastlines(resolution='10m', color='red', linewidth=1)
-```
-
 ## Xarray Integration
 
 Cartopy transforms can be passed to xarray! This creates a very quick path for creating professional looking maps from netCDF data.
 
 ```{code-cell} ipython3
+file_path_data_nc = "./data/20190101120000-REMSS-L4_GHRSST-SSTfnd-MW_IR_OI-GLOB-v02.0-fv05.0.nc"
+urlretrieve("https://data.remss.com/SST/daily/mw_ir/v05.0/netcdf/2019/20190101120000-REMSS-L4_GHRSST-SSTfnd-MW_IR_OI-GLOB-v02.0-fv05.0.nc", file_path_data_nc)
+```
+
+```{code-cell} ipython3
 import xarray as xr
-url = 'https://opendap.jpl.nasa.gov/opendap/OceanTemperature/ghrsst/data/GDS2/L4/GLOB/REMSS/mw_OI/v5.1/2022/001/20220101120000-REMSS-L4_GHRSST-SSTfnd-MW_OI-GLOB-v02.0-fv05.1.nc'
-ds = xr.open_dataset(url)
-#ds
+ds = xr.open_dataset(file_path_data_nc)
+ds
 ```
 
 ```{code-cell} ipython3
 sst = ds["analysed_sst"]
 
-fig = plt.figure(figsize=(9,6))
-ax = plt.axes(projection=ccrs.Robinson())
+fig, ax = plt.subplots(subplot_kw={'projection': ccrs.Robinson()}, figsize=(9,6))
 ax.coastlines()
 ax.gridlines()
 sst.plot(ax=ax, transform=ccrs.PlateCarree(), 
@@ -443,7 +416,7 @@ gent = gent.to_crs(plain_crs.proj4_init)  # adjust to projection
 gent.plot(ax=ax, facecolor="none", edgecolor="white", linewidth=2)
 ```
 
-Someone interested in flood control, might want to know the sensitive areas for inundation in this area. Looking in the available services, https://inspirepub.waterinfo.be/arcgis/rest/services/overstroombaargebied/MapServer/WMTS/1.0.0/WMTSCapabilities.xml has the available layer `overstroombaargebied: overstroombaargebied` (dutch for inundation sensitive area).
+Someone interested in flood control, might want to know the sensitive areas for inundation in this area. Looking in the available services, https://inspirepub.waterinfo.be/arcgis/rest/services/watertoets/watertoets_pluviaal/MapServer/WMTS/1.0.0/WMTSCapabilities.xml has the available layer `watertoets_watertoets_pluviaal` (dutch for rain-induced zones).
 
 Hence, we can combine this WMTS layer into the map as well:
 
@@ -458,8 +431,8 @@ layer_name = 'orthoimage_coverage'
 ax.add_wms(base_uri, layers=layer_name)
 
 # Add WMTS of sensitive areas for inundation.
-base_uri = 'https://inspirepub.waterinfo.be/arcgis/rest/services/Overstromingsgevoelige_gebieden_2017/MapServer/WMTS'
-layer_name = 'Overstromingsgevoelige_gebieden_2017'
+base_uri = "https://inspirepub.waterinfo.be/arcgis/rest/services/watertoets/watertoets_fluviaal/MapServer/WMTS"
+layer_name = 'watertoets_watertoets_fluviaal'
 ax.add_wmts(base_uri, layer_name=layer_name, alpha=0.8)
 
 # Add city of Ghent boundary from file
@@ -467,6 +440,48 @@ gent = geopandas.read_file("./data/gent/vector/gent.geojson")
 gent = gent.to_crs(plain_crs.proj4_init)  # adjust to projection
 gent.plot(ax=ax, facecolor="none", edgecolor="#433d78", linewidth=2)
 ```
+
+### (optional) How the add a satellite image manually
+
+When a (satellite) image does not contain the spatial information, we can still plot the image on a map if we know its extent
+
+```{code-cell} ipython3
+from urllib.request import urlretrieve
+```
+
+```{code-cell} ipython3
+file_path_data_rgb = "./data/RGB.byte.tif"
+urlretrieve("https://github.com/rasterio/rasterio/raw/main/tests/data/RGB.byte.tif", file_path_data_rgb)
+```
+
+```{code-cell} ipython3
+# Read a tiff file as an image without spatial context to illustrate the concept:
+da = xr.open_dataarray(file_path_data_rgb, engine="rasterio", mask_and_scale=False)
+
+# DataArray as a 3-D array/image as used for viz-libraries (channel dim at the end)
+img = np.transpose(da.data, [1, 2, 0])
+
+# extract the extent from the bounds
+(left, bottom, right, top) = da.rio.bounds()
+img_extent = (left, right, bottom, top)
+```
+
+```{code-cell} ipython3
+proj = ccrs.UTM(zone=18, southern_hemisphere=False)
+```
+
+By providing the `extent` and the `proj` information to Matplotlib/Cartopy, the image can be visualized correctly:
+
+```{code-cell} ipython3
+fig, ax = plt.subplots(figsize=(8, 12), subplot_kw={'projection': proj})
+
+ax.imshow(img, extent=img_extent, transform=proj)
+ax.coastlines(resolution='10m', color='red', linewidth=1)
+```
+
+__Note__ This is what xarray is doing under the hood to pass rio/spatial arrays to Matplotlib;
+
++++
 
 ## Doing More
 
