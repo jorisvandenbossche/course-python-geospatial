@@ -1,11 +1,10 @@
 ---
 jupytext:
-  cell_metadata_filter: -run_control,-deletable,-editable,-jupyter,-slideshow
   text_representation:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.0
+    jupytext_version: 1.15.2
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -16,9 +15,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *November, 2022*
+> *September, 2023*
 >
-> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2023, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -32,6 +31,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import cmocean
+
+%matplotlib inline
 ```
 
 ## `xarray.Dataset` for multiple variables
@@ -160,13 +161,13 @@ ds.drop_sel(year=[2016])
 Plotting for data set level is rather limited. A typical use case that is supported to compare two data variables are scatter plots:
 
 ```{code-cell} ipython3
-ds.plot.scatter(x="temperature", y="precipitation", s=1, alpha=0.1)
+ds.plot.scatter(x="temperature", y="precipitation", s=1, alpha=0.1, edgecolor="none")
 ```
 
 `facetting` is also supported here, by linking the `col` or `row` parameter to a data variable.
 
 ```{code-cell} ipython3
-ds.plot.scatter(x="temperature", y="precipitation", s=1, alpha=0.1, col="year")  # try also hue="year" instead of col; requires hue_style="discrete"
+ds.plot.scatter(x="temperature", y="precipitation", s=1, alpha=0.1, col="year", edgecolor="none")  # try also hue="year" instead of col; requires hue_style="discrete"
 ```
 
 ### DataSet reductions
@@ -256,8 +257,6 @@ Save the result of the mapping as the variable `era5_renamed`.
 </div>
 
 ```{code-cell} ipython3
-:tags: [nbtutor-solution]
-
 mapping = {
     "sf": "snowfall_m",
     "sp": "pressure_pa",
@@ -265,6 +264,10 @@ mapping = {
     "tp": "precipitation_m",
     "u10": "wind_ms"
 }
+```
+
+```{code-cell} ipython3
+:tags: [nbtutor-solution]
 
 era5_renamed = era5.rename(mapping)
 era5_renamed

@@ -1,11 +1,10 @@
 ---
 jupytext:
-  cell_metadata_filter: -run_control,-deletable,-editable,-jupyter,-slideshow
   text_representation:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.0
+    jupytext_version: 1.15.2
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -16,13 +15,13 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *November, 2022*
+> *September, 2023*
 >
-> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2023, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
-+++ {"tags": []}
++++
 
 In the previous notebooks, we focused either on vector data or raster data. Often you encounter both types of data and want to combine them. In this notebook, we show *some* examples of typical raster/vector interactions.
 
@@ -56,8 +55,8 @@ data_file = "./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff"
 ```
 
 ```{code-cell} ipython3
-data = rioxarray.open_rasterio(data_file)
-data
+data_raw = rioxarray.open_rasterio(data_file)
+data_raw
 ```
 
 The `rioxarray.open_rasterio` function is similar to `xarray.open_dataarray`.
@@ -65,23 +64,29 @@ The `rioxarray.open_rasterio` function is similar to `xarray.open_dataarray`.
 Once `rioxarray` is imported, it provides a `.rio` accessor on the xarray.DataArray object, which gives access to some properties of the raster data:
 
 ```{code-cell} ipython3
-data.rio.crs
+data_raw.rio.crs
 ```
 
 ```{code-cell} ipython3
-data.rio.bounds()
+data_raw.rio.bounds()
 ```
 
 ```{code-cell} ipython3
-data.rio.resolution()
+data_raw.rio.resolution()
 ```
 
 ```{code-cell} ipython3
-data.rio.nodata
+data_raw.rio.nodata
 ```
 
 ```{code-cell} ipython3
-data.rio.transform()
+data_raw.rio.transform()
+```
+
+For the remainder of this section, we work with the integer converted version:
+
+```{code-cell} ipython3
+data = (data_raw * 255).astype(np.uint8)
 ```
 
 ## Reprojecting rasters
@@ -224,7 +229,7 @@ Next, we download the shapes of the rivers in the area through a WFS (Web Featur
 import json
 import requests
 
-wfs_rivers = "https://geoservices.informatievlaanderen.be/overdrachtdiensten/VHAWaterlopen/wfs"
+wfs_rivers = "https://geo.api.vlaanderen.be/VHAWaterlopen/wfs"
 params = dict(service='WFS', version='1.1.0', request='GetFeature',
               typeName='VHAWaterlopen:Wlas', outputFormat='json',
               cql_filter="(VHAZONENR=460)OR(VHAZONENR=461)", srs="31370")
@@ -233,7 +238,7 @@ params = dict(service='WFS', version='1.1.0', request='GetFeature',
 r = requests.get(wfs_rivers, params=params)
 ```
 
-__Note__: A WFS is a standardized way to share vector GIS data sets on the internet, typically also used by web application, see ['A bit more about WFS'](#a_bit_more_about_WFS) section for more info.
+__Note__: A WFS is a standardized way to share vector GIS data sets on the internet, typically also used by web application, see ['A bit more about WFS'](#A-bit-more-about-WFS) section for more info.
 
 +++
 
@@ -264,7 +269,7 @@ Let's first download the catchment area of the Zwalm river from the Flemish gove
 import json
 import requests
 
-wfs_bekkens = "https://geoservices.informatievlaanderen.be/overdrachtdiensten/Watersystemen/wfs"
+wfs_bekkens = "https://geo.api.vlaanderen.be/Watersystemen/wfs"
 params = dict(service='WFS', version='1.1.0', request='GetFeature',
               typeName='Watersystemen:WsDeelbek', outputFormat='json',
               cql_filter="DEELBEKNM='Zwalm'", srs="31370")
@@ -343,7 +348,9 @@ If we want to avoid loading the full original raster data, the `from_disk` keywo
 dem_zwalm2.rio.clip(catchment.to_crs('epsg:31370').geometry, from_disk=True)
 ```
 
-#### 2. Using GDAL CLI
++++ {"jp-MarkdownHeadingCollapsed": true}
+
+#### 2. (optional) Using GDAL CLI
 
 +++
 
@@ -358,8 +365,6 @@ rm ./dem_masked_gdal.tiff
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 clipped_gdal = xr.open_dataarray("./dem_masked_gdal.tiff", mask_and_scale=True).sel(band=1)
 img = clipped_gdal.plot.imshow(
     cmap="terrain", figsize=(10, 6), interpolation='antialiased')
@@ -540,6 +545,7 @@ We want to limit our search for locations to the surroundings of the centre of G
 <details><summary>Hints</summary>
 
 * Remember the introduction on geospatial data and the shapely objects, e.g. `shapely.geometry.Point`?
+* The Latitude/Longitude order is a typical gotcha. The `Point` expects `x` (longitude) as  first argument and `y` (latitude) as second argument.
 * Use `geopandas.GeoSeries` to create a new GeoSeries and add the `crs` parameter. The lat/lon of the Kornmarkt are provided as EPSG:4326. 
 * In EPSG:31370, the unit is meter, so make sure to use meter to define the buffer size.
 * `.total_bounds` is a class attribute.
@@ -1143,8 +1149,6 @@ gent = geopandas.read_file("data/gent/vector/gent.geojson")
 ```
 
 ```{code-cell} ipython3
-:tags: []
-
 fig, ax = plt.subplots(figsize=(10, 10))
 gent.to_crs("EPSG:31370").plot(ax=ax, alpha=0.1)
 ax.set(ylim=(190_000, 200_000), xlim=(100_000, 110_000))
@@ -1249,7 +1253,7 @@ As an example - municipalities in Belgium, see https://wfs.michelstuyts.be/servi
 - Column `Naam` contains the municipatility, e.g. `Gent`
 
 ```{code-cell} ipython3
-wfs_municipality = "https://geoservices.informatievlaanderen.be/overdrachtdiensten/VRBG2019/wfs"
+wfs_municipality = "https://geo.api.vlaanderen.be/VRBG2019/wfs"
 params = dict(service='WFS', version='1.1.0', request='GetFeature',
               typeName='VRBG2019:Refgem', outputFormat='json',
               cql_filter="NAAM='Gent'", srs="31370")

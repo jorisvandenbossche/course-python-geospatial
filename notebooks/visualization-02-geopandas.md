@@ -1,10 +1,11 @@
 ---
 jupytext:
+  cell_metadata_filter: -run_control,-deletable,-editable,-jupyter,-slideshow
   text_representation:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.0
+    jupytext_version: 1.15.2
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -15,9 +16,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *November, 2022*
+> *September, 2023*
 >
-> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](https://creativecommons.org/licenses/by/4.0/)*
+> *© 2023, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](https://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -49,6 +50,18 @@ GeoPandas itself provides some visualization functionality, and together with ma
 
 ```{code-cell} ipython3
 countries.plot()
+```
+
+<div class="alert alert-info" style="font-size:120%">
+
+**NOTE**: <br>
+
+Making a quick interactive plot is also available as the `.explore()` method on a GeoDataFrame or GeoSeries, using the Folium package. See the [visualization-04-interactive notebook](./visualization-04-interactive.ipynb) for more information on interactive plotting packages or check the [GeoPandas documentation](https://geopandas.org/en/stable/docs/user_guide/interactive_mapping.html) for more examples.
+
+</div>
+
+```{code-cell} ipython3
+countries.explore()
 ```
 
 #### Adjusting the figure size
@@ -213,78 +226,3 @@ geoplot.choropleth(countries, hue='gdp_per_cap', projection=gcrs.Orthographic(),
 ax.set_global()
 ax.spines['geo'].set_visible(True)
 ```
-
-## Interactive web-based visualizations
-
-There are nowadays many libraries that target interactive web-based visualizations and that can handle geospatial data. Some packages with an example for each:
-
-- Bokeh: https://bokeh.pydata.org/en/latest/docs/gallery/texas.html
-- GeoViews (other interface to Bokeh/matplotlib): http://geo.holoviews.org
-- Altair: https://altair-viz.github.io/gallery/choropleth.html
-- Plotly: https://plot.ly/python/#maps
-- ...
-
-+++
-
-Another popular javascript library for online maps is [Leaflet.js](https://leafletjs.com/), and this has python bindings in the [folium](https://github.com/python-visualization/folium) and [ipyleaflet](https://github.com/jupyter-widgets/ipyleaflet) packages.
-
-+++
-
-An example with ipyleaflet:
-
-```{code-cell} ipython3
-import ipyleaflet
-```
-
-```{code-cell} ipython3
-m = ipyleaflet.Map(center=[48.8566, 2.3429], zoom=6)
-
-layer = ipyleaflet.GeoJSON(data=cities.__geo_interface__)
-m.add_layer(layer)
-m
-```
-
-```{code-cell} ipython3
-m = ipyleaflet.Map(center=[48.8566, 2.3429], zoom=3)
-geo_data = ipyleaflet.GeoData(
-    geo_dataframe = countries,
-    style={'color': 'black', 'fillColor': '#3366cc', 'opacity':0.05, 'weight':1.9, 'dashArray':'2', 'fillOpacity':0.6},
-    hover_style={'fillColor': 'red' , 'fillOpacity': 0.2},
-    name = 'Countries')
-m.add_layer(geo_data)
-m
-```
-
-More: https://ipyleaflet.readthedocs.io/en/latest/api_reference/geodata.html
-
-+++
-
-An example with folium:
-
-```{code-cell} ipython3
-import folium
-```
-
-```{code-cell} ipython3
-m = folium.Map([48.8566, 2.3429], zoom_start=6, tiles="OpenStreetMap")
-folium.GeoJson(countries).add_to(m)
-folium.GeoJson(cities).add_to(m)
-m
-```
-
-```{code-cell} ipython3
-m = folium.Map([0, 0], zoom_start=1)
-folium.Choropleth(geo_data=countries, data=countries, columns=['iso_a3', 'gdp_per_cap'],
-             key_on='feature.properties.iso_a3', fill_color='BuGn', highlight=True).add_to(m)
-m
-```
-
-<div class="alert alert-info" style="font-size:120%">
-
-**NOTE**: <br>
-
-Making a quick plot using Folium is now also available as the `.explore()` method on a GeoDataFrame or GeoSeries.
- 
-See https://geopandas.org/en/stable/docs/user_guide/interactive_mapping.html for more examples.
-
-</div>

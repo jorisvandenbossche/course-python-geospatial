@@ -1,11 +1,11 @@
 ---
 jupytext:
-  cell_metadata_filter: -run_control,-deletable,-editable,-jupyter,-slideshow
+  notebook_metadata_filter: -jupytext.cell_metadata_filter
   text_representation:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.0
+    jupytext_version: 1.15.2
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -16,9 +16,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *November, 2022*
+> *September, 2023*
 >
-> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
+> *© 2023, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](http://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -147,8 +147,6 @@ However, with xarray we cannot use a mask like this to directly filter the array
 One typical use case for raster data is where you want to apply a mask to the data and set those values to some "NODATA" value. For plotting, this can for example be `np.nan`, and for this we can use the `where()` method:
 
 ```{code-cell} ipython3
-:tags: []
-
 herstappe.where(herstappe > 0.3).sel(band="red").plot.imshow()
 ```
 
@@ -209,7 +207,7 @@ The `mask_and_scale` parameter is [by default `True`](https://docs.xarray.dev/en
 
 **EXERCISE**:
 
-* Read in the file `./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff` with xarray and assign the data to a new variable `tc_data`.  
+* Read in the file `./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff` with xarray in the original raw data dtype and assign the data to a new variable `tc_data`.  
 * Inspect the display of `tc_data`. What are the different dimensions of the array? 
 * Select only the *second* layer of `tc_data` and assign the output to a new variable `tc_g`.
 * Plot the second (green) layer.
@@ -217,6 +215,7 @@ The `mask_and_scale` parameter is [by default `True`](https://docs.xarray.dev/en
     
 <details><summary>Hints</summary>
 
+* Use the `mask_and_scale` parameter in the reader function to make sure the data type of tc_data is the same as the raw data.
 * To select a specific subset for a certain dimension of a DataArray, use the `.sel()` method. The argument name to use is the name of the dimension.
 * You can mask an array and set the masked values to another value with the `.where()` method. Check the help of the method for information on the keyword arguments.    
 
@@ -312,7 +311,7 @@ Elements with the value `65535` do represent 'Not a Number' (NaN) values. Howeve
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-b4_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff", 
+b4_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff", 
                             engine="rasterio", mask_and_scale=False)
 ```
 
@@ -342,10 +341,14 @@ np.sum(np.isnan(b4_data_f)).values
 :tags: [nbtutor-solution]
 
 # Create the histogram plots
-fig, (ax0, ax1) = plt.subplots(1, 2, sharey=True)
+fig, (ax0, ax1) = plt.subplots(1, 2, sharey=True, figsize=(12, 4))
 b4_data.plot.hist(bins=30, log=True, ax=ax0)
 b4_data_f.plot.hist(bins=30, log=True, ax=ax1);
 ```
+
+This is what the `mask_and_scale` option also does: it reads the nodata value from the metadata in the tiff file and uses this to mask the no-data value with a Nan value.
+
++++
 
 ## Plotting
 
@@ -537,7 +540,7 @@ The combination of element-wise calculations, efficient reductions and broadcast
 
 The data set `./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff` (assign to variable `herstappe_data`) has values ranging in between 0.11325, 0.8575. To improve the quality of the visualization, stretch __each of the layers individually__ to the values to the range 0. to 1. with a linear transformation: 
     
-$$z_i=\frac{x_i-\min(x)}{\max(x)-\min(x)}$$
+$$z_{i,scaled}=\frac{z_i-\min(z)}{\max(z)-\min(z)}$$
 
 Make a plot of the end result and compare with a plot of the original data. 
 
@@ -552,8 +555,6 @@ Make a plot of the end result and compare with a plot of the original data.
 </div>
 
 ```{code-cell} ipython3
-:tags: []
-
 herstappe_data = xr.open_dataarray("./data/herstappe/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff", 
                                    engine="rasterio")
 ```
@@ -598,7 +599,6 @@ In this excercise, we will convert the data to floats within the data range 0 ->
 - Read the data file and assign to a variable `gent`.
 - Try to plot it with the `imshow()` method.
 - Convert the array to a float array and call it `gent_f`.
-- Convert the max value of 65536 to np.nan (as we have done before).
 - Now divide the array by 65536 to get our data in a [0-1] range.
 - Plot the result with the `imshow()` method.
 
@@ -628,9 +628,8 @@ gent.plot.imshow()
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-# Convert to float and make 65535 equal to Nan
+# Convert to float
 gent_f = gent.astype(float)
-gent_f = gent_f.where(gent != 65535)
 ```
 
 ```{code-cell} ipython3

@@ -16,9 +16,9 @@ kernelspec:
 
 
 > *DS Python for GIS and Geoscience*  
-> *November, 2022*
+> *September, 2023*
 >
-> *© 2022, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](https://creativecommons.org/licenses/by/4.0/)*
+> *© 2023, Joris Van den Bossche and Stijn Van Hoey. Licensed under [CC BY 4.0 Creative Commons](https://creativecommons.org/licenses/by/4.0/)*
 
 ---
 
@@ -111,6 +111,16 @@ folium.Choropleth(geo_data=countries, data=countries, columns=['iso_a3', 'gdp_pe
 m
 ```
 
+<div class="alert alert-info" style="font-size:120%">
+
+**NOTE**: <br>
+
+Making a quick interactive plot is also available as the `.explore()` method on a GeoDataFrame or GeoSeries, using the Folium package. See the [visualization-04-interactive notebook](./visualization-04-interactive.ipynb) for more information on interactive plotting packages or check the [GeoPandas documentation](https://geopandas.org/en/stable/docs/user_guide/interactive_mapping.html) for more examples.
+
+</div>
+
++++
+
 ## Using Holoviews for raster data with xarray
 
 +++
@@ -161,7 +171,7 @@ From https://hvplot.holoviz.org/user_guide/Geographic_Data.html#declaring-an-out
 gent.rio._crs = False  # small bug in hvplot's handling of rioxarray crs
 gent.hvplot.image(x="x", y="y", cmap="summer", 
                   frame_height=400, 
-                  crs=ccrs.epsg(3857), 
+                  crs=ccrs.epsg(3857),
                   projection=ccrs.UTM(zone=31), 
                   project=True, geo=True,
                   clim=(0.05, 0.2))
@@ -181,3 +191,7 @@ gent.hvplot.quadmesh(x="x", y="y", cmap="summer",
 ```
 
 See https://hvplot.holoviz.org/user_guide/Geographic_Data.html#declaring-an-output-projection for more options.
+
+```{code-cell} ipython3
+
+```
