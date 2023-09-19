@@ -168,6 +168,7 @@ From https://hvplot.holoviz.org/user_guide/Geographic_Data.html#declaring-an-out
 > The `crs=` argument specifies the input projection, i.e. it declares how to interpret the incoming data values. You can independently choose any output projection, i.e. how you want to map the data points onto the screen for display, using the `projection=` argument.
 
 ```{code-cell} ipython3
+gent.rio._crs = False  # small bug in hvplot's handling of rioxarray crs
 gent.hvplot.image(x="x", y="y", cmap="summer", 
                   frame_height=400, 
                   crs=ccrs.epsg(3857),

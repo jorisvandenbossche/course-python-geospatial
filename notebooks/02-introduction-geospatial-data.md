@@ -179,7 +179,7 @@ type(countries.geometry[0])
 To construct one ourselves:
 
 ```{code-cell} ipython3
-from shapely.geometry import Point, Polygon, LineString
+from shapely import Point, Polygon, LineString
 ```
 
 ```{code-cell} ipython3

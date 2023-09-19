@@ -104,6 +104,19 @@ countries['pop_est'].describe()
 countries.sort_values(by='pop_est')
 ```
 
+<div style="border: 5px solid #3776ab; border-radius: 2px; padding: 2em;">
+
+## Python recap
+
+Python objects have **attributes** and **methods**:
+
+* Attribute: `obj.attribute` (no parentheses!) -> property of the object (pandas examples: `dtypes`, `columns`, `shape`, ..)
+* Method: `obj.method()` (function call with parentheses) -> action (pandas examples: `mean()`, `sort_values()`, ...)
+
+</div>
+
++++
+
 ## Basic operations on Series and DataFrames
 
 +++
@@ -217,7 +230,7 @@ countries[0:4]
 
 +++
 
-Often, you want to select rows based on a certain condition. This can be done with *'boolean indexing'* (like a where clause in SQL). 
+Often, you want to select rows based on a certain condition. This can be done with *'boolean indexing'* (like a WHERE clause in SQL).
 
 The indexer (or boolean mask) should be 1-dimensional and the same length as the thing being indexed.
 

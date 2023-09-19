@@ -3,3 +3,4 @@ formats = "ipynb,md:myst"
 
 # Don't store run_control metadata
 cell_metadata_filter = "-run_control,-deletable,-editable,-jupyter,-slideshow"
+notebook_metadata_filter="-jupytext.cell_metadata_filter"

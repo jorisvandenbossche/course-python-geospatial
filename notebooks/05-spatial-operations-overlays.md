@@ -1,6 +1,5 @@
 ---
 jupytext:
-  cell_metadata_filter: -run_control,-deletable,-editable,-jupyter,-slideshow
   text_representation:
     extension: .md
     format_name: myst
@@ -153,7 +152,7 @@ africa
 ```
 
 ```{code-cell} ipython3
-print(str(africa)[:1000])
+print(str(africa)[:100])
 ```
 
 Alternatively, you might want to take the unary union of a set of geometries but *grouped* by one of the attributes of the GeoDataFrame (so basically doing "groupby" + "unary_union"). For this operation, GeoPandas provides the `dissolve()` method:

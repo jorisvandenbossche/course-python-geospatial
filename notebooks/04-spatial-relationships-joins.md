@@ -411,7 +411,7 @@ In this case, we know that each of the cities is located *within* one of the cou
 We can test such relationships using the methods we have seen in the previous notebook:
 
 ```{code-cell} ipython3
-france = countries.loc[countries['name'] == 'France', 'geometry'].squeeze()
+france = countries.loc[countries['name'] == 'France', 'geometry'].item()
 ```
 
 ```{code-cell} ipython3

@@ -1,6 +1,6 @@
 ---
 jupytext:
-  cell_metadata_filter: -run_control,-deletable,-editable,-jupyter,-slideshow
+  notebook_metadata_filter: -jupytext.cell_metadata_filter
   text_representation:
     extension: .md
     format_name: myst
@@ -253,9 +253,11 @@ __Note__ _These dependencies are not included in the environment, to run this se
 
 +++
 
-Multiple initiatives do exist which publish data online which enables (lazy) loading of the data directly in xarray, such as [OpenDAP](https://www.opendap.org/) and [THREDDS](https://www.unidata.ucar.edu/software/tds/current/) which are well-known and used in the oceanographic and climate studies communities (see exercise). See for example the [ROMS Ocean Model Example](http://xarray.pydata.org/en/stable/examples/ROMS_ocean_model.html) tutorial of xarray. 
+Multiple initiatives do exist which publish data online and enable (lazy) loading of the data directly in xarray, such as [OpenDAP](https://www.opendap.org/) and [THREDDS](https://www.unidata.ucar.edu/software/tds/current/) which are well-known and used in the oceanographic and climate studies communities (see exercise). See for example the [ROMS Ocean Model Example](http://xarray.pydata.org/en/stable/examples/ROMS_ocean_model.html) tutorial of xarray. 
 
 Another initiative that interacts well with xarray is the [SpatioTemporal Asset Catalogs](https://stacspec.org/) specification, which is increasingly used to publish remote sensing products.
+
+Let's explore some Sentinel data hosted on AWS (https://registry.opendata.aws/sentinel-2-l2a-cogs/):
 
 ```{code-cell} ipython3
 import stackstac
@@ -267,14 +269,14 @@ lon, lat = -105.78, 35.79
 ```
 
 ```{code-cell} ipython3
-URL = "https://earth-search.aws.element84.com/v0"
+URL = "https://earth-search.aws.element84.com/v1"
 catalog = pystac_client.Client.open(URL)
 ```
 
 ```{code-cell} ipython3
 results = catalog.search(
     intersects=dict(type="Point", coordinates=[lon, lat]),
-    collections=["sentinel-s2-l2a-cogs"],
+    collections=["sentinel-2-l2a"],
     datetime="2020-04-01/2020-05-01"
 )
 results.matched()
@@ -294,6 +296,10 @@ stacked = stackstac.stack(results.item_collection())
 
 ```{code-cell} ipython3
 stacked
+```
+
+```{code-cell} ipython3
+stacked.sel(band="nir")
 ```
 
 See also https://github.com/stac-utils/pystac-client and https://stackstac.readthedocs.io/en/latest/.
