@@ -358,6 +358,8 @@ ax.contourf(lon, lat, data, transform=ccrs.PlateCarree())
 Cartopy transforms can be passed to xarray! This creates a very quick path for creating professional looking maps from netCDF data.
 
 ```{code-cell} ipython3
+from urllib.request import urlretrieve
+
 file_path_data_nc = "./data/20190101120000-REMSS-L4_GHRSST-SSTfnd-MW_IR_OI-GLOB-v02.0-fv05.0.nc"
 urlretrieve("https://data.remss.com/SST/daily/mw_ir/v05.0/netcdf/2019/20190101120000-REMSS-L4_GHRSST-SSTfnd-MW_IR_OI-GLOB-v02.0-fv05.0.nc", file_path_data_nc)
 ```
