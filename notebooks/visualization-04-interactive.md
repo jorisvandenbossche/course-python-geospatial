@@ -46,11 +46,11 @@ import matplotlib.pyplot as plt
 ```
 
 ```{code-cell} ipython3
-countries = geopandas.read_file("zip://./data/ne_110m_admin_0_countries.zip")
+countries = geopandas.read_file("data/ne_110m_admin_0_countries.zip")
 countries = countries[(countries['pop_est'] >0 ) & (countries['name'] != "Antarctica")]
 countries['gdp_per_cap'] = countries['gdp_md_est'] / countries['pop_est'] * 100
-cities = geopandas.read_file("zip://./data/ne_110m_populated_places.zip")
-rivers = geopandas.read_file("zip://./data/ne_50m_rivers_lake_centerlines.zip")
+cities = geopandas.read_file("data/ne_110m_populated_places.zip")
+rivers = geopandas.read_file("data/ne_50m_rivers_lake_centerlines.zip")
 ```
 
 ## Vector data with Leaflet

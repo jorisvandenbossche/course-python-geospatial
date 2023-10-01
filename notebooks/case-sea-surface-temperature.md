@@ -43,7 +43,7 @@ Reading in the data set, ignoring the `time_bnds` variable:
 
 ```{code-cell} ipython3
 data = './data/sst.mnmean.v4.nc'
-ds = xr.open_dataset(data, drop_variables=['time_bnds'], engine="h5netcdf")
+ds = xr.open_dataset(data, drop_variables=['time_bnds'])
 ```
 
 For this use case, we will focus on the years after 1960, so we slice the data from 1960 and load the data into our computer memory. By only loading the data after the initial slice, we make sure to only load into memory the data we specifically need:

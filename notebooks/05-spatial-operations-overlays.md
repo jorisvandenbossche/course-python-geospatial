@@ -127,8 +127,6 @@ africa_intersection.head()
 What is returned is a new GeoSeries of the same length as the original dataframe, containing one row per country, but now containing only the intersection. In this example, the last element shown is an empty polygon, as that country was not overlapping with the box.
 
 ```{code-cell} ipython3
-# remove the empty polygons before plotting
-africa_intersection = africa_intersection[~africa_intersection.is_empty]
 # plot the intersection
 africa_intersection.plot()
 ```
@@ -265,7 +263,7 @@ For the following exercises, we first introduce a new dataset: a dataset about t
 
 In this exercise, we will read the data, explore it visually, and calculate the total area of the different classes of land use in the area of Paris.
 
-* Read in the `'paris_land_use.shp'` file and assign the result to a variable `land_use`.
+* Read in the `'data/paris_land_use.zip'` shape file and assign the result to a variable `land_use`.
 * Make a plot of `land_use`, using the `'class'` column to color the polygons. Add a legend with `legend=True`, and make the figure size a bit larger.
 * Add a new column `'area'` to the dataframe with the area of each polygon.
 * Calculate the total area in km² for each `'class'` using the `groupby()` method, and print the result.
