@@ -219,6 +219,7 @@ Single geometries are represented by `shapely` objects:
 ## Plotting our different layers together
 
 ```{code-cell} ipython3
+# import matplotlib.pyplot as plt
 # fig, ax = plt.subplots(figsize=(10, 8))
 ax = countries.plot(edgecolor='k', facecolor='none', figsize=(10, 8))
 rivers.plot(ax=ax)

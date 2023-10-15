@@ -241,7 +241,7 @@ The GeoPandas `plot()` method works *if*:
 
 ```{code-cell} ipython3
 import geopandas
-cities = geopandas.read_file("zip://./data/ne_110m_populated_places.zip")
+cities = geopandas.read_file("data/ne_110m_populated_places.zip")
 ```
 
 ```{code-cell} ipython3
