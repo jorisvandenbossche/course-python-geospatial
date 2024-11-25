@@ -6,57 +6,49 @@ layout: default
 
 To get started, you should have the following three elements setup:
 
-1. Install Python and the required Python packages
+1. Install Python and the required Python packages using `conda`
 2. Download the course material to your computer
 3. Test your configuration and installation
 4. Start Jupyter lab
 
 In the following sections, more details are provided for each of these steps. When all three are done, you are ready to start coding!
 
-## 1. (_before the course_) Install Python and the required Python packages
+## 1. (_before the course_) Install Python and the required Python packages using `conda`
 
-For scientific and data analysis, we recommend to use Anaconda (or Miniconda) (<https://www.anaconda.com/download/>), which provides a Python
-distribution that includes the scientific libraries (this recommendation applies to all platforms, so for both Windows, Linux and Mac),
-instead of installing Python as such. After installation, proceed with the setup.
+For scientific and data analysis, we recommend to use `conda`, a command line
+tool for package and environment management (<https://docs.conda.io/projects/conda/>).
+`conda` allows us to install a Python distribution with the the scientific libraries
+we will use in this course (this recommendation applies to all
+platforms, so for both Windows, Linux and Mac).
 
-### Install Anaconda
+### Install `conda`
 
-#### Option 1: I do not have Anaconda installed
+#### Option 1: I do not have `conda` installed
 
-For first time users and people not fully confident with using the command line, we advise to install Anaconda, by downloading and installing
-the Python 3.x version from <https://www.anaconda.com/download/>. Recent computers will require the 64-Bit installer.
+We recommend to use the installer provided by the conda-forge community: <https://conda-forge.org/download/>.
 
-For more detailed instructions to install Anaconda, check the [Windows](https://docs.anaconda.com/anaconda/install/windows/),
-[Mac](https://docs.anaconda.com/anaconda/install/mac-os/) or [linux](https://docs.anaconda.com/anaconda/install/linux/) installation tutorial.
+Follow the instructions on that page, i.e. first download the appropriate
+installed (depending on your operating system), and then run that installer.
 
-**Note:** When you are already familiar with the command line and Python environments you could opt to use Miniconda instead of Anaconda
-and download it from <https://conda.io/miniconda.html>. The main difference is that Anaconda provides a graphical user interface (Anaconda navigator)
-and a whole lot of scientific packages (e.g <https://docs.anaconda.com/anaconda/packages/py3.9_win-64/>) when installing, whereas for Miniconda
-the user needs to install all packages using the command line. On the other hand, Miniconda requires less disk space.
+On Windows, this will mean double-clicking the downdloaded `.exe` file, and
+following the instructions. On MacOS or Linux, you have to open a terminal,
+and run `bash Miniforge3-$(uname)-$(uname -m).sh`
 
-#### Option 2: I have installed Anaconda earlier
+#### Option 2: I already have `conda` or Anaconda installed
 
-When you already have an installation of Anaconda, you have to make sure you are working with the most recent versions. As the course is
-developed for Python 3, make sure you have Anaconda3 (on Windows, check Start > Programs > Anaconda3). If not, reinstall Anaconda according
-to the previous section.
+When you already have an installation of `conda` or Anaconda, you have to make
+sure you are working with a recent version. If you installed it only a few
+months ago, this step is probably not needed, otherwise follow the next steps:
 
-Start the Anaconda Navigator program (for Windows users: Start > Anaconda Navigator) and go to the Environments tab. You should see
-the *base (root) environment*, click the arrow next to it and click `Open terminal`, as shown in the following figure:
+1. Open a terminal window ("Command Prompt" on Windows).
+2. Run `conda update conda`, by typing that command, hit the ENTER-button
+   (make sure you have an internet connection), and respond with *Yes* by typing `y`.
 
-![Navigator terminal](./static/img/navigator_terminal.png)
+### Setup after `conda` installation
 
-Type following command + ENTER-button (make sure you have an internet connection):
-
-```
-conda update -n base conda
-```
-and respond with *Yes* by typing `y`. Packages should be updated after the completion of the command.
-
-### Setup after Anaconda installation
-
-As not all packages we will use in the course are provided by default as part of Anaconda, we have to add the package to Anaconda to get started.
-As a good practice, we will create a new _conda environment_ to work with. This environment will contain the required packages on which this
-course depends.
+Now we will use `conda` to install the Python packages we are going to use
+throughout this course.
+As a good practice, we will create a new _conda environment_ to work with.
 
 The packages used in the course are enlisted in
 an [`environment.yml` file](https://raw.githubusercontent.com/jorisvandenbossche/{{ repository }}/main/environment.yml). The file looks as follows:
@@ -66,7 +58,7 @@ name: {{ conda_environment }}
 channels:
 - conda-forge
 dependencies:
-- python=3.11
+- python=3.12
 - geopandas
 - ...
 ```
@@ -89,30 +81,27 @@ You will need the folder/directory containing the `environment.yml` file in the 
 your computer, e.g. when stored in the folder `C:/Users/yourusername/Documents` you should see the file `environment.yml` in File Explorer
 in that directory.
 
-Next, start the Anaconda Navigator program (for windows users: Start > Anaconda Navigator) and go to the Environments tab. You should see
-the *base (root) environment*, click the arrow next to it and click `Open terminal`, as shown in the following figure:
+Now we can create the environment:
 
-![Navigator terminal](./static/img/navigator_terminal.png)
+1. Open a terminal window ("Command Prompt" on Windows)
+2. Navigate to the directory where you saved the `environment.yml` file:
 
-Type following commands line by line + ENTER-button (make sure you have an internet connection):
+   ```
+   cd FOLDER_PATH_TO_ENVIRONMENT_FILE
+   ```
 
-```
-conda install -n base conda-libmamba-solver
-conda config --set solver libmamba
-conda config --add channels conda-forge
-conda config --set channel_priority strict
-cd FOLDER_PATH_TO_ENVIRONMENT_FILE
-conda env create -f environment.yml
-```
+3. Create the environment by typing the following commands line by line +
+   hitting the ENTER-button (make sure you have an internet connection):
+
+   ```
+   conda env create -f environment.yml
+   ```
 
 __!__ `FOLDER_PATH_TO_ENVIRONMENT_FILE` should be replaced by the path to the folder containing the downloaded environment file. In the
 example earlier, this was `C:/Users/yourusername/Documents`, but make sure you use your specific folder (as seen in File Explorer).
 
 Respond with *Yes* by typing `y` when asked. Output will be printed and if no error occurs, you should have the environment configured
 with all packages installed.
-
-**Note:** If you did use Miniconda instead, create the environment using the same commands/instructions in the terminal (make sure to
-do the `conda config ...` steps.).
 
 When finished, keep the terminal window open (or reopen it). Execute the following commands to check your installation:
 
