@@ -2,7 +2,7 @@ name: DS-geospatial
 channels:
   - conda-forge
 dependencies:
-  - python=3.11
+  - python=3.12
   - ipython
   - jupyter
   - jupyterlab>3
@@ -35,7 +35,6 @@ dependencies:
   - geoviews
   - datashader
   - cmocean 
-  - pygeoprocessing
   - zarr
   - h5netcdf
   - h5py
