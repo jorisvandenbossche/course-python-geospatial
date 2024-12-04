@@ -480,12 +480,12 @@ The `groupby` method splits the data set in groups, applies some function _on ea
 Another (alike) operation - specifically for time series data - is to `resample` the data to another time-aggregation. For example, resample to monthly (`4M`) or yearly (`1Y`) median values:
 
 ```{code-cell} ipython3
-era5_renamed.resample(time="1Y").median()  # 4M
+era5_renamed.resample(time="1YE").median()  # 4M
 ```
 
 ```{code-cell} ipython3
 era5_renamed["temperature_k"].sel(latitude=51., longitude=4., method="nearest").plot.line(x="time");
-era5_renamed["temperature_k"].sel(latitude=51., longitude=4., method="nearest").resample(time="10Y").median().plot.line(x="time");
+era5_renamed["temperature_k"].sel(latitude=51., longitude=4., method="nearest").resample(time="10YE").median().plot.line(x="time");
 ```
 
 A similar, but different functionality is `rolling` to calculate rolling window aggregates:
@@ -554,7 +554,7 @@ ghent_pressure = era5_renamed.sel(latitude=51.05, longitude=3.71, method="neares
 
 fig, ax = plt.subplots(figsize=(18, 6))
 ghent_pressure.plot.line(ax=ax)
-ghent_pressure.resample(time="Y").mean().plot.line(ax=ax)
+ghent_pressure.resample(time="YE").mean().plot.line(ax=ax)
 
 ax.set_ylabel('Pressure (Pa)')
 ax.set_title('Pressure (Pa) in Ghent (-51.05, 3.71)')
@@ -640,7 +640,7 @@ Create a line plot showing the yearly average temperature in the y-axis and time
 :tags: [nbtutor-solution]
 
 temp_mean = era5_renamed["temperature_k"].mean(dim=["latitude", "longitude"]).sel(time=slice("1981", "2020"))
-temp_mean.resample(time="Y").mean().plot.line(figsize=(12, 5))
+temp_mean.resample(time="YE").mean().plot.line(figsize=(12, 5))
 ```
 
 <div class="alert alert-success">
@@ -668,7 +668,7 @@ Make sure to update the name of the snowfall variable and/or colorbar label to m
 :tags: [nbtutor-solution]
 
 snowfall_1991_2005 = era5_renamed.sel(time=slice("1991", "2005"))["snowfall_m"]
-snowfall_yearly = snowfall_1991_2005.resample(time="Y").sum()*100
+snowfall_yearly = snowfall_1991_2005.resample(time="YE").sum()*100
 snowfall_yearly = snowfall_yearly.rename("snowfall_cm")
 snowfall_yearly.plot.imshow(col="time", col_wrap=5, cmap=cmocean.cm.ice, 
                             cbar_kwargs={"label": "snowfall (cm)"})

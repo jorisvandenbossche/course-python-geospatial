@@ -129,7 +129,7 @@ Currently, the only requirement is that your data is already in the WebMercator 
 
 ```{code-cell} ipython3
 # selecting the cities in Europe
-cities_europe = cities[cities.within(countries[countries['continent'] == 'Europe'].unary_union)]
+cities_europe = cities[cities.within(countries[countries['continent'] == 'Europe'].union_all())]
 ```
 
 ```{code-cell} ipython3
@@ -157,7 +157,7 @@ contextily.add_basemap(ax)
 
 ```{code-cell} ipython3
 ax = cities_europe2.plot(figsize=(10, 6))
-contextily.add_basemap(ax, source=contextily.providers.Stamen.TonerLite)
+contextily.add_basemap(ax, source=contextily.providers.NASAGIBS.BlueMarble)
 ```
 
 ## Projection-aware maps with Cartopy
@@ -224,4 +224,8 @@ geoplot.choropleth(countries, hue='gdp_per_cap', projection=gcrs.Orthographic(),
                    cmap='magma', linewidth=0.5, edgecolor='white')
 ax.set_global()
 ax.spines['geo'].set_visible(True)
+```
+
+```{code-cell} ipython3
+
 ```

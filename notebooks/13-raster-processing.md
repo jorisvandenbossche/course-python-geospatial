@@ -348,8 +348,6 @@ If we want to avoid loading the full original raster data, the `from_disk` keywo
 dem_zwalm2.rio.clip(catchment.to_crs('epsg:31370').geometry, from_disk=True)
 ```
 
-+++ {"jp-MarkdownHeadingCollapsed": true}
-
 #### 2. (optional) Using GDAL CLI
 
 +++
@@ -888,6 +886,10 @@ buffer_per_roadtype = {
     "a Major Road Less Important than a Motorway": 500,
     "Other Major Road": 150,
 }
+```
+
+```{code-cell} ipython3
+roads_subset["frc_omschrijving"]
 ```
 
 ```{code-cell} ipython3

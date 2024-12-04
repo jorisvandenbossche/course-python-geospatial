@@ -865,7 +865,7 @@ Further zooming in on the city center, using a discrete color scheme and a diffe
 fig, ax = plt.subplots(figsize=(12, 12))
 ax = gdf_gent.to_crs(3857).plot(column="no2", ax=ax, scheme="NaturalBreaks", k=6, legend=True)
 ax.set(xlim=(408_000, 420_000), ylim=(6_625_000, 6_638_000))
-contextily.add_basemap(ax, source=contextily.providers.Stamen.TonerLite)
+contextily.add_basemap(ax, source=contextily.providers.CartoDB.PositronNoLabels)
 ax.set_axis_off()
 ```
 
