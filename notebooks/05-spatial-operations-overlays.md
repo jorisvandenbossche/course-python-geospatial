@@ -133,7 +133,7 @@ africa_intersection.plot()
 
 ## Unary union and dissolve
 
-Another useful method is the `unary_union` attribute, which converts the set of geometry objects in a GeoDataFrame into a single geometry object by taking the union of all those geometries.
+Another useful method is `union_all()` (in older GeoPandas versions this is available as the `unary_union` attribute), which converts the set of geometry objects in a GeoDataFrame into a single geometry object by taking the union of all those geometries.
 
 For example, we can construct a single Shapely geometry object for the Africa continent:
 
@@ -142,7 +142,7 @@ africa_countries = countries[countries['continent'] == 'Africa']
 ```
 
 ```{code-cell} ipython3
-africa = africa_countries.unary_union
+africa = africa_countries.union_all()
 ```
 
 ```{code-cell} ipython3
