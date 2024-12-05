@@ -205,14 +205,17 @@ One important difference, though, is that the above `rasterio` workflow will not
 
 As example, we are using data from the Zwalm river area in Flanders. 
 
-The digital elevation model (DEM) can be downloaded via the [governmental website](https://download.vlaanderen.be/Producten/Detail?id=936&title=Digitaal_Hoogtemodel_Vlaanderen_II_DSM_raster_5_m) ([download link](https://downloadagiv.blob.core.windows.net/dhm-vlaanderen-ii-dsm-raster-5m/DHMVIIDSMRAS5m_k30.zip), extracted in the `/data` directory for this example)/
+<div class="alert alert-warning">
 
+**! Manual download needed !** <br>
+
+The digital elevation model (DEM) can be downloaded via the [governmental website](https://download.vlaanderen.be/product/936/configureer): choose number 30 on the map and then click "Downloaden". Finally extract the zip file in `/data` directory.
+
+</div>
 
 ```{code-cell} ipython3
 dem_zwalm_file = "data/DHMVIIDSMRAS5m_k30/GeoTIFF/DHMVIIDSMRAS5m_k30.tif"
 ```
-
-_Make sure you have downloaded the data set ([download link](https://downloadagiv.blob.core.windows.net/dhm-vlaanderen-ii-dsm-raster-5m/DHMVIIDSMRAS5m_k30.zip)), saved it in the `./data` subfolder and unzipped the folder_
 
 ```{code-cell} ipython3
 dem_zwalm = xr.open_dataarray(dem_zwalm_file, engine="rasterio").sel(band=1)
@@ -1163,7 +1166,15 @@ The **rasterstats** package provides methods to calculate summary statistics of 
 
 +++
 
-To illustrate this, we are reading a raster file with elevation data of the full world (the file contains a single band for the elevation, save the file in the `data` subdirectory; [download link](https://www.eea.europa.eu/data-and-maps/data/world-digital-elevation-model-etopo5/zipped-dem-geotiff-raster-geographic-tag-image-file-format-raster-data/zipped-dem-geotiff-raster-geographic-tag-image-file-format-raster-data/at_download/file)):
+<div class="alert alert-warning">
+
+**! Manual download needed !** <br>
+
+The data can be downloaded from the EEA at [download link](https://www.eea.europa.eu/data-and-maps/data/world-digital-elevation-model-etopo5/zipped-dem-geotiff-raster-geographic-tag-image-file-format-raster-data/zipped-dem-geotiff-raster-geographic-tag-image-file-format-raster-data/at_download/file), then extract the zip file and save the file in the `data` subdirectory.
+
+</div>
+
+To illustrate this, we are reading a raster file with elevation data of the full world (the file contains a single band for the elevation:
 
 ```{code-cell} ipython3
 countries = geopandas.read_file("./data/ne_110m_admin_0_countries.zip")
