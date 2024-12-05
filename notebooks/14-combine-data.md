@@ -138,9 +138,8 @@ def add_date_dimension(ds):
 
 ```{code-cell} ipython3
 moisture_index_lazy = xr.open_mfdataset(sorted(Path("./data/herstappe/raster/sentinel_moisture").rglob("*.tiff")), 
-                                        preprocess=add_date_dimension, engine="rasterio", decode_cf=True, 
+                                        preprocess=add_date_dimension, engine="rasterio", mask_and_scale=False,
                                         chunks={"date": 1, "band": -1, "x": -1, "y": -1}) # parallel=True
-moisture_index_lazy = moisture_index_lazy.drop_vars("spatial_ref")
 moisture_index_lazy["moisture_index"]
 ```
 
@@ -175,23 +174,14 @@ xr.open_dataset("moisture_index_stacked.nc", engine="netcdf4")
 Storing to zarr files works on the `xarray.DataSet` level:
 
 ```{code-cell} ipython3
-moisture_index_lazy.moisture_index
-```
-
-```{code-cell} ipython3
-moisture_index_lazy
-```
-
-```{code-cell} ipython3
-moisture_index_lazy.to_zarr("moisture_index_stacked.zarr", 
-                            encoding={"moisture_index": {"dtype": "float32"}})  # explicitly defines the data type to store
+moisture_index_lazy.to_zarr("moisture_index_stacked.zarr")
 ```
 
 ```{code-cell} ipython3
 xr.open_dataset("moisture_index_stacked.zarr", engine="zarr")    
 ```
 
-_clean up of these example files_
+_Clean up of these example files_
 
 ```{code-cell} ipython3
 import shutil
