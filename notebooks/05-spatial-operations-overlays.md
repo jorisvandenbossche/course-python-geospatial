@@ -687,6 +687,7 @@ Thanks to the result of the overlay operation, we can now more easily perform a 
 * Select the subset of "Green urban areas" from `combined` and call this `urban_green`.
 * Now calculate the total area per district for this `urban_green` subset, and call this `urban_green_area`.
 * Determine the fraction of urban green area in each district.
+* Check the districts with the largest and smallest fraction of urban green (you can sort the result, or use `nlargest()` / `nsmallest()`)
 
 </div>
 
@@ -714,6 +715,9 @@ urban_green_area.head()
 :tags: [nbtutor-solution]
 
 urban_green_fraction = urban_green_area / districts_area * 100
+# some district are missing from urban_green_area (no urban green in that district)
+# this gives NaNs in the result, which we fill with 0
+urban_green_fraction = urban_green_fraction.fillna(0)
 ```
 
 ```{code-cell} ipython3
@@ -725,7 +729,7 @@ urban_green_fraction.nlargest()
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-urban_green_fraction.nsmallest()
+urban_green_fraction.nsmallest(20)
 ```
 
 An alternative to calculate the area per land use class in each district:
