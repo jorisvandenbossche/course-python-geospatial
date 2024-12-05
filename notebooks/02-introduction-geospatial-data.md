@@ -488,23 +488,6 @@ districts.plot(column='population', figsize=(12, 6), legend=True)
 
 +++
 
-### Note on `fiona`
-
-Under the hood, GeoPandas uses the [Fiona library](http://toblerity.org/fiona/) (pythonic interface to GDAL/OGR) to read and write data. GeoPandas provides a more user-friendly wrapper, which is sufficient for most use cases. But sometimes you want more control, and in that case, to read a file with fiona you can do the following:
-
-```{code-cell} ipython3
-import fiona
-from shapely.geometry import shape
-
-with fiona.Env():
-    with fiona.open("zip://./data/ne_110m_admin_0_countries.zip") as collection:
-        for feature in collection:
-            # ... do something with geometry
-            geom = shape(feature['geometry'])
-            # ... do something with properties
-            print(feature['properties']['name'])
-```
-
 ### Constructing a GeoDataFrame manually
 
 ```{code-cell} ipython3

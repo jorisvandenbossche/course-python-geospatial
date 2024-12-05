@@ -133,7 +133,7 @@ africa_intersection.plot()
 
 ## Unary union and dissolve
 
-Another useful method is the `unary_union` attribute, which converts the set of geometry objects in a GeoDataFrame into a single geometry object by taking the union of all those geometries.
+Another useful method is `union_all()` (in older GeoPandas versions this is available as the `unary_union` attribute), which converts the set of geometry objects in a GeoDataFrame into a single geometry object by taking the union of all those geometries.
 
 For example, we can construct a single Shapely geometry object for the Africa continent:
 
@@ -142,7 +142,7 @@ africa_countries = countries[countries['continent'] == 'Africa']
 ```
 
 ```{code-cell} ipython3
-africa = africa_countries.unary_union
+africa = africa_countries.union_all()
 ```
 
 ```{code-cell} ipython3
@@ -687,6 +687,7 @@ Thanks to the result of the overlay operation, we can now more easily perform a 
 * Select the subset of "Green urban areas" from `combined` and call this `urban_green`.
 * Now calculate the total area per district for this `urban_green` subset, and call this `urban_green_area`.
 * Determine the fraction of urban green area in each district.
+* Check the districts with the largest and smallest fraction of urban green (you can sort the result, or use `nlargest()` / `nsmallest()`)
 
 </div>
 
@@ -714,6 +715,9 @@ urban_green_area.head()
 :tags: [nbtutor-solution]
 
 urban_green_fraction = urban_green_area / districts_area * 100
+# some district are missing from urban_green_area (no urban green in that district)
+# this gives NaNs in the result, which we fill with 0
+urban_green_fraction = urban_green_fraction.fillna(0)
 ```
 
 ```{code-cell} ipython3
@@ -725,7 +729,7 @@ urban_green_fraction.nlargest()
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-urban_green_fraction.nsmallest()
+urban_green_fraction.nsmallest(20)
 ```
 
 An alternative to calculate the area per land use class in each district:
