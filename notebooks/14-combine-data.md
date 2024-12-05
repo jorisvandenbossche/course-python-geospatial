@@ -138,11 +138,12 @@ def add_date_dimension(ds):
 
 ```{code-cell} ipython3
 moisture_index_lazy = xr.open_mfdataset(sorted(Path("./data/herstappe/raster/sentinel_moisture").rglob("*.tiff")), 
-                                        preprocess=add_date_dimension, engine="rasterio", decode_cf=False) # parallel=True
+                                        preprocess=add_date_dimension, engine="rasterio", mask_and_scale=False,
+                                        chunks={"date": 1, "band": -1, "x": -1, "y": -1}) # parallel=True
 moisture_index_lazy["moisture_index"]
 ```
 
-The data itself is not loaded directly and is divided into 3 chunks, i.e. a chunk for each date. See the notebook [15-xarray-dask-big-data](./15-xarray-dask-big-data.ipynb) notebook for more information on the processing of (out of memory) lazy data with Dask.
+The data itself is not loaded directly and is divided into 3 chunks, i.e. we chunked for each date. See the notebook [15-xarray-dask-big-data](./15-xarray-dask-big-data.ipynb) notebook for more information on the processing of (out of memory) lazy data with Dask.
 
 +++
 
@@ -180,7 +181,7 @@ moisture_index_lazy.to_zarr("moisture_index_stacked.zarr")
 xr.open_dataset("moisture_index_stacked.zarr", engine="zarr")    
 ```
 
-_clean up of these example files_
+_Clean up of these example files_
 
 ```{code-cell} ipython3
 import shutil

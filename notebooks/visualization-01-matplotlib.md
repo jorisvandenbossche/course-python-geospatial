@@ -153,9 +153,11 @@ fig.subplots_adjust(top=0.9)
 ax.plot(x, x**2, color='0.4', label='power 2')
 ax.plot(x, x**3, color='0.8', linestyle='--', label='power 3')
 
-ax.vlines(x=-0.75, ymin=0., ymax=0.8, color='0.4', linestyle='-.') 
-ax.axhline(y=0.1, color='0.4', linestyle='-.')
-ax.fill_between(x=[-1, 1.1], y1=[0.65], y2=[0.75], color='0.85')
+ax.vlines(x=-0.75, ymin=0., ymax=0.8, color='0.4', linestyle='-.')  # vertical dotted line within range [0, 0.8]
+ax.fill_between(x=x, y1=x**2, y2=1.1*x**2, color='0.85')   # color fill between the two exponential functions
+
+ax.axhline(y=0.1, color='0.4', linestyle='-.')   # ax-wide horizontal dotted line 
+ax.axhspan(ymin=0.65, ymax=0.75, color='0.95')   # ax-wide horizontal filled space
 
 fig.suptitle('Figure title', fontsize=18, 
              fontweight='bold')
@@ -170,16 +172,21 @@ ax.set_ylim(-0.1, 1.)
 ax.text(0.5, 0.2, 'Text centered at (0.5, 0.2)\nin data coordinates.',
         horizontalalignment='center', fontsize=14)
 
-ax.text(0.5, 0.5, 'Text centered at (0.5, 0.5)\nin Figure coordinates.',
+ax.text(0.5, 0.5, 'Text centered at (0.5, 0.5)\nin relative Axes coordinates.',
         horizontalalignment='center', fontsize=14, 
         transform=ax.transAxes, color='grey')
+
+ax.annotate('Text pointing at (0.0, 0.75)', xy=(0.0, 0.75), xycoords="data",
+            xytext=(20, 40), textcoords="offset points",
+            horizontalalignment='left', fontsize=14,
+            arrowprops=dict(facecolor='black', shrink=0.05, width=1))
 
 ax.legend(loc='lower right', frameon=True, ncol=2, fontsize=14)
 ```
 
 Adjusting specific parts of a plot is a matter of accessing the correct element of the plot:
 
-![](https://matplotlib.org/stable/_images/anatomy.png)
+<img src="https://matplotlib.org/stable/_images/anatomy.png" width="800"/>
 
 +++
 
@@ -213,7 +220,7 @@ plt.style.available
 ```{code-cell} ipython3
 x = np.linspace(0, 10)
 
-with plt.style.context('seaborn-whitegrid'):  # 'seaborn', ggplot', 'bmh', 'grayscale', 'seaborn-whitegrid', 'seaborn-muted'
+with plt.style.context('seaborn-v0_8-colorblind'): 
     fig, ax = plt.subplots()
     ax.plot(x, np.sin(x) + x + np.random.randn(50))
     ax.plot(x, np.sin(x) + 0.5 * x + np.random.randn(50))

@@ -207,6 +207,7 @@ As example, we are using data from the Zwalm river area in Flanders.
 
 The digital elevation model (DEM) can be downloaded via the [governmental website](https://download.vlaanderen.be/Producten/Detail?id=936&title=Digitaal_Hoogtemodel_Vlaanderen_II_DSM_raster_5_m) ([download link](https://downloadagiv.blob.core.windows.net/dhm-vlaanderen-ii-dsm-raster-5m/DHMVIIDSMRAS5m_k30.zip), extracted in the `/data` directory for this example)/
 
+
 ```{code-cell} ipython3
 dem_zwalm_file = "data/DHMVIIDSMRAS5m_k30/GeoTIFF/DHMVIIDSMRAS5m_k30.tif"
 ```
@@ -347,8 +348,6 @@ If we want to avoid loading the full original raster data, the `from_disk` keywo
 ```{code-cell} ipython3
 dem_zwalm2.rio.clip(catchment.to_crs('epsg:31370').geometry, from_disk=True)
 ```
-
-+++ {"jp-MarkdownHeadingCollapsed": true}
 
 #### 2. (optional) Using GDAL CLI
 
@@ -869,12 +868,12 @@ roads_subset.plot(column="frc_omschrijving", figsize=(10, 10), legend=True)
 
 Before we convert the vector data to a raster, we want to buffer the roads. We will use a larger buffer radius for the larger roads.
 
-* Using the defined `buffer_per_roadtype` dictionary, create a new Series by replacing the values in the "frc_omschrijving" column with the matching buffer radius.
+* Using the defined `buffer_per_roadtype` dictionary, create a new Series by mapping the values in the "frc_omschrijving" column to the matching buffer radius.
 * Convert the `roads_subset` GeoDataFrame to CRS `EPSG:31370`, and create buffered lines (polygons) with the calculated buffer radius distances. Call the result `roads_buffer`.
     
 <details><summary>Hints</summary>
 
-* Use the `replace` method to replace the data using the provided mapping `buffer_per_roadtype`.
+* Use the `map()` method to map the values using the provided dictionary `buffer_per_roadtype`.
 * The conversion to EPSG:31370 is important to be able to work with the meters to define the buffer size.
 * The `buffer` method can take a single value to apply to all values, but also a Series of values, with a buffer size defined for each element.
 
@@ -893,7 +892,7 @@ buffer_per_roadtype = {
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-buffers = roads_subset["frc_omschrijving"].replace(buffer_per_roadtype)
+buffers = roads_subset["frc_omschrijving"].map(buffer_per_roadtype)
 buffers
 ```
 
