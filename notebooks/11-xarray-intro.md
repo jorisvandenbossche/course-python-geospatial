@@ -68,7 +68,7 @@ These __dimension coordinate names__ can be used to extract (slice) data making 
 herstappe.sel(band='red')
 ```
 
-The data type of this `xarray.DataArray` `herstappe` is 'float32'. Xarray uses the data types provided by NuPpy. More information on the data types NumPy supports is available in the [documentation](https://numpy.org/devdocs/user/basics.types.html#array-types-and-conversions-between-types).
+The data type of this `xarray.DataArray` `herstappe` is 'float32'. Xarray uses the data types provided by NumPy. More information on the data types NumPy supports is available in the [documentation](https://numpy.org/devdocs/user/basics.types.html#array-types-and-conversions-between-types).
 
 Converting to another data type is supported by `astype()` method:
 
@@ -80,7 +80,7 @@ Using xarray:
 
 - Data stored as a NumPy arrays.
 - Dimensions do have a name.
-- The coordinates of each of the dimensions can represent geographical coordinates, categories, dates, ... instead of just an index.
+- The coordinates of each of the dimensions can represent geographical coordinates, categories, dates, ... instead of just a positional index.
 
 +++
 
@@ -255,7 +255,7 @@ tc_g.where(tc_g < 15000, 65535)
 
 **EXERCISE**:
 
-Subsample the ndarray `tc_data` by taking only the one out of each 5 data points for all layers at the same time. Use _positional indexing_ to subsample the data.
+Subsample the array `tc_data` by taking only one out of each 5 data points for all layers at the same time. Use _positional indexing_ to subsample the data.
     
 (Be aware that this is a naive resampling implementation for educational purposes only). 
     
@@ -310,7 +310,7 @@ Elements with the value `65535` do represent 'Not a Number' (NaN) values. Howeve
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-b4_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_True_color.tiff", 
+b4_data = xr.open_dataarray("./data/gent/raster/2020-09-17_Sentinel_2_L1C_B04.tiff",
                             engine="rasterio", mask_and_scale=False)
 ```
 
@@ -345,7 +345,7 @@ b4_data.plot.hist(bins=30, log=True, ax=ax0)
 b4_data_f.plot.hist(bins=30, log=True, ax=ax1);
 ```
 
-This is what the `mask_and_scale` option also does: it reads the nodata value from the metadata in the tiff file and uses this to mask the no-data value with a Nan value.
+This is what the `mask_and_scale` option also does: it reads the nodata value from the metadata in the tiff file and uses this to mask the no-data value with a NaN value.
 
 +++
 
@@ -629,6 +629,7 @@ gent.plot.imshow()
 
 # Convert to float
 gent_f = gent.astype(float)
+gent_f = gent_f.where(gent_f != 65535)
 ```
 
 ```{code-cell} ipython3

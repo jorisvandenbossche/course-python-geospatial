@@ -273,7 +273,3 @@ open source Swiss Army knife for raster and vector geospatial data handling. GDA
 You can run a CLI command inside a Jupyter Notebook by prefixing it with the `!` character.
 
 </div>
-
-```{code-cell} ipython3
-
-```

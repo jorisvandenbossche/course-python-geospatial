@@ -600,7 +600,7 @@ Calculate the pixel-based average temperature _for each season_. Make a plot (`i
 <details><summary>Hints</summary>
     
 * You need to group based on the season of the data point, hence `groupby("...")` with `time` as an existing dimension, the `time.season` shortcut to get the corresponding season will work.
-* The labels of the season groups are sorted on the strings in the description instead of the seasons. The workaround is to `sortby` and provide a correctly sorted version to sort the `season` with, see the open issue https://github.com/pydata/xarray/issues/757.
+* The labels of the season groups are sorted on the strings in the description instead of the seasons. The workaround is to `reindex` and provide a correctly sorted (i.e. `['DJF','MAM','JJA', 'SON']` version to sort the `season` with.
 * Use facetting to plot each of the seasons next to each other, with `col="season"`.
 
 
@@ -613,7 +613,7 @@ Calculate the pixel-based average temperature _for each season_. Make a plot (`i
 
 seaons_temp = era5_renamed["temperature_k"].groupby("time.season").mean()
 # See https://github.com/pydata/xarray/issues/757 for getting well-sorted groups for plotting
-seaons_temp = seaons_temp.sortby(xr.DataArray(['DJF','MAM','JJA', 'SON'], dims=['season']))
+seaons_temp = seaons_temp.reindex(season=['DJF','MAM','JJA', 'SON'])
 seaons_temp.plot.imshow(col="season", cmap="Reds")
 ```
 
