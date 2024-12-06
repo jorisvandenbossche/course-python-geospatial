@@ -31,6 +31,32 @@ In case you do not want to install everything and just want to try out the cours
 
 Found any typo or have a suggestion, see [how to contribute](./CONTRIBUTING.md).
 
+## Development
+
+In addition to the environment.yml, install the following packages:
+
+```
+conda install jupytext jlab-enhanced-cell-toolbar nbdime
+```
+
+Creating the student version materials from this repo:
+
+```
+export COURSE_DIR="DS-python-geospatial-2022"
+
+git clone https://github.com/jorisvandenbossche/DS-python-geospatial.git $COURSE_DIR
+git clone https://github.com/jorisvandenbossche/course-python-geospatial.git course-python-geospatial-clean
+
+cp course-python-geospatial-clean/notebooks/*.ipynb $COURSE_DIR/_solved/
+cp course-python-geospatial-clean/notebooks/data/ $COURSE_DIR/notebooks/ -r
+cp course-python-geospatial-clean/img/ $COURSE_DIR/ -r
+cp course-python-geospatial-clean/environment.yml $COURSE_DIR/
+cp course-python-geospatial-clean/check_environment.py $COURSE_DIR/
+cd $COURSE_DIR/
+./convert_notebooks.sh
+jupyter nbconvert --clear-output _solved/*.ipynb
+```
+
 
 ## Meta
 Authors: Joris Van den Bossche, Stijn Van Hoey
