@@ -35,7 +35,15 @@ For this use case, we focus on the [Extended Reconstructed Sea Surface Temperatu
 
 
 
-First we download the dataset. We will use the [NOAA Extended Reconstructed Sea Surface Temperature (ERSST)](https://psl.noaa.gov/thredds/catalog/Datasets/noaa.ersst/catalog.html?dataset=Datasets/noaa.ersst/sst.mnmean.v4.nc) v4 product. Download the data from this link: https://psl.noaa.gov/thredds/fileServer/Datasets/noaa.ersst/sst.mnmean.v4.nc and store it in a subfolder `data/` from the notebook as `sst.mnmean.v4.nc`.
+First we download the dataset. 
+
+<div class="alert alert-warning">
+
+**! Manual download needed !** <br>
+
+We will use the [NOAA Extended Reconstructed Sea Surface Temperature (ERSST)](https://psl.noaa.gov/thredds/catalog/Datasets/noaa.ersst/catalog.html?dataset=Datasets/noaa.ersst/sst.mnmean.v4.nc) v4 product. Download the data from this link: https://psl.noaa.gov/thredds/fileServer/Datasets/noaa.ersst/sst.mnmean.v4.nc and store it in a subfolder `data/` from the notebook as `sst.mnmean.v4.nc`.
+
+</div>
 
 +++
 
