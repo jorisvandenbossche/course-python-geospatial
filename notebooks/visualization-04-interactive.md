@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.4
+    jupytext_version: 1.16.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -37,8 +37,6 @@ There are, however, a bunch of alternatives to matplotlib, mainly focusing on pr
 Altair and Plotly are mostly useful for vector data. Using bokeh through holoviews with raster data is shown below.
 
 ```{code-cell} ipython3
-%matplotlib inline
-
 import pandas as pd
 import geopandas
 
