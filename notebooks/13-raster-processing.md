@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.4
+    jupytext_version: 1.16.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -559,7 +559,7 @@ We want to limit our search for locations to the surroundings of the centre of G
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-from shapely.geometry import Point
+from shapely import Point
 ```
 
 ```{code-cell} ipython3

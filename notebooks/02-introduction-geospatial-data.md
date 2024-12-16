@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.4
+    jupytext_version: 1.16.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -22,8 +22,6 @@ kernelspec:
 ---
 
 ```{code-cell} ipython3
-%matplotlib inline
-
 import pandas as pd
 import geopandas
 ```
@@ -34,7 +32,7 @@ import geopandas
 
 Geospatial data is often available from specific GIS file formats or data stores, like ESRI shapefiles, GeoJSON files, geopackage files, PostGIS (PostgreSQL) database, ...
 
-We can use the GeoPandas library to read many of those GIS file formats (relying on the `fiona` library under the hood, which is an interface to GDAL/OGR), using the `geopandas.read_file` function.
+We can use the GeoPandas library to read many of those GIS file formats (relying on the `pyogrio` library under the hood, which is an interface to GDAL/OGR), using the `geopandas.read_file` function.
 
 For example, let's start by reading a shapefile with all the countries of the world (adapted from http://www.naturalearthdata.com/downloads/110m-cultural-vectors/110m-admin-0-countries/, zip file is available in the `/data` directory), and inspect the data:
 

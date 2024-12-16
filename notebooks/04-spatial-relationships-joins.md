@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.4
+    jupytext_version: 1.16.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -22,8 +22,6 @@ kernelspec:
 ---
 
 ```{code-cell} ipython3
-%matplotlib inline
-
 import pandas as pd
 import geopandas
 ```
@@ -67,7 +65,7 @@ brussels = cities.loc[cities['name'] == 'Brussels', 'geometry'].item()
 And a linestring:
 
 ```{code-cell} ipython3
-from shapely.geometry import LineString
+from shapely import LineString
 line = LineString([paris, brussels])
 ```
 
@@ -204,7 +202,7 @@ The location of the Eiffel Tower is: x of 648237.3 and y of 6862271.9
 
 ```{code-cell} ipython3
 # Import the Point geometry
-from shapely.geometry import Point
+from shapely import Point
 ```
 
 ```{code-cell} ipython3

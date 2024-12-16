@@ -4,7 +4,7 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.16.4
+    jupytext_version: 1.16.5
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -107,7 +107,7 @@ africa = countries[countries.continent == 'Africa']
 ```
 
 ```{code-cell} ipython3
-from shapely.geometry import LineString
+from shapely import LineString
 box = LineString([(-10, 0), (50, 0)]).buffer(10, cap_style=3)
 ```
 
