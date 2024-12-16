@@ -559,7 +559,7 @@ We want to limit our search for locations to the surroundings of the centre of G
 ```{code-cell} ipython3
 :tags: [nbtutor-solution]
 
-from shapely.geometry import Point
+from shapely import Point
 ```
 
 ```{code-cell} ipython3

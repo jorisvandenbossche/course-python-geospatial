@@ -65,7 +65,7 @@ brussels = cities.loc[cities['name'] == 'Brussels', 'geometry'].item()
 And a linestring:
 
 ```{code-cell} ipython3
-from shapely.geometry import LineString
+from shapely import LineString
 line = LineString([paris, brussels])
 ```
 
@@ -202,7 +202,7 @@ The location of the Eiffel Tower is: x of 648237.3 and y of 6862271.9
 
 ```{code-cell} ipython3
 # Import the Point geometry
-from shapely.geometry import Point
+from shapely import Point
 ```
 
 ```{code-cell} ipython3

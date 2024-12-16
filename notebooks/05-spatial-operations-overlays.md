@@ -107,7 +107,7 @@ africa = countries[countries.continent == 'Africa']
 ```
 
 ```{code-cell} ipython3
-from shapely.geometry import LineString
+from shapely import LineString
 box = LineString([(-10, 0), (50, 0)]).buffer(10, cap_style=3)
 ```
 
